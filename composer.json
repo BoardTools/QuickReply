@@ -1,0 +1,23 @@
+{
+    "name": "tatiana5/quickreply",
+    "type": "phpbb-extension",
+    "description": "Описание",
+    "homepage": "http://phpbbguru.net",
+    "version": "0.0.1",
+    "time": "2014-02-03",
+    "licence": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Татьяна5",
+            "homepage": "http://phpbbguru.net",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "phpbb/phpbb": "3.1.*@dev"
+    },
+    "extra": {
+        "display-name": "QuickReply"
+    }
+}

@@ -1,0 +1,11 @@
+services:
+    tatiana5.quickreply.listener:
+        class: tatiana5\quickreply\event\listener
+        arguments:
+            - @auth
+            - @config
+            - @template
+            - @user
+            - %core.root_path%
+        tags:
+            - { name: event.listener }

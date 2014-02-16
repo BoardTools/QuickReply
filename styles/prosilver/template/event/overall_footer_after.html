@@ -1,0 +1,99 @@
+<!-- IF S_QR_NOT_CHANGE_SUBJECT -->
+<script type="text/javascript">
+// <![CDATA[
+	//$(document).ready(function() {
+		$("#subject").attr('disabled', 'disabled');
+		$("#subject").css('color', 'grey');
+	//});
+// ]]>
+</script>
+<!-- ENDIF -->
+
+<!-- IF S_QUICK_REPLY and S_QR_CE_ENABLE -->
+<script type="text/javascript">
+// <![CDATA[
+	$('textarea[name="message"]').keydown(function(event){
+		if (event.keyCode == 10 || (event.ctrlKey && event.keyCode == 13)) 
+		{
+			$('#qr_postform input[name="post"]').click();
+		}
+	});
+// ]]>
+</script>
+<!-- ENDIF -->
+
+<!-- IF SCRIPT_NAME == "posting" and S_QR_CE_ENABLE -->
+<script type="text/javascript">
+// <![CDATA[
+	$('#message').keydown(function(event){
+		if (event.keyCode == 10 || (event.ctrlKey && event.keyCode == 13)) 
+		{
+			$('#postform input[name="post"]').click();
+		}
+	});
+// ]]>
+</script>
+<!-- ENDIF -->
+
+<!-- IF S_QUICK_REPLY and S_QR_QUICKQUOTE_ENABLE -->
+<script type="text/javascript">
+// <![CDATA[
+	$( ".content" ).mouseup(function(evt) {
+		// Get cursor coordinates
+		var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
+		var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
+		// Which mouse button is pressed?
+		var key = evt.button || evt.which || null; // IE || FF || Unknown
+
+		//Get nick
+		var post_id = $(this).parent().attr('id');
+		var poster_id = post_id.replace('post_content', 'profile');
+		var nickname = $('#' + poster_id + ' dt a').not('.avatar').html();
+		
+		setTimeout(function() { // Timeout prevents popup when clicking on selected text
+			var sel = '';
+			if (window.getSelection)
+				sel = window.getSelection().toString();
+			else if (document.getSelection)
+				sel = document.getSelection();
+			else if (document.selection)
+				sel = document.selection.createRange().text;
+
+			if (sel && key <= 1) { // If text selected && right mouse button not pressed
+				var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 184 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" style="font-size: 11px !important;">{L_QR_INSERT_TEXT}</a></li></ul></div>').appendTo('body');
+				$('a', qrAlert).mousedown(function() {insert_text('[quote="' + nickname + '"]' + sel + '[/quote]\r', false); qrAlert.remove(); return false;});
+				setTimeout(function() {$(document.body).mousedown(function() {qrAlert.remove(); $(document.body).unbind('mousedown');});}, 10);
+			}
+		}, 0);
+	})
+// ]]>
+</script>
+<!-- ENDIF -->
+
+<!-- IF S_QUICK_REPLY and S_QR_QUICKNICK_ENABLE -->
+<script type="text/javascript">
+// <![CDATA[
+	$('a.username').click(function(evt) {
+		// Get cursor coordinates
+		if (!evt) evt = window.event;
+		var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
+		var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
+		// Which mouse button is pressed?
+		var key = evt.button || evt.which || null; // IE || FF || Unknown
+		
+		//Get nick and id
+		var poster_id = $(this).attr('id');
+		var nickname = $(this).html();
+		
+		var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="{L_QR_QUICKNICK_TITLE}">{L_QR_QUICKNICK}</a></li><li><a href="javascript:void(0);" class="qr_profile" style="font-size: 11px !important;" title="{L_QR_PROFILE}">{L_QR_PROFILE}</a></li></ul></div>').appendTo('body');
+				
+		var comma = ({S_QR_COMMA_ENABLE}) ? ', ' : '';
+		$('a.qr_quicknick', qrNickAlert).mousedown(function() {insert_text('[b]' + nickname + '[/b]' + comma, false); qrNickAlert.remove(); return false;});
+		
+		$('a.qr_profile', qrNickAlert).mousedown(function() {document.location.href = "./memberlist.php?mode=viewprofile&u=" + poster_id; qrNickAlert.remove(); return false;});
+		
+		setTimeout(function() {$(document.body).mousedown(function() {qrNickAlert.remove(); $(document.body).unbind('mousedown');});}, 10);
+	});
+// ]]>
+</script>
+<!-- ENDIF -->
