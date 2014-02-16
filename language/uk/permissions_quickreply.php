@@ -3,10 +3,9 @@
 *
 * quickreply [Ukrainian]
 *
-* @package quickreply
-* @copyright (c) 2014 Татьяна5
-* @translation (c) 2014 www.phpbbukraine.net
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @package language quickreply
+* @copyright (c) 2014 Alex Fryschyn (Sherlock)
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
