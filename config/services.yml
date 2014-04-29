@@ -6,6 +6,8 @@ services:
             - @config
             - @template
             - @user
+            - @dbal.conn
             - %core.root_path%
+            - %core.php_ext%
         tags:
             - { name: event.listener }

@@ -2,7 +2,7 @@
 /**
 *
 * @package quickreply
-* @copyright (c) 2013 Татьяна5
+* @copyright (c) 2014 Татьяна5
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -29,10 +29,11 @@ class listener implements EventSubscriberInterface
 	protected $user;
 	
 	/** @var \phpbb\db\driver\driver */
-	//protected $db;
+	protected $db;
 	
 	/** @var string */
 	protected $phpbb_root_path;
+	protected $php_ext;
 	
 	/**
 	* Constructor
@@ -44,14 +45,15 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\db\driver\driver $db
 	* @param string $phpbb_root_path Root path
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver $db, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
-		//$this->db = $db;
+		$this->db = $db;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 	}
 	
 	/**
@@ -97,9 +99,8 @@ class listener implements EventSubscriberInterface
 	
 	public function show_bbcodes_and_smilies($event)
 	{
-		global $phpEx;
 		
-		include($this->phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		
 		$forum_id	= $event['forum_id'];
 		$topic_data = $event['topic_data'];
@@ -178,7 +179,6 @@ class listener implements EventSubscriberInterface
 	
 	public function delete_re()
 	{
-		global $db;
 			
 		if($this->config['qr_enable_re'] == 0)
 		{
@@ -190,8 +190,8 @@ class listener implements EventSubscriberInterface
 				$sql = 'SELECT topic_title
 							FROM ' . TOPICS_TABLE . ' 
 							WHERE topic_id = ' . (int) $topic_id;
-				$result = $db->sql_query($sql);
-				$post_subject = $db->sql_fetchrow($result);
+				$result = $this->db->sql_query($sql);
+				$post_subject = $this->db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 					
 				$post_subject = censor_text($post_subject['topic_title']);
