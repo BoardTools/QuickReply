@@ -122,10 +122,14 @@ class listener implements EventSubscriberInterface
 			$flash_status	= ($bbcode_status && $this->auth->acl_get('f_flash', $forum_id) && $this->config['allow_post_flash']) ? true : false;
 			$quote_status	= true;
 			
+			if($bbcode_status || $smilies_status)
+			{
+				$this->user->add_lang('posting');
+			}
+			
 			// Build custom bbcodes array
 			if($bbcode_status)
 			{
-				$this->user->add_lang('posting');
 				display_custom_bbcodes();
 			}
 
