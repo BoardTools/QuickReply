@@ -25,6 +25,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'QR_INSERT_TEXT'			=> 'Вставить цитату в окно ответа',
 	'QR_PROFILE'				=> 'Перейти в профиль',
+	'QR_TOO_FEW_CHARS'			=> 'Ваше сообщение слишком короткое.',
 	'QR_QUICKNICK'				=> 'Обратиться по нику',
 	'QR_QUICKNICK_TITLE'		=> 'Вставить имя пользователя в окно быстрого ответа',
 ));

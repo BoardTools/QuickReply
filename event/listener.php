@@ -70,7 +70,29 @@ class listener implements EventSubscriberInterface
 			'core.viewtopic_modify_page_title'	=>	'show_bbcodes_and_smilies',
 			'core.modify_posting_parameters'	=>	'change_subject',
 			'core.posting_modify_template_vars'	=>	'delete_re',
+			'core.submit_post_end'				=>	'ajax_submit',
 		);
+	}
+	
+	public function ajax_submit($event) 
+	{
+		global 	$request;
+			
+		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
+		
+		if ($request->is_ajax())
+		{
+			$json_response = new \phpbb\json_response;
+			$json_response->send(array(
+				'success' => true,
+				//'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
+				//'MESSAGE_TEXT'	=> $this->user->lang['QR_POST_SUBMITTED'],
+				'REFRESH_DATA'	=> array(
+					'time'	=> 0,
+					'url'	=> html_entity_decode($event['url'])
+				)
+			));
+		}
 	}
 
 	/**
@@ -92,8 +114,10 @@ class listener implements EventSubscriberInterface
 			));
 		}
 		
+		//Ajax_submit
 		$this->template->assign_vars(array(
-			
+			'QR_POST_TO_NEXT_PAGE'	=> ($event['current_row_number'] + 1 == $this->config['posts_per_page']) ? 1 : 0,
+			'QR_MIN_POST_CHARS'		=>	$this->config['min_post_chars'],
 		));
 	}
 	

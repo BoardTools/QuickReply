@@ -1,43 +1,32 @@
-<!-- IF S_QR_NOT_CHANGE_SUBJECT -->
 <script type="text/javascript">
 // <![CDATA[
+
+<!-- IF S_QR_NOT_CHANGE_SUBJECT -->
 	//$(document).ready(function() {
 		$("#subject").attr('disabled', 'disabled');
 		$("#subject").css('color', 'grey');
 	//});
-// ]]>
-</script>
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_CE_ENABLE -->
-<script type="text/javascript">
-// <![CDATA[
 	$('textarea[name="message"]').keydown(function(event){
 		if (event.keyCode == 10 || (event.ctrlKey && event.keyCode == 13)) 
 		{
 			$('#qr_postform input[name="post"]').click();
 		}
 	});
-// ]]>
-</script>
 <!-- ENDIF -->
 
 <!-- IF SCRIPT_NAME == "posting" and S_QR_CE_ENABLE -->
-<script type="text/javascript">
-// <![CDATA[
 	$('#message').keydown(function(event){
 		if (event.keyCode == 10 || (event.ctrlKey && event.keyCode == 13)) 
 		{
 			$('#postform input[name="post"]').click();
 		}
 	});
-// ]]>
-</script>
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_QUICKQUOTE_ENABLE -->
-<script type="text/javascript">
-// <![CDATA[
 	$( ".content" ).mouseup(function(evt) {
 		// Get cursor coordinates
 		var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
@@ -46,9 +35,9 @@
 		var key = evt.button || evt.which || null; // IE || FF || Unknown
 
 		//Get nick
-		var post_id = $(this).parent().attr('id');
-		var poster_id = post_id.replace('post_content', 'profile');
-		var nickname = $('#' + poster_id + ' dt a').not('.avatar').html();
+		var qr_post_id = $(this).parent().attr('id');
+		var qr_poster_id = qr_post_id.replace('post_content', 'profile');
+		var nickname = $('#' + qr_poster_id + ' dt a').not('.avatar').html();
 		
 		setTimeout(function() { // Timeout prevents popup when clicking on selected text
 			var sel = '';
@@ -66,13 +55,9 @@
 			}
 		}, 0);
 	})
-// ]]>
-</script>
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_QUICKNICK_ENABLE -->
-<script type="text/javascript">
-// <![CDATA[
 	$('a.username').click(function(evt) {
 		// Get cursor coordinates
 		if (!evt) evt = window.event;
@@ -94,6 +79,68 @@
 		
 		setTimeout(function() {$(document.body).mousedown(function() {qrNickAlert.remove(); $(document.body).unbind('mousedown');});}, 10);
 	});
+<!-- ENDIF -->
+
+<!-- ajax_submit -->
+<!-- IF S_QUICK_REPLY -->
+	$('#qr_postform').attr('data-ajax', 'qr_ajax_submit');
+	
+	<!-- IF QR_POST_TO_NEXT_PAGE -->
+		$('#qr_postform').attr('data-refresh', 'true');
+	<!-- ENDIF -->
+	
+	$('input[name="post"]').click(function () {
+		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
+			<!-- IF not QR_POST_TO_NEXT_PAGE -->
+			if (res.success) {
+				$('#posts').load('#posts');
+				$('#message-box textarea').val('');
+				$('#qr_postform .submit-buttons').load('#qr_postform .submit-buttons');
+			} else {
+				if($('#message-box textarea').val().length < {QR_MIN_POST_CHARS}) 
+				{
+					var qr_error_title = '{L_INFORMATION}';
+					var qr_error_message = '{L_QR_TOO_FEW_CHARS}';
+				} else {
+					var qr_error_title = '{L_AJAX_ERROR_TITLE}';
+					var qr_error_message = '{L_AJAX_ERROR_TEXT}';
+				}
+				
+				alert = phpbb.alert(qr_error_title, qr_error_message);
+				setTimeout(function() {
+					$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
+						alert.hide();
+					});
+				},  3000);
+			}
+			<!-- ENDIF -->
+		});
+	});
+	
+	$('#qr_full_editor').click(function () {
+		var message = $('#message-box textarea').val();
+		var action = $('#qr_postform').attr('action');		
+		
+		if(message)
+		{
+			localStorage['qr_save_message'] = message;
+			document.location.href = action + '#preview';
+		}
+		else
+		{
+			document.location.href = action;
+		}
+	});
+<!-- ENDIF -->
+	
+<!-- IF SCRIPT_NAME == "posting" -->
+	if(localStorage['qr_save_message'])
+	{
+		$('#message').val(localStorage['qr_save_message']);
+		localStorage['qr_save_message'] = '';
+	}
+<!-- ENDIF -->
+<!-- end ajax_submit -->	
+	
 // ]]>
 </script>
-<!-- ENDIF -->
