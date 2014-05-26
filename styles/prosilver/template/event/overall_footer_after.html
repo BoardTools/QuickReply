@@ -27,7 +27,7 @@
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_QUICKQUOTE_ENABLE -->
-	$( ".content" ).mouseup(function(evt) {
+	$('#posts').on('mouseup', '.content', function(evt) {
 		// Get cursor coordinates
 		var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
 		var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
@@ -58,7 +58,7 @@
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_QUICKNICK_ENABLE -->
-	$('a.username').click(function(evt) {
+	$('#posts').on('click', 'a.username', function(evt) {
 		// Get cursor coordinates
 		if (!evt) evt = window.event;
 		var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
@@ -83,27 +83,51 @@
 
 <!-- ajax_submit -->
 <!-- IF S_QUICK_REPLY -->
+            
+
 	$('#qr_postform').attr('data-ajax', 'qr_ajax_submit');
 	
 	<!-- IF QR_POST_TO_NEXT_PAGE -->
 		$('#qr_postform').attr('data-refresh', 'true');
 	<!-- ENDIF -->
 	
-	$('input[name="post"]').click(function () {
+	$('input[name="post"]').on('click', function () {
 		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
 			<!-- IF not QR_POST_TO_NEXT_PAGE -->
+
 			if (res.success) {
-				$('#posts').load('#posts');
-				$('#message-box textarea').val('');
-				$('#qr_postform .submit-buttons').load('#qr_postform .submit-buttons');
-			} else {
+				var posts_content = $('#posts_content').html(); //Все сообщения, кроме последнего
+				var post_ajax_content = $('#post_ajax_content').html(); //Последнее сообщение
+				var post_id_before = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id последнего сообщения до отправки
+				
+				$('#post_ajax').load('# #post_ajax_content', function () {
+					var post_id_after = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id последнего сообщения после отправки
+					if(post_id_after > post_id_before) //for posts_merging
+					{
+						$('#posts_content').html(posts_content + post_ajax_content);
+						$('input[name="topic_cur_post_id"]').attr('value', post_id_after);
+					}
+   
+                     handle_drops($('#posts'));
+					 qr_responsive_links($('#posts'));
+					
+					//Форма отправки
+					
+					$('input[name="post"]').removeAttr('data-clicked');
+					$('#message-box textarea').val('');
+					$('#message-box textarea').attr('style', 'height: 9em;');
+					
+				});
+				
+			} 
+            else {
 				if($('#message-box textarea').val().length < {QR_MIN_POST_CHARS}) 
 				{
 					var qr_error_title = '{L_INFORMATION}';
 					var qr_error_message = '{L_QR_TOO_FEW_CHARS}';
 				} else {
 					var qr_error_title = '{L_AJAX_ERROR_TITLE}';
-					var qr_error_message = '{L_AJAX_ERROR_TEXT}';
+					var qr_error_message = '{L_AJAX_ERROR_TEXT} - test';
 				}
 				
 				alert = phpbb.alert(qr_error_title, qr_error_message);
@@ -141,6 +165,168 @@
 	}
 <!-- ENDIF -->
 <!-- end ajax_submit -->	
+	function handle_drops(container)
+    {
+/**
+	* Dropdowns
+	*/
+	container.find('.dropdown-container').each(function() {
+		var $this = $(this),
+			trigger = $this.find('.dropdown-trigger:first'),
+			contents = $this.find('.dropdown'),
+			options = {
+				direction: 'auto',
+				verticalDirection: 'auto'
+			},
+			data;
+
+		if (!trigger.length) {
+			data = $this.attr('data-dropdown-trigger');
+			trigger = data ? $this.children(data) : $this.children('a:first');
+		}
+
+		if (!contents.length) {
+			data = $this.attr('data-dropdown-contents');
+			contents = data ? $this.children(data) : $this.children('div:first');
+		}
+
+		if (!trigger.length || !contents.length) return;
+
+		if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
+		if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
+		if ($this.hasClass('dropdown-left')) options.direction = 'left';
+		if ($this.hasClass('dropdown-right')) options.direction = 'right';
+
+		phpbb.registerDropdown(trigger, contents, options);
+	});
+    }
 	
+	function qr_responsive_links(container)
+    {
+		/**
+		* Responsive link lists
+		*/
+		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody ul.profile-icons:not([data-skip-responsive])').each(function() {
+			var $this = $(this),
+				$body = $('body'),
+				filterSkip = '.breadcrumbs, [data-skip-responsive]',
+				filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
+				allLinks = $this.children(),
+				links = allLinks.not(filterSkip),
+				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+				filterLastList = links.filter(filterLast);
+
+			if (links.is('.rightside'))
+			{
+				links.filter('.rightside:first').before(html);
+			}
+			else
+			{
+				$this.append(html);
+			}
+
+			var item = $this.children('.responsive-menu'),
+				menu = item.find('.dropdown-contents'),
+				lastWidth = false,
+				compact = false,
+				responsive = false,
+				copied = false;
+
+			function check() {
+				var width = $body.width();
+				if (responsive && width <= lastWidth) {
+					return;
+				}
+
+				// Reset responsive and compact layout
+				if (responsive) {
+					responsive = false;
+					$this.removeClass('responsive');
+					links.css('display', '');
+					item.css('display', 'none');
+				}
+
+				if (compact) {
+					compact = false;
+					$this.removeClass('compact');
+				}
+
+				// Find tallest element
+				var maxHeight = 0;
+				allLinks.each(function() {
+					if (!$(this).height()) return;
+					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				});
+
+				if (maxHeight < 1) {
+					return;
+				}
+
+				// Nothing to resize if block's height is not bigger than tallest element's height
+				if ($this.height() <= maxHeight) {
+					return;
+				}
+
+				// Enable compact layout, find tallest element, compare to height of whole block
+				compact = true;
+				$this.addClass('compact');
+
+				var compactMaxHeight = 0;
+				allLinks.each(function() {
+					if (!$(this).height()) return;
+					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
+				});
+
+				if ($this.height() <= maxHeight) {
+					return;
+				}
+
+				// Compact layout did not resize block enough, switch to responsive layout
+				compact = false;
+				$this.removeClass('compact');
+				responsive = true;
+
+				if (!copied) {
+					var clone = links.clone(true);
+					clone.filter('.rightside').each(function() {
+						menu.prepend(this);
+					});
+					menu.prepend(clone.not('.rightside'));
+					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
+					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+					copied = true;
+				}
+				else {
+					menu.children().css('display', '');
+				}
+
+				item.css('display', '');
+				$this.addClass('responsive');
+
+				// Try to not hide filtered items
+				if (filterLastList.length) {
+					links.not(filterLast).css('display', 'none');
+
+					maxHeight = 0;
+					filterLastList.each(function() {
+						if (!$(this).height()) return;
+						maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+					});
+
+					if ($this.height() <= maxHeight) {
+						menu.children().filter(filterLast).css('display', 'none');
+						return;
+					}
+				}
+
+				links.css('display', 'none');
+			}
+
+			phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+
+			check();
+			$(window).resize(check);
+		});
+	}
 // ]]>
 </script>

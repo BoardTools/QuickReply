@@ -86,9 +86,9 @@ class listener implements EventSubscriberInterface
 			$json_response->send(array(
 				'success' => true,
 				//'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
-				//'MESSAGE_TEXT'	=> $this->user->lang['QR_POST_SUBMITTED'],
+				//'MESSAGE_TEXT'	=> $this->user->lang['INFORMATION'],
 				'REFRESH_DATA'	=> array(
-					'time'	=> 0,
+					'time'	=> 1,
 					'url'	=> html_entity_decode($event['url'])
 				)
 			));
@@ -220,7 +220,7 @@ class listener implements EventSubscriberInterface
 							WHERE topic_id = ' . (int) $topic_id;
 				$result = $this->db->sql_query($sql);
 				$post_subject = $this->db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 					
 				$post_subject = censor_text($post_subject['topic_title']);
 				
