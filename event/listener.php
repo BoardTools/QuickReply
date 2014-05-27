@@ -86,9 +86,9 @@ class listener implements EventSubscriberInterface
 			$json_response->send(array(
 				'success' => true,
 				//'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
-				//'MESSAGE_TEXT'	=> $this->user->lang['QR_POST_SUBMITTED'],
+				//'MESSAGE_TEXT'	=> $this->user->lang['INFORMATION'],
 				'REFRESH_DATA'	=> array(
-					'time'	=> 0,
+					'time'	=> 1,
 					'url'	=> html_entity_decode($event['url'])
 				)
 			));
@@ -205,7 +205,7 @@ class listener implements EventSubscriberInterface
 	
 	}
 	
-	public function delete_re()
+	public function delete_re($event)
 	{
 			
 		if($this->config['qr_enable_re'] == 0)
@@ -220,7 +220,7 @@ class listener implements EventSubscriberInterface
 							WHERE topic_id = ' . (int) $topic_id;
 				$result = $this->db->sql_query($sql);
 				$post_subject = $this->db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 					
 				$post_subject = censor_text($post_subject['topic_title']);
 				
@@ -233,5 +233,60 @@ class listener implements EventSubscriberInterface
 		$this->template->assign_vars(array(
 			'S_QR_CE_ENABLE'		=> $this->config['qr_ctrlenter'],
 		));
+		
+		//Ajax submit
+		global $request, $phpbb_container;
+		if ($request->is_ajax())
+		{
+			$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+			include_once($phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+			
+			$error = $event['error'];
+			
+			$post_data = $event['post_data'];
+			$forum_id = $post_data['forum_id'];
+			$topic_id = $post_data['topic_id'];
+			$topic_cur_post_id = $post_data['topic_cur_post_id'];
+			
+			if(sizeof($error))
+			{
+				$error_text = implode('<br />', $error);
+				$post_id_next = $post_data['topic_last_post_id'];
+				$url_next_post = append_sid("{$phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#$post_id_next");
+			}
+			elseif ($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'] && $post_data['forum_flags'] && FORUM_FLAG_POST_REVIEW && topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id)) {
+				
+				$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
+				
+				$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+				
+				$sql = 'SELECT post_id 
+					FROM ' . POSTS_TABLE . '  
+					WHERE topic_id = ' . $topic_id . ' 
+						AND ' . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, '') . '
+						AND post_id > ' . $topic_cur_post_id . ' 
+						ORDER BY post_time DESC';
+				$result = $this->db->sql_query_limit($sql, 1);
+				$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
+				$this->db->sql_freeresult($result);
+				
+				$url_next_post = append_sid("{$phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next");
+			}
+			
+			if(isset($error_text)) {
+				$json_response = new \phpbb\json_response;
+				$json_response->send(array(
+					'error' => true,
+					'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
+					'MESSAGE_TEXT'	=> $error_text,
+					'NEXT_ID'			=> (isset($post_id_next)) ? $post_id_next : '',
+					'NEXT_URL'			=> (isset($url_next_post)) ? html_entity_decode($url_next_post) : '',
+					'REFRESH_DATA'	=> array(
+						'time'	=> 3,
+						'url'	=> $url_next_post
+					)
+				));
+			}
+		}
 	}
 }
