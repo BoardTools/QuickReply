@@ -50,6 +50,59 @@
 		}
 	}
 
+    //param: reg = 0 -  lowercase, reg = 1 - uppercase
+function updateCase(reg) {
+    var buf = new String;
+    var selection = false;
+    var txtarea = document.forms[form_name].elements[text_name];
+    var regexp;
+    var i;
+    var start;
+    var end;
+
+    if (document.selection) {
+        selection = document.selection.createRange().text;
+        buf = selection;
+    }
+    else
+        if (typeof (txtarea.selectionStart) == "number") {
+            if (txtarea.selectionStart != txtarea.selectionEnd) {
+                start = txtarea.selectionStart;
+                end = txtarea.selectionEnd;
+                buf = txtarea.value.substr(start, end - start);
+            }
+            else
+                buf = '';
+        }
+        if (buf == '') {
+            selection = '';
+            txtarea.focus();
+            return;
+        }
+    switch (parseInt(reg)) {
+        case 0:
+            buf = buf.toLowerCase();
+            break;
+        case 1:
+            buf = buf.toUpperCase();
+            break;
+
+    }
+    if (selection) {
+        eval('regexp = /' + selection + '/');
+        txtarea.value = txtarea.value.replace(regexp, buf);
+    }
+    else {
+        txtarea.value = txtarea.value.substr(0, start) + buf + txtarea.value.substr(end);
+    }
+
+    selection = '';
+    buf = '';
+
+    txtarea.focus();
+}
+
+
 // ]]>
 </script>
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
@@ -98,6 +151,13 @@
 		<input type="button" class="button2 bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}" />
 	<!-- END custom_tags -->
 </div>
+<div>
+        {L_TRANSFORM_TEXT}
+    	<input type="button" class="btnbbcode" accesskey="t" name="lowercase" value="{L_TRANSFORM_TEXT_LOWER}" onclick="updateCase(0)"  title='{L_TRANSFORM_TEXT_TOOLTIP}' />
+		<input type="button" class="btnbbcode" accesskey="t" name="uppercase" value="{L_TRANSFORM_TEXT_UPPER}" onclick="updateCase(1)"  title '{L_TRANSFORM_TEXT_TOOLTIP}' />
+
+</div>
+
 <!-- ENDIF -->
 
 	<div id="smiley-box">

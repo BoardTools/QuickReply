@@ -28,4 +28,10 @@ $lang = array_merge($lang, array(
 	'QR_TOO_FEW_CHARS'			=> 'Ваше сообщение слишком короткое.',
 	'QR_QUICKNICK'				=> 'Обратиться по нику',
 	'QR_QUICKNICK_TITLE'		=> 'Вставить имя пользователя в окно быстрого ответа',
+//begin mod CapsLock Transfer
+	'TRANSFORM_TEXT'			        => 'Перевести текст в ',
+	'TRANSFORM_TEXT_LOWER'		=> 'нижний регистр',
+	'TRANSFORM_TEXT_UPPER'		=> 'верхний регистр',
+	'TRANSFORM_TEXT_TOOLTIP'    => 'Смена регистра выделенного текста ',
+  //end mod CapsLock Transfer    
 ));
