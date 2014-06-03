@@ -73,7 +73,7 @@ class listener implements EventSubscriberInterface
 			'core.submit_post_end'				=>	'ajax_submit',
 		);
 	}
-	
+    
 	public function ajax_submit($event) 
 	{
 		global 	$request;
@@ -85,7 +85,8 @@ class listener implements EventSubscriberInterface
 			$json_response = new \phpbb\json_response;
 			$json_response->send(array(
 				'success' => true,
-				//'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
+				'url'			=>$event['url'] ,
+			//'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
 				//'MESSAGE_TEXT'	=> $this->user->lang['INFORMATION'],
 				'REFRESH_DATA'	=> array(
 					'time'	=> 1,
@@ -113,10 +114,11 @@ class listener implements EventSubscriberInterface
 				'POST_AUTHOR_FULL'		=> '<a href="javascript:void(0);" id="' . $event['row']['user_id'] . '" ' . $user_colour  . '>' . $event['user_poster_data']['author_username'] . '</a>',
 			));
 		}
-		
+
 		//Ajax_submit
 		$this->template->assign_vars(array(
-			'QR_POST_TO_NEXT_PAGE'	=> ($event['current_row_number'] + 1 == $this->config['posts_per_page']) ? 1 : 0,
+			'QR_POST_TO_NEXT_PAGE'	=> ($event['current_row_number'] + 1 >= $this->config['posts_per_page']) ? 1 : 0,
+			'CONFIG_POSTS_PER_PAGE'	=>  $this->config['posts_per_page'],
 			'QR_MIN_POST_CHARS'		=>	$this->config['min_post_chars'],
 		));
 	}

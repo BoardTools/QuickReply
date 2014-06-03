@@ -90,7 +90,7 @@
 	<!-- IF QR_POST_TO_NEXT_PAGE -->
 		$('#qr_postform').attr('data-refresh', 'true');
 	<!-- ENDIF -->
-	
+	 var next_page = 0;
 	$('input[name="post"]').on('click', function () {
 		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
 			<!-- IF not QR_POST_TO_NEXT_PAGE -->
@@ -102,13 +102,21 @@
 				
 				$('#post_ajax').load('# #post_ajax_content', function () {
 					var post_id_after = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id последнего сообщения после отправки
-					
+                    var numrow = $('#post_ajax_content div').attr('numrow');
+                    if (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) -1)
+                    {
+                        if (next_page == 0)
+                            next_page = 1;
+                        else
+                            location.href = res.url.replace(/&amp\;/ig, '&');
+                    }
+
 					if(post_id_after > post_id_before) //for posts_merging
 					{
 						$('#posts_content').html(posts_content + post_ajax_content);
 						$('input[name="topic_cur_post_id"]').attr('value', post_id_after);
 					}
-   
+                    $( ".icon_post_target_unread" ).removeClass( "icon_post_target_unread" ).addClass( "icon_post_target" );
                     handle_drops($('#posts'));
 					qr_responsive_links($('#posts'));
 					
