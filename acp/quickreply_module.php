@@ -38,6 +38,8 @@ class quickreply_module
 				'qr_comma'	=> array('lang' => 'ACP_QR_COMMA', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_enable_re'	=> array('lang' => 'ACP_QR_ENABLE_RE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_ctrlenter'	=> array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_capslock_transfer'	=> array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_ajax_submit'	=> array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				
 				'legend2'					=> 'ACP_SUBMIT_CHANGES',
 			),

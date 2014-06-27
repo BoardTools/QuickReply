@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "Описание",
     "homepage": "http://phpbbguru.net",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "time": "2014-02-03",
     "license": "GPL-2.0",
     "authors": [

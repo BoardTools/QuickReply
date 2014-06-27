@@ -50,8 +50,9 @@
 		}
 	}
 
+<!-- IF S_QR_CAPS_ENABLE -->
     //param: reg = 0 -  lowercase, reg = 1 - uppercase
-function updateCase(reg) {
+function qr_updateCase(reg) {
     var buf = new String;
     var selection = false;
     var txtarea = document.forms[form_name].elements[text_name];
@@ -101,6 +102,7 @@ function updateCase(reg) {
 
     txtarea.focus();
 }
+<!-- ENDIF -->
 
 
 // ]]>
@@ -151,12 +153,14 @@ function updateCase(reg) {
 		<input type="button" class="button2 bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}" />
 	<!-- END custom_tags -->
 </div>
+<!-- IF S_QR_CAPS_ENABLE -->
 <div>
-        {L_TRANSFORM_TEXT}
-    	<input type="button" class="btnbbcode" accesskey="t" name="lowercase" value="{L_TRANSFORM_TEXT_LOWER}" onclick="updateCase(0)"  title='{L_TRANSFORM_TEXT_TOOLTIP}' />
-		<input type="button" class="btnbbcode" accesskey="t" name="uppercase" value="{L_TRANSFORM_TEXT_UPPER}" onclick="updateCase(1)"  title '{L_TRANSFORM_TEXT_TOOLTIP}' />
+        {L_QR_TRANSFORM_TEXT}
+    	<input type="button" class="btnbbcode" accesskey="t" name="lowercase" value="{L_QR_TRANSFORM_TEXT_LOWER}" onclick="qr_updateCase(0)"  title='{L_QR_TRANSFORM_TEXT_TOOLTIP}' />
+		<input type="button" class="btnbbcode" accesskey="t" name="uppercase" value="{L_QR_TRANSFORM_TEXT_UPPER}" onclick="qr_updateCase(1)"  title '{L_QR_TRANSFORM_TEXT_TOOLTIP}' />
 
 </div>
+<!-- ENDIF -->
 
 <!-- ENDIF -->
 

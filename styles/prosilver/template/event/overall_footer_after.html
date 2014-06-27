@@ -82,62 +82,67 @@
 <!-- ENDIF -->
 
 <!-- ajax_submit -->
-<!-- IF S_QUICK_REPLY -->
-            
+<!-- IF S_QUICK_REPLY and S_QR_AJAX_SUBMIT -->
 
 	$('#qr_postform').attr('data-ajax', 'qr_ajax_submit');
 	
-	<!-- IF QR_POST_TO_NEXT_PAGE -->
-		$('#qr_postform').attr('data-refresh', 'true');
-	<!-- ENDIF -->
-	 var next_page = 0;
+	var numrow = $('#post_ajax_content').attr('numrow');
+	var next_page = (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1) ? 1 : 0;
+	
 	$('input[name="post"]').on('click', function () {
 		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
-			<!-- IF not QR_POST_TO_NEXT_PAGE -->
-
 			if (res.success) {
-				var posts_content = $('#posts_content').html(), //Все сообщения, кроме последнего
-					post_ajax_content = $('#post_ajax_content').html(), //Последнее сообщение
-					post_id_before = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id последнего сообщения до отправки
+				var posts_content = $('#posts_content').html(), //All post, except for the last post
+					post_ajax_content = $('#post_ajax_content').html(), //Last post
+					post_id_before = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id of the last post before sending
 				
 				$('#post_ajax').load('# #post_ajax_content', function () {
-					var post_id_after = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id последнего сообщения после отправки
-                    var numrow = $('#post_ajax_content div').attr('numrow');
-                    if (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) -1)
-                    {
-                        if (next_page == 0)
-                            next_page = 1;
-                        else
-                            location.href = res.url.replace(/&amp\;/ig, '&');
-                    }
+					var post_id_after = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id of the last post after sending - ??? ошибка при переходе на следующую страницу
 
+					numrow = $('#post_ajax_content').attr('numrow');
+						
+					if (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1)
+					{
+						//Test
+						alert('numrow = ' + numrow + '; CONFIG_POSTS_PER_PAGE = ' + {CONFIG_POSTS_PER_PAGE} + '; next_page = ' + next_page);
+						//end Test
+						
+						if (next_page == 0)
+						{
+							next_page = 1;
+						}
+						else
+						{
+							location.href = res.url.replace(/&amp\;/ig, '&');
+						}
+					}
+					
 					if(post_id_after > post_id_before) //for posts_merging
 					{
 						$('#posts_content').html(posts_content + post_ajax_content);
 						$('input[name="topic_cur_post_id"]').attr('value', post_id_after);
 					}
-                    $( ".icon_post_target_unread" ).removeClass( "icon_post_target_unread" ).addClass( "icon_post_target" );
-                    handle_drops($('#posts'));
+					$('.icon_post_target_unread').removeClass('icon_post_target_unread').addClass('icon_post_target');
+					handle_drops($('#posts'));
 					qr_responsive_links($('#posts'));
 					
-					//Форма отправки
+					//Sending form
 					$('input[name="post"]').removeAttr('data-clicked');
 					$('#message-box textarea').val('');
 					$('#message-box textarea').attr('style', 'height: 9em;');
-					
 				});
 			
 			} else {
 				if (res.NEXT_URL) {
 					setTimeout(function() {
 						localStorage['qr_save_message'] = $('#message-box textarea').val();
-						document.location.href = res.NEXT_URL;
+						document.location.href = res.NEXT_URL.replace(/&amp\;/ig, '&');;
 					},  3000);
 				}
 				
 				if(!res.error) {
 					var qr_error_title = '{L_AJAX_ERROR_TITLE}',
-						qr_error_message = '{L_AJAX_ERROR_TEXT} - test';
+						qr_error_message = '{L_AJAX_ERROR_TEXT}';
 						
 					alert = phpbb.alert(qr_error_title, qr_error_message);
 					setTimeout(function() {
@@ -147,7 +152,6 @@
 					},  3000);
 				}
 			}
-			<!-- ENDIF -->
 		});
 	});
 	
@@ -180,49 +184,50 @@
 		localStorage['qr_save_message'] = '';
 	}
 <!-- ENDIF -->
-<!-- end ajax_submit -->	
+
+<!-- IF S_QUICK_REPLY and S_QR_AJAX_SUBMIT -->	
 	function handle_drops(container)
-    {
-/**
-	* Dropdowns
-	*/
-	container.find('.dropdown-container').each(function() {
-		var $this = $(this),
-			trigger = $this.find('.dropdown-trigger:first'),
-			contents = $this.find('.dropdown'),
-			options = {
-				direction: 'auto',
-				verticalDirection: 'auto'
-			},
-			data;
+	{
+		/**
+		* Dropdowns
+		*/
+		container.find('.dropdown-container').each(function() {
+			var $this = $(this),
+				trigger = $this.find('.dropdown-trigger:first'),
+				contents = $this.find('.dropdown'),
+				options = {
+					direction: 'auto',
+					verticalDirection: 'auto'
+				},
+				data;
 
-		if (!trigger.length) {
-			data = $this.attr('data-dropdown-trigger');
-			trigger = data ? $this.children(data) : $this.children('a:first');
-		}
+			if (!trigger.length) {
+				data = $this.attr('data-dropdown-trigger');
+				trigger = data ? $this.children(data) : $this.children('a:first');
+			}
 
-		if (!contents.length) {
-			data = $this.attr('data-dropdown-contents');
-			contents = data ? $this.children(data) : $this.children('div:first');
-		}
+			if (!contents.length) {
+				data = $this.attr('data-dropdown-contents');
+				contents = data ? $this.children(data) : $this.children('div:first');
+			}
 
-		if (!trigger.length || !contents.length) return;
+			if (!trigger.length || !contents.length) return;
 
-		if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
-		if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
-		if ($this.hasClass('dropdown-left')) options.direction = 'left';
-		if ($this.hasClass('dropdown-right')) options.direction = 'right';
+			if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
+			if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
+			if ($this.hasClass('dropdown-left')) options.direction = 'left';
+			if ($this.hasClass('dropdown-right')) options.direction = 'right';
 
-		phpbb.registerDropdown(trigger, contents, options);
-	});
-    }
+			phpbb.registerDropdown(trigger, contents, options);
+		});
+	}
 	
 	function qr_responsive_links(container)
-    {
+	{
 		/**
 		* Responsive link lists
 		*/
-		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody ul.profile-icons:not([data-skip-responsive])').each(function() {
+		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
 			var $this = $(this),
 				$body = $('body'),
 				filterSkip = '.breadcrumbs, [data-skip-responsive]',
@@ -310,6 +315,11 @@
 					menu.prepend(clone.not('.rightside'));
 					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
 					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+
+					if ($this.hasClass('post-buttons')) {
+						$('.button', menu).removeClass('button icon-button');
+						$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
+					}
 					copied = true;
 				}
 				else {
@@ -344,8 +354,7 @@
 			$(window).resize(check);
 		});
 	}
-
-
-
+<!-- ENDIF -->
+<!-- end ajax_submit -->
 // ]]>
 </script>
