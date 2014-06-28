@@ -7,9 +7,9 @@
 *
 */
 
-namespace tatiana5\quickreply\migrations;
+namespace tatiana5\quickreply\migrations\v0xx;
 
-class v_0_1_0 extends \phpbb\db\migration\migration
+class v_0_0_1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -44,11 +44,9 @@ class v_0_1_0 extends \phpbb\db\migration\migration
 			array('config.add', array('qr_smilies', '1')),
 			array('config.add', array('qr_enable_re', '0')),
 			array('config.add', array('qr_ctrlenter', '1')),
-			array('config.add', array('qr_capslock_transfer', '1')),
-			array('config.add', array('qr_ajax_submit', '1')),
 
 			// Current version
-			array('config.add', array('qr_version', '0.1.0')),
+			array('config.add', array('qr_version', '0.0.1')),
 
 			// Add ACP modules
 			array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'ACP_QUICKREPLY')),
@@ -58,15 +56,6 @@ class v_0_1_0 extends \phpbb\db\migration\migration
 					'module_mode'		=> 'config_quickreply',
 					'module_auth'		=> 'acl_a_quickreply',
 			))),
-
-			// Add UCP modules
-			//array('module.add', array('ucp', false, 'UCP_REPUTATION')),
-			//array('module.add', array('ucp', 'UCP_REPUTATION', array(
-			//		'module_basename'	=> '\pico88\reputation\ucp\reputation_module',
-			//		'module_langname'	=> 'UCP_REPUTATION_FRONT',
-			//		'module_mode'		=> 'front',
-			//		'module_auth'		=> 'cfg_rs_enable',
-			//))),
 
 			// Add permissions
 			array('permission.add', array('a_quickreply', true)),
