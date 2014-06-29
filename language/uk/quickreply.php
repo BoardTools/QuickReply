@@ -4,7 +4,7 @@
 * quickreply [Ukrainian]
 *
 * @package language quickreply
-* @copyright (c) 2014 Alex Fryschyn (Sherlock)
+* @copyright (c) 2014 Oleksii Fryschyn (Sherlock)
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -27,4 +27,14 @@ $lang = array_merge($lang, array(
 	'QR_PROFILE'				=> 'Перейти в профіль',
 	'QR_QUICKNICK'				=> 'Звернутися за ніком',
 	'QR_QUICKNICK_TITLE'		=> 'Вставити ім\'я користувача у вікно швидкої відповіді',
+//begin mod CapsLock Transfer
+	'QR_TRANSFORM_TEXT'			=> 'Зміна регістра тексту:',
+	'QR_TRANSFORM_TEXT_TOOLTIP'	=> 'Для зміни регістру виділіть частину тексту та натисніть потрібну кнопку',
+	'QR_TRANSFORM_TEXT_LOWER'	=> '&#9660; абв',
+	'QR_TRANSFORM_TEXT_UPPER'	=> '&#9650; АБВ',
+	'QR_TRANSFORM_TEXT_INVERS'	=> '&#9660;&#9650; аБВ',
+	'QR_TRANSFORM_TEXT_LOWER_TOOLTIP'	=> 'нижній регістр',
+	'QR_TRANSFORM_TEXT_UPPER_TOOLTIP'	=> 'ВЕРХНІЙ РЕГІСТР',
+	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP'	=> 'іНВЕРСІЯ рЕГІСТРА',
+//end mod CapsLock Transfer    
 ));
