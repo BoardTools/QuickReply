@@ -51,57 +51,106 @@
 	}
 
 <!-- IF S_QR_CAPS_ENABLE -->
-    //param: reg = 0 -  lowercase, reg = 1 - uppercase
-function qr_updateCase(reg) {
-    var buf = new String;
-    var selection = false;
-    var txtarea = document.forms[form_name].elements[text_name];
-    var regexp;
-    var i;
-    var start;
-    var end;
+	function qr_formatToggle(s) 
+	{
+		var t = new String();
+		var sc = s.length;
+		var c;
+		for (i = 0; i < sc; i++) 
+		{
+			c = s.charAt(i);
+			if (c.toLowerCase() == c) 
+			{
+				c = c.toUpperCase();
+			} 
+			else if (c.toUpperCase() == c) 
+			{
+				c = c.toLowerCase();
+			}
+			t += c;
+		}
+		return t;
+	}
+    //param: reg = 0 -  lowercase, reg = 1 - uppercase, reg = 2 - inverse
+	function qr_updateCase(reg) 
+	{
+		var buf = new String;
+		var selection = false;
+		var txtarea = document.forms[form_name].elements[text_name];
+		var regexp;
+		var i;
+		var start;
+		var end;
 
-    if (document.selection) {
-        selection = document.selection.createRange().text;
-        buf = selection;
-    }
-    else
-        if (typeof (txtarea.selectionStart) == "number") {
-            if (txtarea.selectionStart != txtarea.selectionEnd) {
-                start = txtarea.selectionStart;
-                end = txtarea.selectionEnd;
-                buf = txtarea.value.substr(start, end - start);
-            }
-            else
-                buf = '';
-        }
-        if (buf == '') {
-            selection = '';
-            txtarea.focus();
-            return;
-        }
-    switch (parseInt(reg)) {
-        case 0:
-            buf = buf.toLowerCase();
-            break;
-        case 1:
-            buf = buf.toUpperCase();
-            break;
+		if (document.selection) 
+		{
+			selection = document.selection.createRange().text;
+			buf = selection;
+		}
+		else if (typeof (txtarea.selectionStart) == "number") 
+		{
+			start = txtarea.selectionStart;
+			end = txtarea.selectionEnd;
+			if (start != end) 
+			{
+				buf = txtarea.value.substr(start, end - start);
+			}
+			else
+			{
+				buf = txtarea.value;
+			}
+		}
+		//if (buf == '') 
+		//{
+		//	selection = '';
+		//	txtarea.focus();
+		//	
+		//	alert = phpbb.alert('{L_INFORMATION}', '{L_QR_NO_SELECTION}');
+		//	setTimeout(function() {
+		//		$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
+		//			alert.hide();
+		//		});
+		//	},  3000);
+		//	return;
+		//}
+		switch (parseInt(reg))
+		{
+			case 0:
+				buf = buf.toLowerCase();
+			break;
+			
+			case 1:
+				buf = buf.toUpperCase();
+			break;
+			
+			case 2:
+				buf = qr_formatToggle(buf);
+			break;
+		}
+		
 
-    }
-    if (selection) {
-        eval('regexp = /' + selection + '/');
-        txtarea.value = txtarea.value.replace(regexp, buf);
-    }
-    else {
-        txtarea.value = txtarea.value.substr(0, start) + buf + txtarea.value.substr(end);
-    }
+		if (selection)
+		{
+			eval('regexp = /' + selection + '/');
+			txtarea.value = txtarea.value.replace(regexp, buf);
+		}
+		else 
+		{
+			if (start != end)
+			{
+				txtarea.value = txtarea.value.substr(0, start) + buf + txtarea.value.substr(end);
+			}
+			else
+			{
+				txtarea.value = buf;
+			}
+		}
 
-    selection = '';
-    buf = '';
+		selection = '';
+		buf = '';
 
-    txtarea.focus();
-}
+		txtarea.focus();
+	}
 <!-- ENDIF -->
 
 
@@ -153,15 +202,14 @@ function qr_updateCase(reg) {
 		<input type="button" class="button2 bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}" />
 	<!-- END custom_tags -->
 </div>
-<!-- IF S_QR_CAPS_ENABLE -->
-<div>
-        {L_QR_TRANSFORM_TEXT}
-    	<input type="button" class="btnbbcode" accesskey="t" name="lowercase" value="{L_QR_TRANSFORM_TEXT_LOWER}" onclick="qr_updateCase(0)"  title='{L_QR_TRANSFORM_TEXT_TOOLTIP}' />
-		<input type="button" class="btnbbcode" accesskey="t" name="uppercase" value="{L_QR_TRANSFORM_TEXT_UPPER}" onclick="qr_updateCase(1)"  title '{L_QR_TRANSFORM_TEXT_TOOLTIP}' />
-
-</div>
 <!-- ENDIF -->
-
+<!-- IF S_QR_CAPS_ENABLE -->
+<div>	
+	<acronym style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}</acronym>&nbsp;
+	<input type="button" class="button2" accesskey="t" name="uppercase" value="{L_QR_TRANSFORM_TEXT_UPPER}" onclick="qr_updateCase(1)"  title="{L_QR_TRANSFORM_TEXT_UPPER_TOOLTIP}" />
+    <input type="button" class="button2" accesskey="t" name="lowercase" value="{L_QR_TRANSFORM_TEXT_LOWER}" onclick="qr_updateCase(0)"  title="{L_QR_TRANSFORM_TEXT_LOWER_TOOLTIP}" />
+	<input type="button" class="button2" accesskey="t" name="inverscase" value="{L_QR_TRANSFORM_TEXT_INVERS}" onclick="qr_updateCase(2)"  title="{L_QR_TRANSFORM_TEXT_INVERS_TOOLTIP}" />
+</div>
 <!-- ENDIF -->
 
 	<div id="smiley-box">

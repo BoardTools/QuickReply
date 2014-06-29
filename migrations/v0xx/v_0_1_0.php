@@ -18,20 +18,17 @@ class v_0_1_0 extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-			return array('\tatiana5\quickreply\migrations\v0xx\v_0_0_1');
-			
+		return array('\tatiana5\quickreply\migrations\v0xx\v_0_0_1');
 	}
 
 	public function update_schema()
 	{
-		return array(
-		);
+		return array();
 	}
 
 	public function revert_schema()
 	{
-		return array(
-		);
+		return array();
 	}
 
 	public function update_data()
@@ -40,15 +37,9 @@ class v_0_1_0 extends \phpbb\db\migration\migration
 			// Add configs
 			array('config.add', array('qr_capslock_transfer', '1')),
 			array('config.add', array('qr_ajax_submit', '1')),
-
-			// Add UCP modules
-			//array('module.add', array('ucp', false, 'UCP_REPUTATION')),
-			//array('module.add', array('ucp', 'UCP_REPUTATION', array(
-			//		'module_basename'	=> '\pico88\reputation\ucp\reputation_module',
-			//		'module_langname'	=> 'UCP_REPUTATION_FRONT',
-			//		'module_mode'		=> 'front',
-			//		'module_auth'		=> 'cfg_rs_enable',
-			//))),
+			
+			// Update exisiting configs
+			array('config.update', array('qr_version', '0.1.0')),
 		);
 	}
 }

@@ -28,9 +28,13 @@ $lang = array_merge($lang, array(
 	'QR_QUICKNICK'				=> 'Обратиться по нику',
 	'QR_QUICKNICK_TITLE'		=> 'Вставить имя пользователя в окно быстрого ответа',
 //begin mod CapsLock Transfer
-	'QR_TRANSFORM_TEXT'			=> 'Перевести текст в ',
-	'QR_TRANSFORM_TEXT_LOWER'	=> 'нижний регистр',
-	'QR_TRANSFORM_TEXT_UPPER'	=> 'верхний регистр',
-	'QR_TRANSFORM_TEXT_TOOLTIP'	=> 'Смена регистра выделенного текста ',
+	'QR_TRANSFORM_TEXT'			=> 'Изменение регистра текста:',
+	'QR_TRANSFORM_TEXT_TOOLTIP'	=> 'Для изменения регистра выделите часть текста и нажмите нужную кнопку',
+	'QR_TRANSFORM_TEXT_LOWER'	=> '&#9660; абв',
+	'QR_TRANSFORM_TEXT_UPPER'	=> '&#9650; АБВ',
+	'QR_TRANSFORM_TEXT_INVERS'	=> '&#9660;&#9650; аБВ',
+	'QR_TRANSFORM_TEXT_LOWER_TOOLTIP'	=> 'нижний регистр',
+	'QR_TRANSFORM_TEXT_UPPER_TOOLTIP'	=> 'ВЕРХНИЙ РЕГИСТР',
+	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP'	=> 'иНВЕРСИЯ рЕГИСТРА',
 //end mod CapsLock Transfer    
 ));
