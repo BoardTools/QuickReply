@@ -28,7 +28,7 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\user */
 	protected $user;
 	
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 	
 	/** @var string */
@@ -45,7 +45,7 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\db\driver\driver $db
 	* @param string $phpbb_root_path Root path
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver $db, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
