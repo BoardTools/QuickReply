@@ -1,10 +1,10 @@
 <?php
 /**
 *
-* quickreply [Russian]
+* quickreply [English]
 *
 * @package language quickreply
-* @copyright (c) 2013 Татьяна5
+* @copyright (c) 2014 William Jacoby (bonelifer)
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -23,24 +23,24 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'ACP_QUICKREPLY'				=> 'Быстрый ответ',
-	'ACP_QUICKREPLY_EXPLAIN'		=> 'Настройки быстрого ответа',
+	'ACP_QUICKREPLY'				=> 'Quick Reply',
+	'ACP_QUICKREPLY_EXPLAIN'		=> 'Quick Reply Settings',
 	
-	'ACP_QR_BBCODE'					=> 'Включить bbcode',
-	'ACP_QR_BBCODE_EXPLAIN'			=> 'Разрешить отображение кнопок bbcode в форме быстрого ответа',
-	'ACP_QR_COMMA'					=> 'Включить запятую',
-	'ACP_QR_COMMA_EXPLAIN'			=> 'Автоматически добавлять запятую после ника при использовании опции «Обращение по нику»',
-	'ACP_QR_CTRLENTER'				=> 'Включить отправку по «Ctrl+Enter»',
-	'ACP_QR_CTRLENTER_EXPLAIN'		=> 'Разрешить отправку сообщения при нажатии «Ctrl+Enter» в формах полного и быстрого ответа',
-	'ACP_QR_ENABLE_RE'				=> 'Включить «Re:»',
-	'ACP_QR_ENABLE_RE_EXPLAIN'		=> 'Автоматически добавлять префикс «Re:» в поле «Заголовок сообщения» в формах полного и быстрого ответа',
-	'ACP_QR_QUICKNICK'				=> 'Включить обращение по нику',
-	'ACP_QR_QUICKNICK_EXPLAIN'		=> 'Разрешить вставку ника в форму быстрого ответа при клике на надпись «Обратиться по нику»',
-	'ACP_QR_QUICKQUOTE'				=> 'Включить быстрое цитирование',
-	'ACP_QR_QUICKQUOTE_EXPLAIN'		=> 'Разрешить возможность цитирования через «всплывашку», появляющуюся при выделении текста в сообщении',
-	'ACP_QR_SMILIES'				=> 'Включить смайлы',
-	'ACP_QR_SMILIES_EXPLAIN'		=> 'Разрешить отображение смайлов в форме быстрого ответа',
-	'ACP_QR_CAPSLOCK'				=> 'Включить преобразование текста в верхний/нижний регистр',
-	'ACP_QR_AJAX_SUBMIT'			=> 'Включить ajax-отправку сообщений',
-	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Разрешить отправку сообщений без перезагрузки страницы',
+	'ACP_QR_BBCODE'					=> 'Enable BBcode',
+	'ACP_QR_BBCODE_EXPLAIN'			=> 'Enable BBCode buttons in the Quick Reply form',
+	'ACP_QR_COMMA'					=> 'Add comma after username',
+	'ACP_QR_COMMA_EXPLAIN'			=> 'Automatically add a comma after the username when using “Refer by username”',
+	'ACP_QR_CTRLENTER'				=> 'Enable sending with “Ctrl+Enter”',
+	'ACP_QR_CTRLENTER_EXPLAIN'		=> 'Allow sending a message by clicking “Ctrl+Enter”',
+	'ACP_QR_ENABLE_RE'				=> 'Enable “Re:”',
+	'ACP_QR_ENABLE_RE_EXPLAIN'		=> 'Automatically add prefix “Re:” in the “Post subject” in the Quick Reply form',
+	'ACP_QR_QUICKNICK'				=> 'Insert Username',
+	'ACP_QR_QUICKNICK_EXPLAIN'		=> 'Allow insertion of username in the form of a quick response when you click on the words “Refer by username”',
+	'ACP_QR_QUICKQUOTE'				=> 'Enable quick quote',
+	'ACP_QR_QUICKQUOTE_EXPLAIN'		=> 'Allow quotes through a “popup” that appears when you select text in a message',
+	'ACP_QR_SMILIES'				=> 'Enable Smilies',
+	'ACP_QR_SMILIES_EXPLAIN'		=> 'Allow display of smiles in the Quick Reply form',
+	'ACP_QR_CAPSLOCK'				=> 'Enable text-to upper / lower case',
+	'ACP_QR_AJAX_SUBMIT'			=> 'Enable ajax-posting',
+	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Allow sending messages without reloading the page',
 ));
