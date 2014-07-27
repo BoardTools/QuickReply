@@ -2,10 +2,10 @@
 // <![CDATA[
 
 <!-- IF S_QR_NOT_CHANGE_SUBJECT -->
-	//$(document).ready(function() {
+	$(document).ready(function() {
 		$("#subject").attr('disabled', 'disabled');
 		$("#subject").css('color', 'grey');
-	//});
+	});
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_CE_ENABLE -->
@@ -81,9 +81,9 @@
 	});
 <!-- ENDIF -->
 
-<!-- ajax_submit -->
-<!-- IF S_QUICK_REPLY and S_QR_AJAX_SUBMIT -->
 
+<!-- IF S_QUICK_REPLY and S_QR_AJAX_SUBMIT -->
+<!-- ajax_submit -->
 	$('#qr_postform').attr('data-ajax', 'qr_ajax_submit');
 	
 	var numrow = $('#post_ajax_content').attr('numrow');
@@ -350,7 +350,8 @@
 			$(window).resize(check);
 		});
 	}
-<!-- ENDIF -->
 <!-- end ajax_submit -->
+<!-- ENDIF -->
+
 // ]]>
 </script>

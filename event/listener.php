@@ -31,6 +31,8 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 	
+
+	
 	/** @var string */
 	protected $phpbb_root_path;
 	protected $php_ext;
@@ -142,6 +144,8 @@ class listener implements EventSubscriberInterface
 		
 		if ($s_quick_reply)
 		{
+			global $phpbb_extension_manager;
+			
 			// HTML, BBCode, Smilies, Images and Flash status
 			$bbcode_status	= ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 			$smilies_status	= ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
@@ -187,6 +191,9 @@ class listener implements EventSubscriberInterface
 				
 				//Ajax submit
 				'S_QR_AJAX_SUBMIT'		=> $this->config['qr_ajax_submit'],
+				
+				//ABBC3
+				'S_ABBC3_INSTALLED'		=> $phpbb_extension_manager->is_enabled('vse/abbc3'),
 			));
 			
 			if($this->config['qr_enable_re'] == 0)
