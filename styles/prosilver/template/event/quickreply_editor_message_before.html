@@ -100,19 +100,6 @@
 				buf = txtarea.value;
 			}
 		}
-		//if (buf == '') 
-		//{
-		//	selection = '';
-		//	txtarea.focus();
-		//	
-		//	alert = phpbb.alert('{L_INFORMATION}', '{L_QR_NO_SELECTION}');
-		//	setTimeout(function() {
-		//		$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
-		//			alert.hide();
-		//		});
-		//	},  3000);
-		//	return;
-		//}
 		switch (parseInt(reg))
 		{
 			case 0:
@@ -158,7 +145,7 @@
 </script>
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
 
-<!-- IF S_ABBC3_INSTALLED -->
+<!-- IF S_ABBC3_INSTALLED and S_BBCODE_ALLOWED -->
 	<!-- INCLUDE ../../../../../vse/abbc3/styles/all/template/abbc3_posting_buttons.html -->
 <!-- ENDIF -->
 <!-- IF S_BBCODE_ALLOWED -->
