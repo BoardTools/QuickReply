@@ -31,7 +31,11 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 	
-
+	/** @var \phpbb\extension\manager */
+	protected $phpbb_extension_manager;
+	
+	/** @var \phpbb\request\request */
+	protected $request;
 	
 	/** @var string */
 	protected $phpbb_root_path;
@@ -45,15 +49,22 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
 	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\extension\manager $phpbb_extension_manager
+	* @param \phpbb\request\request $request
+	* @param \phpbb\content_visibility $phpbb_content_visibility
 	* @param string $phpbb_root_path Root path
+	* @param string $phpbb_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, \phpbb\content_visibility $phpbb_content_visibility, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->db = $db;
+		$this->phpbb_extension_manager = $phpbb_extension_manager;
+		$this->request = $request;
+		$this->phpbb_content_visibility = $phpbb_content_visibility;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -75,32 +86,10 @@ class listener implements EventSubscriberInterface
 			'core.submit_post_end'				=>	'ajax_submit',
 		);
 	}
-    
-	public function ajax_submit($event) 
-	{
-		if($this->config['qr_ajax_submit'])
-		{
-			global 	$request;
-				
-			$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
-			
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'success'		=> true,
-					'url'			=> $event['url'],
-					'REFRESH_DATA'	=> array(
-						'time'	=> 1,
-						'url'	=> html_entity_decode($event['url'])
-					)
-				));
-			}
-		}
-	}
 
 	/**
 	* Show quickreply on the index page
+	* Template data for Ajax sumbit
 	*
 	* @return null
 	* @access public
@@ -109,12 +98,16 @@ class listener implements EventSubscriberInterface
 	{
 		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
 		
+		$user_poster_data = $event['user_poster_data'];
+		$row = $event['row'];
+		$topic_data = $event['topic_data'];
+		
 		if($this->config['qr_quicknick'])
 		{
-			$user_colour = ($event['user_poster_data']['user_colour']) ? ' class="username-coloured username" style="color: #' . $event['user_poster_data']['user_colour'] . ';" ' : ' class="username" ';
+			$user_colour = ($user_poster_data['user_colour']) ? ' class="username-coloured username" style="color: #' . $user_poster_data['user_colour'] . ';" ' : ' class="username" ';
 			
 			$event['post_row'] = array_merge($event['post_row'], array(
-				'POST_AUTHOR_FULL'		=> '<a href="javascript:void(0);" id="' . $event['row']['user_id'] . '" ' . $user_colour  . '>' . $event['user_poster_data']['author_username'] . '</a>',
+				'POST_AUTHOR_FULL'		=> '<a href="javascript:void(0);" id="' . $row['user_id'] . '" ' . $user_colour  . '>' . $user_poster_data['author_username'] . '</a>',
 			));
 		}
 
@@ -122,12 +115,19 @@ class listener implements EventSubscriberInterface
 		{
 			//Ajax_submit
 			$this->template->assign_vars(array(
-				'CONFIG_POSTS_PER_PAGE'	=>  $this->config['posts_per_page'],
+				'CONFIG_POSTS_PER_PAGE'	=>  ($this->phpbb_extension_manager->is_enabled('rxu/FirstPostOnEveryPage') && $event['start'] > 0 && $topic_data['topic_first_post_show'] == 1) ? ($this->config['posts_per_page']+ 1) : $this->config['posts_per_page'],
 				'QR_MIN_POST_CHARS'		=>	$this->config['min_post_chars'],
 			));
 		}
 	}
 	
+	/**
+	* Show bbcodes and smilies in the quickreply
+	* Template data for Ajax sumbit
+	*
+	* @return null
+	* @access public
+	*/ 
 	public function show_bbcodes_and_smilies($event)
 	{
 		include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
@@ -143,9 +143,7 @@ class listener implements EventSubscriberInterface
 		}
 		
 		if ($s_quick_reply)
-		{
-			global $phpbb_extension_manager;
-			
+		{			
 			// HTML, BBCode, Smilies, Images and Flash status
 			$bbcode_status	= ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 			$smilies_status	= ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
@@ -190,10 +188,11 @@ class listener implements EventSubscriberInterface
 				//end mod CapsLock Transfer  
 				
 				//Ajax submit
+				'L_FULL_EDITOR'			=> ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
 				'S_QR_AJAX_SUBMIT'		=> $this->config['qr_ajax_submit'],
 				
 				//ABBC3
-				'S_ABBC3_INSTALLED'		=> $phpbb_extension_manager->is_enabled('vse/abbc3'),
+				'S_ABBC3_INSTALLED'		=> $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
 			));
 			
 			if($this->config['qr_enable_re'] == 0)
@@ -205,6 +204,12 @@ class listener implements EventSubscriberInterface
 		}
 	}
 	
+	/**
+	* User can change post subject or not
+	*
+	* @return null
+	* @access public
+	*/ 
 	public function change_subject($event)
 	{
 		$forum_id	= $event['forum_id'];
@@ -223,15 +228,23 @@ class listener implements EventSubscriberInterface
 	
 	}
 	
+	/**
+	* Delete Re:
+	* Ctrl+Enter submit - template variables in the full editor
+	* Ajax submit - error messages and preview
+	*
+	* @return null
+	* @access public
+	*/ 
 	public function delete_re($event)
 	{
-			
+		// Delete Re:	
 		if($this->config['qr_enable_re'] == 0)
 		{
-			$forum_id	= request_var('f', 0);
-			$topic_id	= request_var('t', 0);
+			$forum_id	= $event['forum_id'];
+			$topic_id	= $event['topic_id'];
 			
-			if(!empty($forum_id) && !empty($topic_id))
+			if(isset($forum_id) && isset($topic_id))
 			{
 				$sql = 'SELECT topic_title
 							FROM ' . TOPICS_TABLE . ' 
@@ -248,6 +261,7 @@ class listener implements EventSubscriberInterface
 			}
 		}
 		
+		// Ctrl+Enter submit
 		$this->template->assign_vars(array(
 			'S_QR_CE_ENABLE'		=> $this->config['qr_ctrlenter'],
 		));
@@ -255,13 +269,17 @@ class listener implements EventSubscriberInterface
 		//Ajax submit
 		if($this->config['qr_ajax_submit'])
 		{
-			global $request, $phpbb_container;
-			if ($request->is_ajax())
+			$forum_id	= $event['forum_id'];
+			$topic_id	= $event['topic_id'];
+			$message_parser = $event['message_parser'];
+			
+			if ($this->request->is_ajax())
 			{
 				$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 				
 				$error = $event['error'];
+				$preview = $event['preview'];
 				
 				$post_data = $event['post_data'];
 				$forum_id = $post_data['forum_id'];
@@ -271,41 +289,126 @@ class listener implements EventSubscriberInterface
 				if(sizeof($error))
 				{
 					$error_text = implode('<br />', $error);
-					$post_id_next = $post_data['topic_last_post_id'];
-					$url_next_post = append_sid("{$phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#$post_id_next");
+					$url_next_post = 0;
 				}
-				elseif ($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'] && $post_data['forum_flags'] && FORUM_FLAG_POST_REVIEW && topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id)) {
-					
-					$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
-					
-					$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+				elseif ($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id']) {
 					
 					$sql = 'SELECT post_id 
-						FROM ' . POSTS_TABLE . '  
-						WHERE topic_id = ' . $topic_id . ' 
-							AND ' . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, '') . '
-							AND post_id > ' . $topic_cur_post_id . ' 
-							ORDER BY post_time DESC';
-					$result = $this->db->sql_query_limit($sql, 1);
-					$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
-					$this->db->sql_freeresult($result);
+							FROM ' . POSTS_TABLE . '  
+							WHERE topic_id = ' . $topic_id . ' 
+								AND ' . $this->phpbb_content_visibility->get_visibility_sql('post', $forum_id, '') . '
+								AND post_id > ' . $topic_cur_post_id . ' 
+								ORDER BY post_time DESC';
+						$result = $this->db->sql_query_limit($sql, 1);
+						$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
+						$this->db->sql_freeresult($result);
 					
-					$url_next_post = append_sid("{$phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next");
+					if($post_data['forum_flags'] && FORUM_FLAG_POST_REVIEW && topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id))
+					{
+						$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
+						$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next");
+					}
+					else
+					{
+						//$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_data['topic_id']#p$post_data['topic_id']");
+					}
+				}
+				
+				// Preview
+				if (!sizeof($error) && $preview)
+				{
+					
+					$message_parser->message = html_entity_decode(request_var('message', '', true));
+					$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
+					
+						// Attachment Preview
+						//if (sizeof($message_parser->attachment_data))
+						//{
+							//$template->assign_var('S_HAS_ATTACHMENTS', true);
+
+							//$update_count = array();
+							//$attachment_data = $message_parser->attachment_data;
+
+							//parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
+
+							//foreach ($attachment_data as $i => $attachment)
+							//{
+								//$template->assign_block_vars('attachment', array(
+								//	'DISPLAY_ATTACHMENT'	=> $attachment)
+								//);
+							//}
+							//unset($attachment_data);
+						//}
+						
+						$error_text = $preview_message;
 				}
 				
 				if(isset($error_text)) {
 					$json_response = new \phpbb\json_response;
+					
+					if(!sizeof($error) && $preview)
+					{
+						$json_response->send(array(
+							'preview' => true,
+							'PREVIEW_TITLE'	=> $this->user->lang['PREVIEW'],
+							'PREVIEW_TEXT'	=> $preview_message,
+						));
+					}
+					else
+					{
+						$json_response->send(array(
+							'error' => true,
+							'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $error_text,
+							'NEXT_URL'			=> (isset($url_next_post)) ? $url_next_post : '',
+							'REFRESH_DATA'	=> array(
+								'time'	=> 3,
+							)
+						));
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	* Ajax submit
+	*
+	* @return array
+	* @access public
+	*/    
+	public function ajax_submit($event) 
+	{
+		if($this->config['qr_ajax_submit'])
+		{
+			$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
+			
+			if ($this->request->is_ajax())
+			{
+				$json_response = new \phpbb\json_response;
+				
+				$data = $event['data'];
+				if ((!$this->auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
+				{
+					// No approve
 					$json_response->send(array(
-						'error' => true,
+						'noapprove'		=> true,
 						'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
-						'MESSAGE_TEXT'	=> $error_text,
-						'NEXT_ID'			=> (isset($post_id_next)) ? $post_id_next : '',
-						'NEXT_URL'			=> (isset($url_next_post)) ? $url_next_post : '',
+						'MESSAGE_TEXT'	=> $this->user->lang['POST_STORED_MOD'] . (($this->user->data['user_id'] == ANONYMOUS) ? '' : ' '. $this->user->lang['POST_APPROVAL_NOTIFY']),
 						'REFRESH_DATA'	=> array(
-							'time'	=> 3,
+							'time'	=> 10,
 						)
 					));
 				}
+				
+				$json_response->send(array(
+					'success'		=> true,
+					'url'			=> $event['url'],
+					'REFRESH_DATA'	=> array(
+						'time'	=> 1,
+						'url'	=> html_entity_decode($event['url'])
+					)
+				));
 			}
 		}
 	}

@@ -7,6 +7,9 @@ services:
             - @template
             - @user
             - @dbal.conn
+            - @ext.manager
+            - @request
+            - @content.visibility
             - %core.root_path%
             - %core.php_ext%
         tags:

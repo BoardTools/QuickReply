@@ -49,7 +49,7 @@
 				sel = document.selection.createRange().text;
 
 			if (sel && key <= 1) { // If text selected && right mouse button not pressed
-				var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 184 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" style="font-size: 11px !important;">{L_QR_INSERT_TEXT}</a></li></ul></div>').appendTo('body');
+				var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 184 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" style="font-size: 11px !important;">{LA_QR_INSERT_TEXT}</a></li></ul></div>').appendTo('body');
 				$('a', qrAlert).mousedown(function() {insert_text('[quote="' + nickname + '"]' + sel + '[/quote]\r', false); qrAlert.remove(); return false;});
 				setTimeout(function() {$(document.body).mousedown(function() {qrAlert.remove(); $(document.body).unbind('mousedown');});}, 10);
 			}
@@ -70,7 +70,7 @@
 		var poster_id = $(this).attr('id');
 		var nickname = $(this).html();
 		
-		var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="{L_QR_QUICKNICK_TITLE}">{L_QR_QUICKNICK}</a></li><li><a href="javascript:void(0);" class="qr_profile" style="font-size: 11px !important;" title="{L_QR_PROFILE}">{L_QR_PROFILE}</a></li></ul></div>').appendTo('body');
+		var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="{LA_QR_QUICKNICK_TITLE}">{LA_QR_QUICKNICK}</a></li><li><a href="javascript:void(0);" class="qr_profile" style="font-size: 11px !important;" title="{LA_QR_PROFILE}">{LA_QR_PROFILE}</a></li></ul></div>').appendTo('body');
 				
 		var comma = ({S_QR_COMMA_ENABLE}) ? ', ' : '';
 		$('a.qr_quicknick', qrNickAlert).mousedown(function() {insert_text('[b]' + nickname + '[/b]' + comma, false); qrNickAlert.remove(); return false;});
@@ -89,7 +89,7 @@
 	var numrow = $('#post_ajax_content').attr('numrow');
 	var next_page = (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1) ? 1 : 0;
 	
-	$('input[name="post"]').on('click', function () {
+	//$('input[name="post"]').on('click', function () {
 		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
 			if (res.success) {
 				var posts_content = $('#posts_content').html(), //All post, except for the last post
@@ -126,6 +126,8 @@
 					$('input[name="post"]').removeAttr('data-clicked');
 					$('#message-box textarea').val('');
 					$('#message-box textarea').attr('style', 'height: 9em;');
+					$('#preview h3').html('');
+					$('#preview .content').html('');
 				});
 			
 			} else {
@@ -136,20 +138,35 @@
 					},  3000);
 				}
 				
-				if(!res.error) {
-					var qr_error_title = '{L_AJAX_ERROR_TITLE}',
-						qr_error_message = '{L_AJAX_ERROR_TEXT}';
-						
-					alert = phpbb.alert(qr_error_title, qr_error_message);
-					setTimeout(function() {
-						$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
-							alert.hide();
-						});
-					},  3000);
+				//if(!res.error && !res.preview) {
+				//	var qr_error_title = '{LA_AJAX_ERROR_TITLE}',
+				//		qr_error_message = '{LA_AJAX_ERROR_TEXT}';
+				//		
+				//	alert = phpbb.alert(qr_error_title, qr_error_message);
+				//	setTimeout(function() {
+				//		$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
+				//			alert.hide();
+				//		});
+				//	},  3000);
+				//}
+				
+				if(res.preview)
+				{
+					$('#preview h3').html(res.PREVIEW_TITLE);
+					$('#preview .content').html(res.PREVIEW_TEXT);
+				}
+				
+				if(res.noapprove)
+				{
+					$('input[name="post"]').removeAttr('data-clicked');
+					$('#message-box textarea').val('');
+					$('#message-box textarea').attr('style', 'height: 9em;');
+					$('#preview h3').html('');
+					$('#preview .content').html('');
 				}
 			}
 		});
-	});
+	//});
 	
 	if(localStorage['qr_save_message'])
 	{
@@ -157,20 +174,20 @@
 		localStorage['qr_save_message'] = '';
 	}
 	
-	$('#qr_full_editor').click(function () {
-		var message = $('#message-box textarea').val(),
-			action = $('#qr_postform').attr('action');		
+	//$('#qr_full_editor').click(function () {
+		//var message = $('#message-box textarea').val(),
+		//	action = $('#qr_postform').attr('action');		
 		
-		if(message)
-		{
-			localStorage['qr_save_message'] = message;
-			document.location.href = action + '#preview';
-		}
-		else
-		{
-			document.location.href = action;
-		}
-	});
+		//if(message)
+		//{
+		//	localStorage['qr_save_message'] = message;
+		//	document.location.href = action + '#preview';
+		//}
+		//else
+		//{
+		//	document.location.href = action;
+		//}
+	//});
 <!-- ENDIF -->
 	
 <!-- IF SCRIPT_NAME == "posting" -->
