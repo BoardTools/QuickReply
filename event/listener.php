@@ -37,6 +37,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\request\request */
 	protected $request;
 	
+	/** @var \phpbb\content_visibility */
+	protected $phpbb_content_visibility;
+	
 	/** @var string */
 	protected $phpbb_root_path;
 	protected $php_ext;
@@ -88,7 +91,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	* Show quickreply on the index page
+	* Refer by username
 	* Template data for Ajax sumbit
 	*
 	* @return null
@@ -102,6 +105,7 @@ class listener implements EventSubscriberInterface
 		$row = $event['row'];
 		$topic_data = $event['topic_data'];
 		
+		//Refer by username
 		if($this->config['qr_quicknick'])
 		{
 			$user_colour = ($user_poster_data['user_colour']) ? ' class="username-coloured username" style="color: #' . $user_poster_data['user_colour'] . ';" ' : ' class="username" ';
@@ -111,9 +115,9 @@ class listener implements EventSubscriberInterface
 			));
 		}
 
+		//Ajax_submit
 		if($this->config['qr_ajax_submit'])
 		{
-			//Ajax_submit
 			$this->template->assign_vars(array(
 				'CONFIG_POSTS_PER_PAGE'	=>  ($this->phpbb_extension_manager->is_enabled('rxu/FirstPostOnEveryPage') && $event['start'] > 0 && $topic_data['topic_first_post_show'] == 1) ? ($this->config['posts_per_page']+ 1) : $this->config['posts_per_page'],
 				'QR_MIN_POST_CHARS'		=>	$this->config['min_post_chars'],
@@ -243,22 +247,18 @@ class listener implements EventSubscriberInterface
 		{
 			$forum_id	= $event['forum_id'];
 			$topic_id	= $event['topic_id'];
+			$page_data	= $event['page_data'];
 			
-			if(isset($forum_id) && isset($topic_id))
-			{
-				$sql = 'SELECT topic_title
-							FROM ' . TOPICS_TABLE . ' 
-							WHERE topic_id = ' . (int) $topic_id;
-				$result = $this->db->sql_query($sql);
-				$post_subject = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+			$sql = 'SELECT topic_title
+						FROM ' . TOPICS_TABLE . ' 
+						WHERE topic_id = ' . (int) $topic_id;
+			$result = $this->db->sql_query($sql);
+			$post_subject = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 					
-				$post_subject = censor_text($post_subject['topic_title']);
-				
-				$this->template->assign_vars(array(
-					'SUBJECT'					=> $post_subject,
-				));
-			}
+			$post_subject = censor_text($post_subject['topic_title']);
+			$page_data['SUBJECT'] = $post_subject;
+			$event['page_data'] = $page_data;
 		}
 		
 		// Ctrl+Enter submit
@@ -273,7 +273,7 @@ class listener implements EventSubscriberInterface
 			$topic_id	= $event['topic_id'];
 			$message_parser = $event['message_parser'];
 			
-			if ($this->request->is_ajax())
+			if ($this->request->is_ajax() && $this->request->is_set_post('qr'))
 			{
 				$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
@@ -383,7 +383,7 @@ class listener implements EventSubscriberInterface
 		{
 			$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
 			
-			if ($this->request->is_ajax())
+			if ($this->request->is_ajax() && $this->request->is_set_post('qr'))
 			{
 				$json_response = new \phpbb\json_response;
 				
