@@ -174,20 +174,14 @@
 		localStorage['qr_save_message'] = '';
 	}
 	
-	//$('#qr_full_editor').click(function () {
-		//var message = $('#message-box textarea').val(),
-		//	action = $('#qr_postform').attr('action');		
+	$('.reply-icon').click(function () {
+		var message = $('#message-box textarea').val();		
 		
-		//if(message)
-		//{
-		//	localStorage['qr_save_message'] = message;
-		//	document.location.href = action + '#preview';
-		//}
-		//else
-		//{
-		//	document.location.href = action;
-		//}
-	//});
+		if(message)
+		{
+			localStorage['qr_save_message'] = message;
+		}
+	});
 <!-- ENDIF -->
 	
 <!-- IF SCRIPT_NAME == "posting" -->

@@ -87,12 +87,12 @@ class listener implements EventSubscriberInterface
 			'core.modify_posting_parameters'	=>	'change_subject',
 			'core.posting_modify_template_vars'	=>	'delete_re',
 			'core.submit_post_end'				=>	'ajax_submit',
+			'rxu.PostsMerging.posts_merging_end'=>	'ajax_submit',
 		);
 	}
 
 	/**
 	* Refer by username
-	* Template data for Ajax sumbit
 	*
 	* @return null
 	* @access public
@@ -114,15 +114,6 @@ class listener implements EventSubscriberInterface
 				'POST_AUTHOR_FULL'		=> '<a href="javascript:void(0);" id="' . $row['user_id'] . '" ' . $user_colour  . '>' . $user_poster_data['author_username'] . '</a>',
 			));
 		}
-
-		//Ajax_submit
-		if($this->config['qr_ajax_submit'])
-		{
-			$this->template->assign_vars(array(
-				'CONFIG_POSTS_PER_PAGE'	=>  ($this->phpbb_extension_manager->is_enabled('rxu/FirstPostOnEveryPage') && $event['start'] > 0 && $topic_data['topic_first_post_show'] == 1) ? ($this->config['posts_per_page']+ 1) : $this->config['posts_per_page'],
-				'QR_MIN_POST_CHARS'		=>	$this->config['min_post_chars'],
-			));
-		}
 	}
 	
 	/**
@@ -134,7 +125,7 @@ class listener implements EventSubscriberInterface
 	*/ 
 	public function show_bbcodes_and_smilies($event)
 	{
-		include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+		include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		
 		$forum_id	= $event['forum_id'];
 		$topic_data = $event['topic_data'];
@@ -147,7 +138,7 @@ class listener implements EventSubscriberInterface
 		}
 		
 		if ($s_quick_reply)
-		{			
+		{	
 			// HTML, BBCode, Smilies, Images and Flash status
 			$bbcode_status	= ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 			$smilies_status	= ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
@@ -192,6 +183,7 @@ class listener implements EventSubscriberInterface
 				//end mod CapsLock Transfer  
 				
 				//Ajax submit
+				'CONFIG_POSTS_PER_PAGE'	=>  ($this->phpbb_extension_manager->is_enabled('rxu/FirstPostOnEveryPage') && $event['start'] > 0 && $topic_data['topic_first_post_show'] == 1) ? ($this->config['posts_per_page']+ 1) : $this->config['posts_per_page'],
 				'L_FULL_EDITOR'			=> ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
 				'S_QR_AJAX_SUBMIT'		=> $this->config['qr_ajax_submit'],
 				
@@ -242,35 +234,35 @@ class listener implements EventSubscriberInterface
 	*/ 
 	public function delete_re($event)
 	{
+		$forum_id	= $event['forum_id'];
+		$topic_id	= $event['topic_id'];
+		$page_data	= $event['page_data'];
+		
 		// Delete Re:	
 		if($this->config['qr_enable_re'] == 0)
 		{
-			$forum_id	= $event['forum_id'];
-			$topic_id	= $event['topic_id'];
-			$page_data	= $event['page_data'];
-			
-			$sql = 'SELECT topic_title
-						FROM ' . TOPICS_TABLE . ' 
-						WHERE topic_id = ' . (int) $topic_id;
-			$result = $this->db->sql_query($sql);
-			$post_subject = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
+			//$sql = 'SELECT topic_title
+			//			FROM ' . TOPICS_TABLE . ' 
+			//			WHERE topic_id = ' . (int) $topic_id;
+			//$result = $this->db->sql_query($sql);
+			//$post_subject = $this->db->sql_fetchrow($result);
+			//$this->db->sql_freeresult($result);
 					
-			$post_subject = censor_text($post_subject['topic_title']);
-			$page_data['SUBJECT'] = $post_subject;
-			$event['page_data'] = $page_data;
+			//$post_subject = censor_text($post_subject['topic_title']);
+			$page_data['SUBJECT'] = preg_replace('/^Re: /', '', $page_data['SUBJECT']);
+			
 		}
 		
 		// Ctrl+Enter submit
-		$this->template->assign_vars(array(
+		$page_data = array_merge($page_data, array(
 			'S_QR_CE_ENABLE'		=> $this->config['qr_ctrlenter'],
 		));
+		
+		$event['page_data'] = $page_data;
 		
 		//Ajax submit
 		if($this->config['qr_ajax_submit'])
 		{
-			$forum_id	= $event['forum_id'];
-			$topic_id	= $event['topic_id'];
 			$message_parser = $event['message_parser'];
 			
 			if ($this->request->is_ajax() && $this->request->is_set_post('qr'))
