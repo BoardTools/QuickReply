@@ -368,7 +368,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @return array
 	* @access public
-	*/    
+	*/
 	public function ajax_submit($event) 
 	{
 		if($this->config['qr_ajax_submit'])
