@@ -87,7 +87,7 @@ class listener implements EventSubscriberInterface
 			'core.modify_posting_parameters'	=>	'change_subject',
 			'core.posting_modify_template_vars'	=>	'delete_re',
 			'core.submit_post_end'				=>	'ajax_submit',
-			'rxu.PostsMerging.posts_merging_end'=>	'ajax_submit',
+			'rxu.postsmerging.posts_merging_end'=>	'ajax_submit',
 		);
 	}
 
