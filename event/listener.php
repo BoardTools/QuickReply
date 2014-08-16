@@ -216,7 +216,7 @@ class listener implements EventSubscriberInterface
 		//$post_subject = '';
 
 		if(!$can_change_subject && $event['mode'] != 'post' && !empty($topic_id))
-		{	
+		{
 			$this->template->assign_vars(array(
 				'S_QR_NOT_CHANGE_SUBJECT'	=> true,
 			));
@@ -281,7 +281,7 @@ class listener implements EventSubscriberInterface
 					$error_text = implode('<br />', $error);
 					$url_next_post = 0;
 				}
-				else if ($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id']) 
+				else if ($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 				{
 					$sql = 'SELECT post_id 
 							FROM ' . POSTS_TABLE . '  
@@ -365,7 +365,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @return array
 	* @access public
-	*/    
+	*/
 	public function ajax_submit($event)
 	{
 		if($this->config['qr_ajax_submit'])
