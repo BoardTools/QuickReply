@@ -122,6 +122,13 @@
 					handle_drops($('#posts'));
 					qr_responsive_links($('#posts'));
 					
+					<!-- IF S_ABBC3_INSTALLED -->
+						var bbvideo = $('#post_ajax_content').find('.bbvideo');
+						if(bbvideo.length > 0) {
+							$('#post_ajax_content .bbvideo').bbvideo();
+						}
+					<!-- ENDIF -->
+					
 					//Sending form
 					$('input[name="post"]').removeAttr('data-clicked');
 					$('#message-box textarea').val('');
@@ -154,6 +161,12 @@
 				{
 					$('#preview h3').html(res.PREVIEW_TITLE);
 					$('#preview .content').html(res.PREVIEW_TEXT);
+					<!-- IF S_ABBC3_INSTALLED -->
+						var bbvideo = $('#preview').find('.bbvideo');
+						if(bbvideo.length > 0) {
+							$('#preview .bbvideo').bbvideo();
+						}
+					<!-- ENDIF -->
 				}
 				
 				if(res.noapprove)
