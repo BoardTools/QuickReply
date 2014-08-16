@@ -25,7 +25,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_QUICKREPLY'				=> 'Швидка відповідь',
 	'ACP_QUICKREPLY_EXPLAIN'		=> 'Налаштування швидкої відповіді',
-	
+
 	'ACP_QR_BBCODE'					=> 'Включити BBcode',
 	'ACP_QR_BBCODE_EXPLAIN'			=> 'Дозволити відображення кнопок bbcode у формі швидкої відповіді',
 	'ACP_QR_COMMA'					=> 'Включити кому',

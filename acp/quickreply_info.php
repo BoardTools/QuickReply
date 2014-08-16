@@ -23,5 +23,3 @@ class quickreply_info
 		);
 	}
 }
-
-?>

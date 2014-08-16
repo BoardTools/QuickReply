@@ -36,5 +36,5 @@ $lang = array_merge($lang, array(
 	'QR_TRANSFORM_TEXT_LOWER_TOOLTIP'	=> 'нижний регистр',
 	'QR_TRANSFORM_TEXT_UPPER_TOOLTIP'	=> 'ВЕРХНИЙ РЕГИСТР',
 	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP'	=> 'иНВЕРСИЯ рЕГИСТРА',
-//end mod CapsLock Transfer    
+//end mod CapsLock Transfer
 ));

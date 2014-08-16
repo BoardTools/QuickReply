@@ -25,7 +25,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_QUICKREPLY'				=> 'Quick Reply',
 	'ACP_QUICKREPLY_EXPLAIN'		=> 'Quick Reply Settings',
-	
+
 	'ACP_QR_BBCODE'					=> 'Enable BBcode',
 	'ACP_QR_BBCODE_EXPLAIN'			=> 'Enable BBCode buttons in the Quick Reply form',
 	'ACP_QR_COMMA'					=> 'Add comma after username',

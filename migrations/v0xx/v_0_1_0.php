@@ -37,7 +37,7 @@ class v_0_1_0 extends \phpbb\db\migration\migration
 			// Add configs
 			array('config.add', array('qr_capslock_transfer', '1')),
 			array('config.add', array('qr_ajax_submit', '1')),
-			
+
 			// Update exisiting configs
 			array('config.update', array('qr_version', '0.1.0')),
 		);

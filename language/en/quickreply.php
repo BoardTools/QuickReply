@@ -36,5 +36,5 @@ $lang = array_merge($lang, array(
 	'QR_TRANSFORM_TEXT_LOWER_TOOLTIP'	=> 'Lower Case',
 	'QR_TRANSFORM_TEXT_UPPER_TOOLTIP'	=> 'Upper Case',
 	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP'	=> 'Invert Case',
-//end mod CapsLock Transfer    
+//end mod CapsLock Transfer
 ));

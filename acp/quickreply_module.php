@@ -22,11 +22,11 @@ class quickreply_module
 
 		$this->page_title = 'ACP_QUICKREPLY';
 		$this->tpl_name = 'acp_quickreply';
-		
+
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$form_key = 'config_quickreply';
 		add_form_key($form_key);
-		
+
 		$display_vars = array(
 			'title'	=> 'ACP_QUICKREPLY',
 			'vars'	=> array(
@@ -44,14 +44,14 @@ class quickreply_module
 				'legend2'					=> 'ACP_SUBMIT_CHANGES',
 			),
 		);
-						
+
 		if (isset($display_vars['lang']))
 		{
 			$user->add_lang($display_vars['lang']);
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -66,7 +66,7 @@ class quickreply_module
 		{
 			$submit = false;
 		}
-		
+
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
@@ -79,17 +79,17 @@ class quickreply_module
 
 			if ($submit)
 			{
-				set_config($config_name, $config_value);
+				$config->set($config_name, $config_value, $cache = true);
 			}
 		}
-		
+
 		if ($submit)
 		{
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
-		
+
 		$this->page_title = $display_vars['title'];
-		
+
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$display_vars['title']],
 			'L_TITLE_EXPLAIN'	=> $user->lang[$display_vars['title'] . '_EXPLAIN'],
@@ -97,7 +97,7 @@ class quickreply_module
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
 			'ERROR_MSG'			=> implode('<br />', $error),
 		));
-		
+
 		// Output relevant page
 		foreach ($display_vars['vars'] as $config_key => $vars)
 		{
@@ -148,5 +148,3 @@ class quickreply_module
 		}
 	}
 }
-
-?>
