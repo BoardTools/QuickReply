@@ -307,7 +307,7 @@ class listener implements EventSubscriberInterface
 				// Preview
 				if (!sizeof($error) && $preview)
 				{
-					$message_parser->message = html_entity_decode($this->request->variable('message', '', true));
+					$message_parser->message = html_entity_decode($this->request->variable('message', '', true), ENT_NOQUOTES);
 					$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
 
 						// Attachment Preview

@@ -89,97 +89,115 @@
 	var numrow = $('#post_ajax_content').attr('numrow');
 	var next_page = (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1) ? 1 : 0;
 	
-	//$('input[name="post"]').on('click', function () {
-		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
-			if (res.success) {
-				var posts_content = $('#posts_content').html(), //All post, except for the last post
-					post_ajax_content = $('#post_ajax_content').html(), //Last post
-					post_id_before = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id of the last post before sending
+	phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
+		if (res.success) {
+			var posts_content = $('#posts_content').html(), //All post, except for the last post
+				post_ajax_content = $('#post_ajax_content').html(), //Last post
+				post_id_before = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id of the last post before sending
 				
-				$('#post_ajax').load('# #post_ajax_content', function () {
-					var post_id_after = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id of the last post after sending - ??? ошибка при переходе на следующую страницу
+			$('#post_ajax').load('# #post_ajax_content', function () {
+				var post_id_after = $('#post_ajax_content div').attr('id').replace(/p/, ''); //id of the last post after sending
 
-					numrow = $('#post_ajax_content').attr('numrow');
+				numrow = $('#post_ajax_content').attr('numrow');
 						
-					if (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1)
+				if (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1)
+				{
+					if (next_page == 0)
 					{
-						if (next_page == 0)
-						{
-							next_page = 1;
-						}
-						else
-						{
-							location.href = res.url.replace(/&amp\;/ig, '&');
-						}
+						next_page = 1;
 					}
-					
-					if(post_id_after > post_id_before) //for posts_merging
+					else
 					{
-						$('#posts_content').html(posts_content + post_ajax_content);
-						$('input[name="topic_cur_post_id"]').attr('value', post_id_after);
+						location.href = res.url.replace(/&amp\;/ig, '&');
 					}
-					$('.icon_post_target_unread').removeClass('icon_post_target_unread').addClass('icon_post_target');
-					handle_drops($('#posts'));
-					qr_responsive_links($('#posts'));
+				}
 					
+				if(post_id_after > post_id_before) //for posts_merging
+				{
+					$('#posts_content').html(posts_content + post_ajax_content);
+					$('input[name="topic_cur_post_id"]').attr('value', post_id_after);
+					handle_drops($('#post_ajax').prev('div'));
+				}
+				handle_drops($('#post_ajax'));
+				qr_responsive_links($('#post_ajax'));
+					
+				$('.icon_post_target_unread').removeClass('icon_post_target_unread').addClass('icon_post_target');
+					
+				<!-- IF S_ABBC3_INSTALLED -->
+					var bbvideo = $('#post_ajax_content').find('.bbvideo');
+					if(bbvideo.length > 0) {
+						$('#post_ajax_content .bbvideo').bbvideo();
+					}
+				<!-- ENDIF -->
+					
+				//Sending form
+				$('input[name="post"]').removeAttr('data-clicked');
+				$('#message-box textarea').val('');
+				$('#message-box textarea').attr('style', 'height: 9em;');
+				$('#preview h3').html('');
+				$('#preview .content').html('');
+				
+				if($('#colour_palette').is(':visible'))
+				{
 					<!-- IF S_ABBC3_INSTALLED -->
-						var bbvideo = $('#post_ajax_content').find('.bbvideo');
-						if(bbvideo.length > 0) {
-							$('#post_ajax_content .bbvideo').bbvideo();
-						}
+						$('#abbc3_bbpalette').click();
+					<!-- ELSE -->
+						$('#bbpalette').click();
 					<!-- ENDIF -->
-					
-					//Sending form
-					$('input[name="post"]').removeAttr('data-clicked');
-					$('#message-box textarea').val('');
-					$('#message-box textarea').attr('style', 'height: 9em;');
-					$('#preview h3').html('');
-					$('#preview .content').html('');
-				});
+				}
+			});
 			
-			} else {
-				if (res.NEXT_URL) {
-					setTimeout(function() {
-						localStorage['qr_save_message'] = $('#message-box textarea').val();
-						document.location.href = res.NEXT_URL.replace(/&amp\;/ig, '&');;
-					},  3000);
-				}
+		} else {
+			if (res.NEXT_URL) {
+				setTimeout(function() {
+					localStorage['qr_save_message'] = $('#message-box textarea').val();
+					document.location.href = res.NEXT_URL.replace(/&amp\;/ig, '&');;
+				},  3000);
+			}
 				
-				//if(!res.error && !res.preview) {
-				//	var qr_error_title = '{LA_AJAX_ERROR_TITLE}',
-				//		qr_error_message = '{LA_AJAX_ERROR_TEXT}';
-				//		
-				//	alert = phpbb.alert(qr_error_title, qr_error_message);
-				//	setTimeout(function() {
-				//		$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
-				//			alert.hide();
-				//		});
-				//	},  3000);
-				//}
+			//if(!res.error && !res.preview) {
+			//	var qr_error_title = '{LA_AJAX_ERROR_TITLE}',
+			//		qr_error_message = '{LA_AJAX_ERROR_TEXT}';
+			//		
+			//	alert = phpbb.alert(qr_error_title, qr_error_message);
+			//	setTimeout(function() {
+			//		$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
+			//			alert.hide();
+			//		});
+			//	},  3000);
+			//}
 				
-				if(res.preview)
+			if(res.preview)
+			{
+				$('#preview h3').html(res.PREVIEW_TITLE);
+				$('#preview .content').html(res.PREVIEW_TEXT);
+				<!-- IF S_ABBC3_INSTALLED -->
+					var bbvideo = $('#preview').find('.bbvideo');
+					if(bbvideo.length > 0) {
+						$('#preview .bbvideo').bbvideo();
+					}
+				<!-- ENDIF -->
+			}
+				
+			if(res.noapprove)
+			{
+				$('input[name="post"]').removeAttr('data-clicked');
+				$('#message-box textarea').val('');
+				$('#message-box textarea').attr('style', 'height: 9em;');
+				$('#preview h3').html('');
+				$('#preview .content').html('');
+				
+				if($('#colour_palette').is(':visible'))
 				{
-					$('#preview h3').html(res.PREVIEW_TITLE);
-					$('#preview .content').html(res.PREVIEW_TEXT);
 					<!-- IF S_ABBC3_INSTALLED -->
-						var bbvideo = $('#preview').find('.bbvideo');
-						if(bbvideo.length > 0) {
-							$('#preview .bbvideo').bbvideo();
-						}
+						$('#abbc3_bbpalette').click();
+					<!-- ELSE -->
+						$('#bbpalette').click();
 					<!-- ENDIF -->
-				}
-				
-				if(res.noapprove)
-				{
-					$('input[name="post"]').removeAttr('data-clicked');
-					$('#message-box textarea').val('');
-					$('#message-box textarea').attr('style', 'height: 9em;');
-					$('#preview h3').html('');
-					$('#preview .content').html('');
 				}
 			}
-		});
-	//});
+		}
+	});
 	
 	if(localStorage['qr_save_message'])
 	{
@@ -251,19 +269,24 @@
 			var $this = $(this),
 				$body = $('body'),
 				filterSkip = '.breadcrumbs, [data-skip-responsive]',
-				filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
+				filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
+				persist = $this.attr('id') == 'nav-main',
 				allLinks = $this.children(),
 				links = allLinks.not(filterSkip),
 				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-				filterLastList = links.filter(filterLast);
+				filterLastList = links.filter(filterLast),
+				slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured. 
 
-			if (links.is('.rightside'))
-			{
-				links.filter('.rightside:first').before(html);
-			}
-			else
-			{
-				$this.append(html);
+			if (!persist) {
+				if (links.is('.rightside'))
+				{
+					links.filter('.rightside:first').before(html);
+					$this.children('.responsive-menu').addClass('rightside');
+				}
+				else
+				{
+					$this.append(html);
+				}
 			}
 
 			var item = $this.children('.responsive-menu'),
@@ -279,12 +302,20 @@
 					return;
 				}
 
+				// Unhide the quick-links menu if it has content
+				if (persist) {
+					item.addClass('hidden');
+					if (menu.find('li:not(.separator, .clone)').length || (responsive && menu.find('li.clone').length)) {
+						item.removeClass('hidden');
+					}
+				}
+
 				// Reset responsive and compact layout
 				if (responsive) {
 					responsive = false;
 					$this.removeClass('responsive');
 					links.css('display', '');
-					item.css('display', 'none');
+					if (!persist) item.css('display', 'none');
 				}
 
 				if (compact) {
@@ -304,7 +335,7 @@
 				}
 
 				// Nothing to resize if block's height is not bigger than tallest element's height
-				if ($this.height() <= maxHeight) {
+				if ($this.height() <= (maxHeight + slack)) {
 					return;
 				}
 
@@ -318,7 +349,7 @@
 					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 				});
 
-				if ($this.height() <= maxHeight) {
+				if ($this.height() <= (maxHeight + slack)) {
 					return;
 				}
 
@@ -330,9 +361,16 @@
 				if (!copied) {
 					var clone = links.clone(true);
 					clone.filter('.rightside').each(function() {
+						if (persist) $(this).addClass('clone');
 						menu.prepend(this);
 					});
-					menu.prepend(clone.not('.rightside'));
+					
+					if (persist) {
+						menu.prepend(clone.not('.rightside').addClass('clone'));
+					} else {
+						menu.prepend(clone.not('.rightside'));
+					}
+
 					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
 					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 
@@ -359,16 +397,20 @@
 						maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 					});
 
-					if ($this.height() <= maxHeight) {
+					if ($this.height() <= (maxHeight + slack)) {
 						menu.children().filter(filterLast).css('display', 'none');
 						return;
 					}
 				}
 
+				// If even responsive isn't enough, use both responsive and compact at same time
+				compact = true;
+				$this.addClass('compact');
+
 				links.css('display', 'none');
 			}
 
-			phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+			if (!persist) phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
 
 			check();
 			$(window).resize(check);
