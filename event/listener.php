@@ -102,7 +102,7 @@ class listener implements EventSubscriberInterface
 	public function show_bbcodes_and_smilies($event)
 	{
 		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
-		
+
 		include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 
 		$forum_id	= $event['forum_id'];
@@ -399,7 +399,6 @@ class listener implements EventSubscriberInterface
 
 			$tpl_ary = array_merge($tpl_ary, array(
 				'QR_NOT_FIRST_POST'	=> ($row['topic_first_post_id'] == $row['post_id']) ? false : true,
-				
 			));
 
 			$event['tpl_ary'] = $tpl_ary;
