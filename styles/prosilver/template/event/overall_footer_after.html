@@ -58,26 +58,35 @@
 <!-- ENDIF -->
 
 <!-- IF S_QUICK_REPLY and S_QR_QUICKNICK_ENABLE -->
-	$('#posts').on('click', 'a.username', function(evt) {
+	function qr_quicknick(evt, link) {
 		// Get cursor coordinates
 		if (!evt) evt = window.event;
+		evt.preventDefault();
 		var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
 		var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
 		// Which mouse button is pressed?
 		var key = evt.button || evt.which || null; // IE || FF || Unknown
 		
 		//Get nick and id
-		var poster_id = $(this).attr('id');
-		var nickname = $(this).html();
+		var vievprofile_url = link.attr('href');
+		var nickname = link.html();
 		
-		var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="{LA_QR_QUICKNICK_TITLE}">{LA_QR_QUICKNICK}</a></li><li><a href="javascript:void(0);" class="qr_profile" style="font-size: 11px !important;" title="{LA_QR_PROFILE}">{LA_QR_PROFILE}</a></li></ul></div>').appendTo('body');
+		var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="{LA_QR_QUICKNICK_TITLE}">{LA_QR_QUICKNICK}</a></li><li><a href="' + vievprofile_url + '" class="qr_profile" style="font-size: 11px !important;" title="{LA_QR_PROFILE}">{LA_QR_PROFILE}</a></li></ul></div>').appendTo('body');
 				
 		var comma = ({S_QR_COMMA_ENABLE}) ? ', ' : '';
 		$('a.qr_quicknick', qrNickAlert).mousedown(function() {insert_text('[b]' + nickname + '[/b]' + comma, false); qrNickAlert.remove(); return false;});
 		
-		$('a.qr_profile', qrNickAlert).mousedown(function() {document.location.href = "./memberlist.php?mode=viewprofile&u=" + poster_id; qrNickAlert.remove(); return false;});
+		$('a.qr_profile', qrNickAlert).mousedown(function(e) {e.preventDefault(); document.location.href = vievprofile_url; qrNickAlert.remove(); return false;});
 		
 		setTimeout(function() {$(document.body).mousedown(function() {qrNickAlert.remove(); $(document.body).unbind('mousedown');});}, 10);
+	}
+	
+	$('#posts').on('click', 'a.username', function(e) {
+		qr_quicknick(e, $(this));
+	});
+	
+	$('#posts').on('click', 'a.username-coloured', function(e) {
+		qr_quicknick(e, $(this));
 	});
 <!-- ENDIF -->
 
@@ -117,6 +126,15 @@
 					$('#posts_content').html(posts_content + post_ajax_content);
 					$('input[name="topic_cur_post_id"]').attr('value', post_id_after);
 					handle_drops($('#post_ajax').prev('div'));
+					
+					//New posts number
+					var regexp = /(\d)+/,
+						qr_pagination = $('.action-bar .pagination').html(),
+						qr_pg_number = regexp.exec(qr_pagination);
+					qr_pg_number = parseInt(qr_pg_number[0]) + 1;
+					
+					qr_pagination = qr_pagination.replace(regexp, qr_pg_number);
+					$('.action-bar .pagination').html(qr_pagination);
 				}
 				handle_drops($('#post_ajax'));
 				qr_responsive_links($('#post_ajax'));
@@ -145,6 +163,13 @@
 						$('#bbpalette').click();
 					<!-- ENDIF -->
 				}
+				
+				<!-- IF S_VIEWTOPIC -->//and QR_HIDE_POSTS_SUBJECT
+					$('#post_ajax_content').find('.post .postbody div').each(function() {
+						$(this).find('h3:first').css('display', 'none');
+						$(this).find('p.author').css('display', 'inline');
+					});
+				<!-- ENDIF -->				
 			});
 			
 		} else {
@@ -417,6 +442,20 @@
 		});
 	}
 <!-- end ajax_submit -->
+<!-- ENDIF -->
+
+<!-- IF .searchresults and QR_HIDE_POSTS_SUBJECT -->
+	$('#page-body').find('.not_first_post').each(function() {
+		$(this).next('div.search').find('div.postbody h3:first').css('display', 'none');
+	});
+<!-- ENDIF -->
+
+<!-- IF S_VIEWTOPIC and QR_HIDE_POSTS_SUBJECT -->
+	$('#page-body').find('.post .postbody div').each(function() {
+		var qr_post_subject = $(this).find('h3:first').not('.first');
+		qr_post_subject.css('display', 'none');
+		qr_post_subject.next().next('p.author').css('display', 'inline');
+	});
 <!-- ENDIF -->
 
 // ]]>

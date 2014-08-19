@@ -82,38 +82,14 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'core.viewtopic_modify_post_row'	=>	'show_quicknick',
 			'core.viewtopic_modify_page_title'	=>	'show_bbcodes_and_smilies',
 			'core.modify_posting_parameters'	=>	'change_subject',
 			'core.posting_modify_template_vars'	=>	'delete_re',
 			'core.submit_post_end'				=>	'ajax_submit',
 			'rxu.postsmerging.posts_merging_end'=>	'ajax_submit',
+			'core.search_get_posts_data'		=>	'hide_posts_subjects_in_searchresults_sql',
+			'core.search_modify_tpl_ary'		=>	'hide_posts_subjects_in_searchresults_tpl',
 		);
-	}
-
-	/**
-	* Refer by username
-	*
-	* @return null
-	* @access public
-	*/
-	public function show_quicknick($event)
-	{
-		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
-
-		$user_poster_data = $event['user_poster_data'];
-		$row = $event['row'];
-		$topic_data = $event['topic_data'];
-
-		//Refer by username
-		if($this->config['qr_quicknick'])
-		{
-			$user_colour = ($user_poster_data['user_colour']) ? ' class="username-coloured username" style="color: #' . $user_poster_data['user_colour'] . ';" ' : ' class="username" ';
-
-			$event['post_row'] = array_merge($event['post_row'], array(
-				'POST_AUTHOR_FULL'		=> '<a href="javascript:void(0);" id="' . $row['user_id'] . '" ' . $user_colour  . '>' . $user_poster_data['author_username'] . '</a>',
-			));
-		}
 	}
 
 	/**
@@ -125,6 +101,8 @@ class listener implements EventSubscriberInterface
 	*/
 	public function show_bbcodes_and_smilies($event)
 	{
+		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
+
 		include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 
 		$forum_id	= $event['forum_id'];
@@ -198,6 +176,10 @@ class listener implements EventSubscriberInterface
 				));
 			}
 		}
+
+		$this->template->assign_vars(array(
+			'QR_HIDE_POSTS_SUBJECT'	=> $this->config['qr_hide_subjects']
+		));
 	}
 
 	/**
@@ -240,14 +222,6 @@ class listener implements EventSubscriberInterface
 		// Delete Re:
 		if($this->config['qr_enable_re'] == 0)
 		{
-			//$sql = 'SELECT topic_title
-			//			FROM ' . TOPICS_TABLE . '
-			//			WHERE topic_id = ' . (int) $topic_id;
-			//$result = $this->db->sql_query($sql);
-			//$post_subject = $this->db->sql_fetchrow($result);
-			//$this->db->sql_freeresult($result);
-
-			//$post_subject = censor_text($post_subject['topic_title']);
 			$page_data['SUBJECT'] = preg_replace('/^Re: /', '', $page_data['SUBJECT']);
 		}
 
@@ -261,12 +235,9 @@ class listener implements EventSubscriberInterface
 		//Ajax submit
 		if($this->config['qr_ajax_submit'])
 		{
-			$message_parser = $event['message_parser'];
-
 			if ($this->request->is_ajax() && $this->request->is_set_post('qr'))
 			{
-				$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+				include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 
 				$error = $event['error'];
 				$preview = $event['preview'];
@@ -275,13 +246,14 @@ class listener implements EventSubscriberInterface
 				$forum_id = $post_data['forum_id'];
 				$topic_id = $post_data['topic_id'];
 				$topic_cur_post_id = $post_data['topic_cur_post_id'];
+				$message_parser = $event['message_parser'];
 
 				if(sizeof($error))
 				{
 					$error_text = implode('<br />', $error);
 					$url_next_post = 0;
 				}
-				else if ($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
+				else if (($post_data['topic_cur_post_id'] != $post_data['topic_last_post_id']) && $post_data['forum_flags'] && FORUM_FLAG_POST_REVIEW && topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id))
 				{
 					$sql = 'SELECT post_id 
 							FROM ' . POSTS_TABLE . '  
@@ -289,19 +261,12 @@ class listener implements EventSubscriberInterface
 								AND ' . $this->phpbb_content_visibility->get_visibility_sql('post', $forum_id, '') . '
 								AND post_id > ' . $topic_cur_post_id . ' 
 								ORDER BY post_time DESC';
-						$result = $this->db->sql_query_limit($sql, 1);
-						$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
-						$this->db->sql_freeresult($result);
+					$result = $this->db->sql_query_limit($sql, 1);
+					$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
+					$this->db->sql_freeresult($result);
 
-					if($post_data['forum_flags'] && FORUM_FLAG_POST_REVIEW && topic_review($topic_id, $forum_id, 'post_review', $topic_cur_post_id))
-					{
-						$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
-						$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next");
-					}
-					else
-					{
-						//$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_data['topic_id']#p$post_data['topic_id']");
-					}
+					$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
+					$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next");
 				}
 
 				// Preview
@@ -392,13 +357,51 @@ class listener implements EventSubscriberInterface
 
 				$json_response->send(array(
 					'success'		=> true,
-					'url'			=> $event['url'],
-					'REFRESH_DATA'	=> array(
-						'time'	=> 1,
-						'url'	=> html_entity_decode($event['url'])
-					)
+					'url'			=> $event['url']
 				));
 			}
+		}
+	}
+
+	/**
+	* Hide posts subjects in searchresult
+	*
+	* @return null
+	* @access public
+	*/
+	public function hide_posts_subjects_in_searchresults_sql($event)
+	{
+		if($this->config['qr_hide_subjects'])
+		{
+			$sql_array = $event['sql_array'];
+			if(!preg_match('/t\.topic_first_post_id/', $sql_array['SELECT'], $matches_t))
+			{
+				$sql_array['SELECT'] .= ', t.topic_first_post_id';
+			}
+			if(!preg_match('/p\.post_id/', $sql_array['SELECT'], $matches_p))
+			{
+				$sql_array['SELECT'] .= ', p.post_id';
+			}
+			$event['sql_array'] = $sql_array;
+		}
+	}
+
+	public function hide_posts_subjects_in_searchresults_tpl($event)
+	{
+		$this->template->assign_vars(array(
+			'QR_HIDE_POSTS_SUBJECT'	=> $this->config['qr_hide_subjects']
+		));
+
+		if($this->config['qr_hide_subjects'])
+		{
+			$row = $event['row'];
+			$tpl_ary = $event['tpl_ary'];
+
+			$tpl_ary = array_merge($tpl_ary, array(
+				'QR_NOT_FIRST_POST'	=> ($row['topic_first_post_id'] == $row['post_id']) ? false : true,
+			));
+
+			$event['tpl_ary'] = $tpl_ary;
 		}
 	}
 }

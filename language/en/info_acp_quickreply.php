@@ -43,4 +43,5 @@ $lang = array_merge($lang, array(
 	'ACP_QR_CAPSLOCK'				=> 'Enable text-to upper / lower case',
 	'ACP_QR_AJAX_SUBMIT'			=> 'Enable ajax-posting',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Allow sending messages without reloading the page',
+	'ACP_QR_HIDE_SUBJECTS'			=> 'Hide posts subjects',
 ));
