@@ -43,4 +43,5 @@ $lang = array_merge($lang, array(
 	'ACP_QR_CAPSLOCK'				=> 'Включить преобразование текста в верхний/нижний регистр',
 	'ACP_QR_AJAX_SUBMIT'			=> 'Включить ajax-отправку сообщений',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Разрешить отправку сообщений без перезагрузки страницы',
+	'ACP_QR_HIDE_SUBJECTS'			=> 'Скрывать заголовки сообщений',
 ));

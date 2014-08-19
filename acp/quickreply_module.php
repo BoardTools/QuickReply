@@ -12,8 +12,7 @@ namespace tatiana5\quickreply\acp;
 class quickreply_module
 {
 	var $u_action;
-	var $max_rep_id;
-	var $step = 1000;
+	var $new_config = array();
 
 	function main($id, $mode)
 	{
@@ -40,6 +39,7 @@ class quickreply_module
 				'qr_ctrlenter'	=> array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer'	=> array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_ajax_submit'	=> array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_ajax_submit'	=> array('lang' => 'ACP_QR_HIDE_SUBJECTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend2'					=> 'ACP_SUBMIT_CHANGES',
 			),
@@ -79,7 +79,8 @@ class quickreply_module
 
 			if ($submit)
 			{
-				$config->set($config_name, $config_value, $cache = true);
+				//set_config($config_name, $config_value);
+				$config->set($config_name, $config_value);
 			}
 		}
 
