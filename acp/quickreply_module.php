@@ -39,7 +39,7 @@ class quickreply_module
 				'qr_ctrlenter'	=> array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer'	=> array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_ajax_submit'	=> array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_ajax_submit'	=> array('lang' => 'ACP_QR_HIDE_SUBJECTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_hide_subjects'	=> array('lang' => 'ACP_QR_HIDE_SUBJECTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend2'					=> 'ACP_SUBMIT_CHANGES',
 			),
