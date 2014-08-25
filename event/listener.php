@@ -82,14 +82,33 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
+			'core.user_setup'					=>	'load_language_on_setup',
 			'core.viewtopic_modify_page_title'	=>	'show_bbcodes_and_smilies',
-			'core.modify_posting_parameters'	=>	'change_subject',
+			'core.modify_posting_parameters'	=>	'change_subject_tpl',
+			'core.modify_submit_post_data'		=>	'change_subject_when_sending',
 			'core.posting_modify_template_vars'	=>	'delete_re',
 			'core.submit_post_end'				=>	'ajax_submit',
 			'rxu.postsmerging.posts_merging_end'=>	'ajax_submit',
 			'core.search_get_posts_data'		=>	'hide_posts_subjects_in_searchresults_sql',
 			'core.search_modify_tpl_ary'		=>	'hide_posts_subjects_in_searchresults_tpl',
 		);
+	}
+
+	/**
+	* Load common files during user setup
+	*
+	* @param object $event The event object
+	* @return null
+	* @access public
+	*/
+	public function load_language_on_setup($event)
+	{
+		$lang_set_ext = $event['lang_set_ext'];
+		$lang_set_ext[] = array(
+			'ext_name' => 'tatiana5/quickreply',
+			'lang_set' => 'quickreply',
+		);
+		$event['lang_set_ext'] = $lang_set_ext;
 	}
 
 	/**
@@ -101,8 +120,6 @@ class listener implements EventSubscriberInterface
 	*/
 	public function show_bbcodes_and_smilies($event)
 	{
-		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
-
 		include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 
 		$forum_id	= $event['forum_id'];
@@ -143,11 +160,12 @@ class listener implements EventSubscriberInterface
 			}
 
 			$this->template->assign_vars(array(
-				'S_QR_NOT_CHANGE_SUBJECT'	=> ($this->auth->acl_get('f_qr_change_subject', $forum_id) || $this->auth->acl_get('m_qr_change_subject', $forum_id)) ? false : true,
+				'S_QR_NOT_CHANGE_SUBJECT'	=> ($this->auth->acl_get('f_qr_change_subject', $forum_id)) ? false : true,
 				'S_QR_COMMA_ENABLE'		=> $this->config['qr_comma'],
 				'S_QR_QUICKNICK_ENABLE'	=> $this->config['qr_quicknick'],
 				'S_QR_QUICKQUOTE_ENABLE'=> $this->config['qr_quickquote'],
 				'S_QR_CE_ENABLE'		=> $this->config['qr_ctrlenter'],
+				'QR_SOURCE_POST'		=> $this->config['qr_source_post'],
 
 				'S_BBCODE_ALLOWED'		=> ($bbcode_status) ? 1 : 0,
 				'S_SMILIES_ALLOWED'		=> $smilies_status,
@@ -178,7 +196,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		$this->template->assign_vars(array(
-			'QR_HIDE_POSTS_SUBJECT'	=> $this->config['qr_hide_subjects']
+			'QR_HIDE_POSTS_SUBJECT'	=> ($this->config['qr_hide_subjects']) ? false : true
 		));
 	}
 
@@ -188,14 +206,12 @@ class listener implements EventSubscriberInterface
 	* @return null
 	* @access public
 	*/
-	public function change_subject($event)
+	public function change_subject_tpl($event)
 	{
 		$forum_id	= $event['forum_id'];
 		$topic_id	= $event['topic_id'];
 
-		$can_change_subject = ($this->auth->acl_get('f_qr_change_subject', $forum_id) || $this->auth->acl_get('m_qr_change_subject', $forum_id)) ? true : false;
-
-		//$post_subject = '';
+		$can_change_subject = ($this->auth->acl_get('f_qr_change_subject', $forum_id)) ? true : false;
 
 		if(!$can_change_subject && $event['mode'] != 'post' && !empty($topic_id))
 		{
@@ -203,6 +219,33 @@ class listener implements EventSubscriberInterface
 				'S_QR_NOT_CHANGE_SUBJECT'	=> true,
 			));
 		};
+	}
+
+	/**
+	* User can change post subject or not
+	*
+	* @return null
+	* @access public
+	*/
+	public function change_subject_when_sending($event)
+	{
+		$data = $event['data'];
+
+		$can_change_subject = ($this->auth->acl_get('f_qr_change_subject', $data['forum_id'])) ? true : false;
+
+		if(!$can_change_subject && ($data['topic_first_post_id'] != $data['post_id']))
+		{
+			if($this->config['qr_enable_re'] == 0)
+			{
+				$subject = $data['topic_title'];
+			}
+			else
+			{
+				$subject = 'Re: ' . $data['topic_title'];
+			}
+
+			$event['subject'] = $subject;
+		}
 	}
 
 	/**
@@ -335,8 +378,6 @@ class listener implements EventSubscriberInterface
 	{
 		if($this->config['qr_ajax_submit'])
 		{
-			$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
-
 			if ($this->request->is_ajax() && $this->request->is_set_post('qr'))
 			{
 				$json_response = new \phpbb\json_response;
@@ -371,7 +412,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function hide_posts_subjects_in_searchresults_sql($event)
 	{
-		if($this->config['qr_hide_subjects'])
+		if($this->config['qr_hide_subjects'] == 0)
 		{
 			$sql_array = $event['sql_array'];
 			if(!preg_match('/t\.topic_first_post_id/', $sql_array['SELECT'], $matches_t))
@@ -388,11 +429,7 @@ class listener implements EventSubscriberInterface
 
 	public function hide_posts_subjects_in_searchresults_tpl($event)
 	{
-		$this->template->assign_vars(array(
-			'QR_HIDE_POSTS_SUBJECT'	=> $this->config['qr_hide_subjects']
-		));
-
-		if($this->config['qr_hide_subjects'])
+		if($this->config['qr_hide_subjects'] == 0)
 		{
 			$row = $event['row'];
 			$tpl_ary = $event['tpl_ary'];
@@ -402,6 +439,10 @@ class listener implements EventSubscriberInterface
 			));
 
 			$event['tpl_ary'] = $tpl_ary;
+
+			$this->template->assign_vars(array(
+				'QR_HIDE_POSTS_SUBJECT'	=> true
+			));
 		}
 	}
 }

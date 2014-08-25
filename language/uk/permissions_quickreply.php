@@ -28,5 +28,4 @@ $lang = array_merge($lang, array(
 
 	'ACL_A_QUICKREPLY'			=> 'Може змінювати налаштування швидкої відповіді',
 	'ACL_F_QR_CHANGE_SUBJECT'	=> 'Може змінювати заголовок повідомлення',
-	'ACL_M_QR_CHANGE_SUBJECT'	=> 'Може змінювати заголовок повідомлення',
 ));

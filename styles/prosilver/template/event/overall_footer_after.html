@@ -39,6 +39,10 @@
 		var qr_poster_id = qr_post_id.replace('post_content', 'profile');
 		var nickname = $('#' + qr_poster_id + ' dt a').not('.avatar').html();
 		
+		// Link to the source post
+		var qr_post_id_num = qr_post_id.replace('post_content', '');
+		var qr_bbpost = ({QR_SOURCE_POST}) ? '[post]' + qr_post_id_num + '[/post] ' : '';
+		
 		setTimeout(function() { // Timeout prevents popup when clicking on selected text
 			var sel = '';
 			if (window.getSelection)
@@ -50,7 +54,8 @@
 
 			if (sel && key <= 1) { // If text selected && right mouse button not pressed
 				var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 184 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" style="font-size: 11px !important;">{LA_QR_INSERT_TEXT}</a></li></ul></div>').appendTo('body');
-				$('a', qrAlert).mousedown(function() {insert_text('[quote="' + nickname + '"]' + sel + '[/quote]\r', false); qrAlert.remove(); return false;});
+				$('a', qrAlert).mousedown(function() {insert_text('[quote="' + nickname + '"]' + qr_bbpost + sel + '[/quote]\r', false); qrAlert.remove(); return false;});
+				$(qrAlert).mousedown(function() {insert_text('[quote="' + nickname + '"]' + qr_bbpost + sel + '[/quote]\r', false); qrAlert.remove(); return false;});
 				setTimeout(function() {$(document.body).mousedown(function() {qrAlert.remove(); $(document.body).unbind('mousedown');});}, 10);
 			}
 		}, 0);
@@ -164,7 +169,7 @@
 					<!-- ENDIF -->
 				}
 				
-				<!-- IF S_VIEWTOPIC -->//and QR_HIDE_POSTS_SUBJECT
+				<!-- IF QR_HIDE_POSTS_SUBJECT -->
 					$('#post_ajax_content').find('.post .postbody div').each(function() {
 						$(this).find('h3:first').css('display', 'none');
 						$(this).find('p.author').css('display', 'inline');

@@ -28,5 +28,4 @@ $lang = array_merge($lang, array(
 
 	'ACL_A_QUICKREPLY'			=> 'Can change the settings of the Quick Reply',
 	'ACL_F_QR_CHANGE_SUBJECT'	=> 'Can modify the Post subject',
-	'ACL_M_QR_CHANGE_SUBJECT'	=> 'Can modify the Post subject',
 ));

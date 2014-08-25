@@ -23,6 +23,7 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
+	'QR_BBPOST'					=> 'Источник',
 	'QR_INSERT_TEXT'			=> 'Вставить цитату в окно ответа',
 	'QR_PROFILE'				=> 'Перейти в профиль',
 	'QR_QUICKNICK'				=> 'Обратиться по нику',

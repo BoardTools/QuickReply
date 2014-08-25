@@ -32,16 +32,21 @@ class quickreply_module
 				'legend1'		=> '',
 				'qr_bbcode'		=> array('lang' => 'ACP_QR_BBCODE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_smilies'	=> array('lang' => 'ACP_QR_SMILIES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_quickquote'	=> array('lang' => 'ACP_QR_QUICKQUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_quicknick'	=> array('lang' => 'ACP_QR_QUICKNICK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_comma'	=> array('lang' => 'ACP_QR_COMMA', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_enable_re'	=> array('lang' => 'ACP_QR_ENABLE_RE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_ctrlenter'	=> array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer'	=> array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_ajax_submit'	=> array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+
+				'legend2'		=> '',
+				'qr_quickquote'	=> array('lang' => 'ACP_QR_QUICKQUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_quicknick'	=> array('lang' => 'ACP_QR_QUICKNICK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_comma'	=> array('lang' => 'ACP_QR_COMMA', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_source_post'	=> array('lang' => 'ACP_QR_SOURCE_POST', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+
+				'legend3'		=> '',
+				'qr_enable_re'	=> array('lang' => 'ACP_QR_ENABLE_RE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_hide_subjects'	=> array('lang' => 'ACP_QR_HIDE_SUBJECTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
-				'legend2'					=> 'ACP_SUBMIT_CHANGES',
+				'legend4'					=> 'ACP_SUBMIT_CHANGES',
 			),
 		);
 
