@@ -66,7 +66,7 @@ class v_0_1_2 extends \phpbb\db\migration\migration
 
 		// Build the BBCodes
 		$data = $bbcode_tool->build_regexp($bbcode_array['bbcode_match'], $bbcode_array['bbcode_tpl']);
-		
+
 		$bbcode_array += array(
 			'bbcode_tag'			=> $data['bbcode_tag'],
 			'first_pass_match'		=> $data['first_pass_match'],
