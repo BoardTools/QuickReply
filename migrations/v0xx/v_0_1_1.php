@@ -35,7 +35,7 @@ class v_0_1_1 extends \phpbb\db\migration\migration
 	{
 		return array(
 			// Add configs
-			array('config.add', array('qr_hide_subjects', '1')),
+			array('config.add', array('qr_hide_subjects', '0')),
 
 			// Update exisiting configs
 			array('config.update', array('qr_version', '0.1.1')),

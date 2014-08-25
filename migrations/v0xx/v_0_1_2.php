@@ -60,7 +60,7 @@ class v_0_1_2 extends \phpbb\db\migration\migration
 		$bbcode_array = array(
 			'bbcode_helpline'	=> 'BBCode for QuickReply extension',
 			'bbcode_match'		=> '[post]{NUMBER}[/post]',
-			'bbcode_tpl'		=> '<a href="./viewtopic.php?p={NUMBER}#{NUMBER}"><span class="imageset icon_topic_latest" title="{L_QR_BBPOST}">{L_QR_BBPOST}</span></a>',
+			'bbcode_tpl'		=> '<a href="./viewtopic.php?p={NUMBER}#p{NUMBER}"><span class="imageset icon_topic_latest" title="{L_QR_BBPOST}">{L_QR_BBPOST}</span></a>',
 			'display_on_posting'=> 0,
 		);
 
