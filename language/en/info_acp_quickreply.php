@@ -44,4 +44,5 @@ $lang = array_merge($lang, array(
 	'ACP_QR_AJAX_SUBMIT'			=> 'Enable ajax-posting',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Allow sending messages without reloading the page',
 	'ACP_QR_HIDE_SUBJECTS'			=> 'Hide posts subjects',
+	'ACP_QR_SOURCE_POST'			=> 'Add a link to the quoted message when quoting',
 ));
