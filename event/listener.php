@@ -39,6 +39,15 @@ class listener implements EventSubscriberInterface
 
 	/** @var \phpbb\content_visibility */
 	protected $phpbb_content_visibility;
+	
+	/** @var \phpbb\cache\service */
+	protected $cache;
+	
+	/** @var \phpbb\plupload\plupload */
+	protected $plupload;
+
+	/** @var \phpbb\mimetype\guesser */
+	protected $mimetype_guesser;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -55,10 +64,13 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\extension\manager $phpbb_extension_manager
 	* @param \phpbb\request\request $request
 	* @param \phpbb\content_visibility $phpbb_content_visibility
+	* @param \phpbb\cache\service $cache
+	* @param \phpbb\plupload\plupload $plupload
+	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	* @param string $phpbb_root_path Root path
 	* @param string $phpbb_ext
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, \phpbb\content_visibility $phpbb_content_visibility, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\cache\service $cache, \phpbb\plupload\plupload $plupload, \phpbb\mimetype\guesser $mimetype_guesser, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -68,8 +80,12 @@ class listener implements EventSubscriberInterface
 		$this->phpbb_extension_manager = $phpbb_extension_manager;
 		$this->request = $request;
 		$this->phpbb_content_visibility = $phpbb_content_visibility;
+		$this->cache = $cache;
+		$this->plupload = $plupload;
+		$this->mimetype_guesser = $mimetype_guesser;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->files_uploaded = false;
 	}
 
 	/**
@@ -83,7 +99,7 @@ class listener implements EventSubscriberInterface
 	{
 		return array(
 			'core.user_setup'					=>	'load_language_on_setup',
-			'core.viewtopic_modify_page_title'	=>	'show_bbcodes_and_smilies',
+			'core.viewtopic_modify_page_title'	=>	'viewtopic_modify_data',
 			'core.modify_posting_parameters'	=>	'change_subject_tpl',
 			'core.modify_submit_post_data'		=>	'change_subject_when_sending',
 			'core.posting_modify_template_vars'	=>	'delete_re',
@@ -118,10 +134,8 @@ class listener implements EventSubscriberInterface
 	* @return null
 	* @access public
 	*/
-	public function show_bbcodes_and_smilies($event)
+	public function viewtopic_modify_data($event)
 	{
-		include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-
 		$forum_id	= $event['forum_id'];
 		$topic_data = $event['topic_data'];
 
@@ -134,6 +148,8 @@ class listener implements EventSubscriberInterface
 
 		if ($s_quick_reply)
 		{
+			include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+
 			// HTML, BBCode, Smilies, Images and Flash status
 			$bbcode_status	= ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 			$smilies_status	= ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
@@ -158,8 +174,36 @@ class listener implements EventSubscriberInterface
 			{
 				generate_smilies('inline', $forum_id);
 			}
+		
+			// Show attachment box for adding attachments if true
+			$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_attachments'] || !$this->auth->acl_get('u_attach') || !$this->auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
+			$allowed = ($this->auth->acl_get('f_attach', $forum_id) && $this->auth->acl_get('u_attach') && $this->config['allow_attachments'] && $form_enctype);
 
+			if ($this->config['qr_attach'] && $allowed)
+			{
+				include_once($this->phpbb_root_path . 'includes/message_parser.' . $this->php_ext);
+				$this->user->add_lang('posting');
+				$message_parser = new \parse_message();
+				$message_parser->set_plupload($this->plupload);
+				$message_parser->set_mimetype_guesser($this->mimetype_guesser);
+
+				$message_parser->get_submitted_attachment_data($this->user->data['user_id']);
+
+				$attachment_data = $message_parser->attachment_data;
+				$filename_data = $message_parser->filename_data;
+
+				posting_gen_inline_attachments($attachment_data);
+				
+				$max_files = ($this->auth->acl_get('a_') || $this->auth->acl_get('m_', $forum_id)) ? 0 : (int) $this->config['max_attachments'];
+				$topic_id = $topic_data['topic_id'];
+				$s_action = append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id");
+				$this->plupload->configure($this->cache, $this->template, $s_action, $forum_id, $max_files);
+				
+				posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
+			}
+			
 			$this->template->assign_vars(array(
+				'S_QR_COLOUR_NICKNAME'		=> $this->config['qr_color_nickname'],
 				'S_QR_NOT_CHANGE_SUBJECT'	=> ($this->auth->acl_get('f_qr_change_subject', $forum_id)) ? false : true,
 				'S_QR_COMMA_ENABLE'		=> $this->config['qr_comma'],
 				'S_QR_QUICKNICK_ENABLE'	=> $this->config['qr_quicknick'],
@@ -185,6 +229,10 @@ class listener implements EventSubscriberInterface
 
 				//ABBC3
 				'S_ABBC3_INSTALLED'		=> $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
+
+				//Upload attachments
+				'S_QR_SHOW_ATTACH_BOX'	=> $this->config['qr_attach'] && $allowed,
+				'S_ATTACH_DATA'			=> (isset($message_parser->attachment_data)) ? json_encode($message_parser->attachment_data) : '[]',
 			));
 
 			if($this->config['qr_enable_re'] == 0)
@@ -196,7 +244,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		$this->template->assign_vars(array(
-			'QR_HIDE_POSTS_SUBJECT'	=> ($this->config['qr_hide_subjects']) ? false : true
+			'QR_HIDE_POSTS_SUBJECT'	=> ($this->config['qr_show_subjects']) ? false : true
 		));
 	}
 
@@ -303,7 +351,7 @@ class listener implements EventSubscriberInterface
 							WHERE topic_id = ' . $topic_id . ' 
 								AND ' . $this->phpbb_content_visibility->get_visibility_sql('post', $forum_id, '') . '
 								AND post_id > ' . $topic_cur_post_id . ' 
-								ORDER BY post_time DESC';
+								ORDER BY post_time ASC';
 					$result = $this->db->sql_query_limit($sql, 1);
 					$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
 					$this->db->sql_freeresult($result);
@@ -318,24 +366,29 @@ class listener implements EventSubscriberInterface
 					$message_parser->message = html_entity_decode($this->request->variable('message', '', true), ENT_NOQUOTES);
 					$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
 
+						$preview_attachments = false;
 						// Attachment Preview
-						//if (sizeof($message_parser->attachment_data))
-						//{
-							//$template->assign_var('S_HAS_ATTACHMENTS', true);
+						if (sizeof($message_parser->attachment_data))
+						{
+							$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>';
+							
+							//$this->template->assign_var('S_HAS_ATTACHMENTS', true);
 
-							//$update_count = array();
-							//$attachment_data = $message_parser->attachment_data;
+							$update_count = array();
+							$attachment_data = $message_parser->attachment_data;
 
-							//parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
+							parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
 
-							//foreach ($attachment_data as $i => $attachment)
-							//{
-								//$template->assign_block_vars('attachment', array(
+							foreach ($attachment_data as $i => $attachment)
+							{
+								//$this->template->assign_block_vars('attachment', array(
 								//	'DISPLAY_ATTACHMENT'	=> $attachment)
 								//);
-							//}
-							//unset($attachment_data);
-						//}
+								$preview_attachments .= '<dd>' . $attachment . '</dd>';
+							}
+							$preview_attachments .= '</dl>';
+							unset($attachment_data);
+						}
 
 						$error_text = $preview_message;
 				}
@@ -349,6 +402,7 @@ class listener implements EventSubscriberInterface
 							'preview' => true,
 							'PREVIEW_TITLE'	=> $this->user->lang['PREVIEW'],
 							'PREVIEW_TEXT'	=> $preview_message,
+							'PREVIEW_ATTACH'=> $preview_attachments,
 						));
 					}
 					else
@@ -383,6 +437,8 @@ class listener implements EventSubscriberInterface
 				$json_response = new \phpbb\json_response;
 
 				$data = $event['data'];
+				$topic_cur_post_id	= $this->request->variable('topic_cur_post_id', 0);
+
 				if ((!$this->auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
 				{
 					// No approve
@@ -393,6 +449,27 @@ class listener implements EventSubscriberInterface
 						'REFRESH_DATA'	=> array(
 							'time'	=> 10,
 						)
+					));
+				}
+
+				if ($topic_cur_post_id != $data['topic_last_post_id'] && $data['topic_id'] > 0)
+				{
+					$forum_id = $data['forum_id'];
+					$topic_id = $data['topic_id'];
+					$sql = 'SELECT post_id 
+							FROM ' . POSTS_TABLE . '  
+							WHERE topic_id = ' . $data['topic_id'] . ' 
+								AND ' . $this->phpbb_content_visibility->get_visibility_sql('post', $data['forum_id'], '') . '
+								AND post_id > ' . $topic_cur_post_id . ' 
+								ORDER BY post_time ASC';
+					$result = $this->db->sql_query_limit($sql, 1);
+					$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
+					$this->db->sql_freeresult($result);
+
+					$json_response->send(array(
+						'success'		=> true,
+						'url'			=> $event['url'],
+						'prew_url'		=> append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next")
 					));
 				}
 
@@ -412,7 +489,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function hide_posts_subjects_in_searchresults_sql($event)
 	{
-		if($this->config['qr_hide_subjects'] == 0)
+		if($this->config['qr_show_subjects'] == 0)
 		{
 			$sql_array = $event['sql_array'];
 			if(!preg_match('/t\.topic_first_post_id/', $sql_array['SELECT'], $matches_t))
@@ -429,20 +506,24 @@ class listener implements EventSubscriberInterface
 
 	public function hide_posts_subjects_in_searchresults_tpl($event)
 	{
-		if($this->config['qr_hide_subjects'] == 0)
+		if($this->config['qr_show_subjects'] == 0)
 		{
 			$row = $event['row'];
 			$tpl_ary = $event['tpl_ary'];
+			$show_results = $event['show_results'];
 
-			$tpl_ary = array_merge($tpl_ary, array(
-				'QR_NOT_FIRST_POST'	=> ($row['topic_first_post_id'] == $row['post_id']) ? false : true,
-			));
+			if($show_results == 'posts')
+			{
+				$tpl_ary = array_merge($tpl_ary, array(
+					'QR_NOT_FIRST_POST'	=> ($row['topic_first_post_id'] == $row['post_id']) ? false : true,
+				));
 
-			$event['tpl_ary'] = $tpl_ary;
+				$event['tpl_ary'] = $tpl_ary;
 
-			$this->template->assign_vars(array(
-				'QR_HIDE_POSTS_SUBJECT'	=> true
-			));
+				$this->template->assign_vars(array(
+					'QR_HIDE_POSTS_SUBJECT'	=> true
+				));
+			}
 		}
 	}
 }

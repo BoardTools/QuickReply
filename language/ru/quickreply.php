@@ -25,6 +25,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'QR_BBPOST'					=> 'Источник',
 	'QR_INSERT_TEXT'			=> 'Вставить цитату в окно ответа',
+	'QR_PREW_POSTS'				=> 'В теме появились новые сообщения. Нажмите на ссылку, чтобы увидеть их.',
 	'QR_PROFILE'				=> 'Перейти в профиль',
 	'QR_QUICKNICK'				=> 'Обратиться по нику',
 	'QR_QUICKNICK_TITLE'		=> 'Вставить имя пользователя в окно быстрого ответа',

@@ -21,16 +21,6 @@ class v_0_1_2 extends \phpbb\db\migration\migration
 		return array('\tatiana5\quickreply\migrations\v0xx\v_0_1_1');
 	}
 
-	public function update_schema()
-	{
-		return array();
-	}
-
-	public function revert_schema()
-	{
-		return array();
-	}
-
 	public function update_data()
 	{
 		return array(
@@ -38,9 +28,6 @@ class v_0_1_2 extends \phpbb\db\migration\migration
 
 			// Add configs
 			array('config.add', array('qr_source_post', '1')),
-
-			//Remove permission
-			array('permission.remove', array('m_qr_change_subject', true)),
 
 			// Update exisiting configs
 			array('config.update', array('qr_version', '0.1.2')),
@@ -120,7 +107,7 @@ class v_0_1_2 extends \phpbb\db\migration\migration
 			if ($bbcode_id <= BBCODE_LIMIT)
 			{
 				$bbcode_array['bbcode_id'] = (int) $bbcode_id;
-				$bbcode_array['display_on_posting'] = 1;
+				//$bbcode_array['display_on_posting'] = 1;
 
 				$this->db->sql_query('INSERT INTO ' . $this->table_prefix . 'bbcodes ' . $this->db->sql_build_array('INSERT', $bbcode_array));
 			}

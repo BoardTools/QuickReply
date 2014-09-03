@@ -1,0 +1,12 @@
+<!-- IF S_QR_SHOW_ATTACH_BOX -->
+	<script type="text/javascript">
+	// <![CDATA[
+			var qr_postform = document.getElementById('qr_postform');
+			var qr_textarea = document.getElementById('message-box').getElementsByTagName('textarea')[0];
+			qr_postform.setAttribute('enctype', 'multipart/form-data');
+			qr_textarea.setAttribute('id', 'message');
+	// ]]>
+	</script>
+
+	<!-- INCLUDE posting_attach_body.html -->
+<!-- ENDIF -->

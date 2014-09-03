@@ -10,6 +10,9 @@ services:
             - @ext.manager
             - @request
             - @content.visibility
+            - @cache
+            - @plupload
+            - @mimetype.guesser
             - %core.root_path%
             - %core.php_ext%
         tags:

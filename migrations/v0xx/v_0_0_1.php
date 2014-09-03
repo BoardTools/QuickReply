@@ -21,18 +21,6 @@ class v_0_0_1 extends \phpbb\db\migration\migration
 			return array('\phpbb\db\migration\data\v310\dev');
 	}
 
-	public function update_schema()
-	{
-		return array(
-		);
-	}
-
-	public function revert_schema()
-	{
-		return array(
-		);
-	}
-
 	public function update_data()
 	{
 		return array(
@@ -54,19 +42,17 @@ class v_0_0_1 extends \phpbb\db\migration\migration
 					'module_basename'	=> '\tatiana5\quickreply\acp\quickreply_module',
 					'module_langname'	=> 'ACP_QUICKREPLY_EXPLAIN',
 					'module_mode'		=> 'config_quickreply',
-					'module_auth'		=> 'acl_a_quickreply',
+					'module_auth'		=> 'ext_tatiana5/quickreply && acl_a_quickreply',
 			))),
 
 			// Add permissions
 			array('permission.add', array('a_quickreply', true)),
 			array('permission.add', array('f_qr_change_subject', false)),
-			array('permission.add', array('m_qr_change_subject', true)),
 
 			// Set permissions
 			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'a_quickreply')),
+			array('permission.permission_set', array('ROLE_ADMIN_STANDARD', 'a_quickreply')),
 			array('permission.permission_set', array('ROLE_FORUM_FULL', 'f_qr_change_subject')),
-			array('permission.permission_set', array('ROLE_FORUM_STANDARD', 'f_qr_change_subject')),
-			array('permission.permission_set', array('ROLE_MOD_FULL', 'm_qr_change_subject')),
 		);
 	}
 }

@@ -43,6 +43,8 @@ $lang = array_merge($lang, array(
 	'ACP_QR_CAPSLOCK'				=> 'Enable text-to upper / lower case',
 	'ACP_QR_AJAX_SUBMIT'			=> 'Enable ajax-posting',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Allow sending messages without reloading the page',
-	'ACP_QR_HIDE_SUBJECTS'			=> 'Hide posts subjects',
+	'ACP_QR_SHOW_SUBJECTS'			=> 'Show posts subjects',
 	'ACP_QR_SOURCE_POST'			=> 'Add a link to the quoted message when quoting',
+	'ACP_QR_ATTACH'					=> 'Allow attachments',
+	'ACP_QR_COLOUR_NICKNAME'		=> 'Add colour when refer by username',
 ));

@@ -21,16 +21,6 @@ class v_0_1_0 extends \phpbb\db\migration\migration
 		return array('\tatiana5\quickreply\migrations\v0xx\v_0_0_1');
 	}
 
-	public function update_schema()
-	{
-		return array();
-	}
-
-	public function revert_schema()
-	{
-		return array();
-	}
-
 	public function update_data()
 	{
 		return array(
