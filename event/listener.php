@@ -39,10 +39,10 @@ class listener implements EventSubscriberInterface
 
 	/** @var \phpbb\content_visibility */
 	protected $phpbb_content_visibility;
-	
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
-	
+
 	/** @var \phpbb\plupload\plupload */
 	protected $plupload;
 
@@ -174,7 +174,7 @@ class listener implements EventSubscriberInterface
 			{
 				generate_smilies('inline', $forum_id);
 			}
-		
+
 			// Show attachment box for adding attachments if true
 			$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_attachments'] || !$this->auth->acl_get('u_attach') || !$this->auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 			$allowed = ($this->auth->acl_get('f_attach', $forum_id) && $this->auth->acl_get('u_attach') && $this->config['allow_attachments'] && $form_enctype);
@@ -193,15 +193,15 @@ class listener implements EventSubscriberInterface
 				$filename_data = $message_parser->filename_data;
 
 				posting_gen_inline_attachments($attachment_data);
-				
+
 				$max_files = ($this->auth->acl_get('a_') || $this->auth->acl_get('m_', $forum_id)) ? 0 : (int) $this->config['max_attachments'];
 				$topic_id = $topic_data['topic_id'];
 				$s_action = append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id");
 				$this->plupload->configure($this->cache, $this->template, $s_action, $forum_id, $max_files);
-				
+
 				posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 			}
-			
+
 			$this->template->assign_vars(array(
 				'S_QR_COLOUR_NICKNAME'		=> $this->config['qr_color_nickname'],
 				'S_QR_NOT_CHANGE_SUBJECT'	=> ($this->auth->acl_get('f_qr_change_subject', $forum_id)) ? false : true,
@@ -371,7 +371,7 @@ class listener implements EventSubscriberInterface
 						if (sizeof($message_parser->attachment_data))
 						{
 							$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>';
-							
+
 							//$this->template->assign_var('S_HAS_ATTACHMENTS', true);
 
 							$update_count = array();
