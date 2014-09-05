@@ -73,7 +73,7 @@
 		return "#" + colorHEX;
 	}
 	
-	function qr_quicknick(evt, link, color = false) {
+	function qr_quicknick(evt, link, color) {
 		// Get cursor coordinates
 		if (!evt) evt = window.event;
 		evt.preventDefault();
@@ -98,7 +98,7 @@
 	}
 	
 	$('#posts').on('click', 'a.username', function(e) {
-		qr_quicknick(e, $(this));
+		qr_quicknick(e, $(this), false);
 	});
 	
 	$('#posts').on('click', 'a.username-coloured', function(e) {
@@ -119,8 +119,6 @@
 
 <!-- IF S_QUICK_REPLY and S_QR_AJAX_SUBMIT -->
 <!-- ajax_submit -->
-	$('#qr_postform').attr('data-ajax', 'qr_ajax_submit');
-	
 	var numrow = $('#post_ajax_content').attr('numrow');
 	var next_page = (numrow == parseInt({CONFIG_POSTS_PER_PAGE}) - 1) ? 1 : 0;
 	
@@ -221,7 +219,7 @@
 				
 				<!-- IF S_QR_SHOW_ATTACH_BOX -->
 					$('#file-list-container').css('display', 'none');
-					$('#file-list').html('');
+					$('#file-list').empty();
 					$('#preview').find('dl.attachbox').remove();
 				<!-- ENDIF -->
 			});

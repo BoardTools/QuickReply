@@ -138,6 +138,7 @@ class listener implements EventSubscriberInterface
 	{
 		$forum_id	= $event['forum_id'];
 		$topic_data = $event['topic_data'];
+		$topic_id = $topic_data['topic_id'];
 
 		$s_quick_reply = false;
 		if ($this->user->data['is_registered'] && $this->config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) && $this->auth->acl_get('f_reply', $forum_id))
@@ -176,11 +177,15 @@ class listener implements EventSubscriberInterface
 			}
 
 			// Show attachment box for adding attachments if true
-			$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_attachments'] || !$this->auth->acl_get('u_attach') || !$this->auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
+			$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_attachments'] || !$this->auth->acl_get('u_attach') || !$this->auth->acl_get('f_attach', $forum_id)) ? '' : '" enctype="multipart/form-data';
 			$allowed = ($this->auth->acl_get('f_attach', $forum_id) && $this->auth->acl_get('u_attach') && $this->config['allow_attachments'] && $form_enctype);
 
 			if ($this->config['qr_attach'] && $allowed)
 			{
+				$this->template->assign_vars(array(
+					'U_QR_ACTION'			=> append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id") . $form_enctype,
+				));
+
 				include_once($this->phpbb_root_path . 'includes/message_parser.' . $this->php_ext);
 				$this->user->add_lang('posting');
 				$message_parser = new \parse_message();
