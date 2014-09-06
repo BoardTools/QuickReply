@@ -220,6 +220,7 @@
 				<!-- IF S_QR_SHOW_ATTACH_BOX -->
 					$('#file-list-container').css('display', 'none');
 					$('#file-list').empty();
+					phpbb.plupload.clearParams();
 					$('#preview').find('dl.attachbox').remove();
 				<!-- ENDIF -->
 			});
