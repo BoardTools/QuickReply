@@ -208,7 +208,7 @@
 				<!-- IF QR_HIDE_POSTS_SUBJECT -->
 					$('#post_ajax_content').find('.post .postbody div').each(function() {
 						$(this).find('h3:first').css('display', 'none');
-						$(this).find('p.author').css('display', 'inline');
+						//$(this).find('p.author').css('display', 'inline');
 					});
 				<!-- ENDIF -->
 
@@ -522,7 +522,7 @@
 	$('#page-body').find('.post .postbody div').each(function() {
 		var qr_post_subject = $(this).find('h3:first').not('.first');
 		qr_post_subject.css('display', 'none');
-		qr_post_subject.next().next('p.author').css('display', 'inline');
+		//qr_post_subject.next().next('p.author').css('display', 'inline');
 	});
 <!-- ENDIF -->
 
