@@ -1,9 +1,9 @@
 {
     "name": "tatiana5/quickreply",
     "type": "phpbb-extension",
-    "description": "Описание",
+    "description": "Расширенные возможности быстрого ответа",
     "homepage": "http://phpbbguru.net",
-    "version": "0.1.3",
+    "version": "0.1.4-dev",
     "time": "2014-02-03",
     "license": "GPL-2.0",
     "authors": [

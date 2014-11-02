@@ -159,7 +159,7 @@
 					}
 				}
 					
-				if(post_id_after > post_id_before) //for posts_merging
+				if(post_id_after > post_id_before) //for posts_merging - bug in IE 11
 				{
 					$('#posts_content').html(posts_content + post_ajax_content);
 					$('input[name="topic_cur_post_id"]').attr('value', post_id_after);

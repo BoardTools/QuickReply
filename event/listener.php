@@ -103,7 +103,7 @@ class listener implements EventSubscriberInterface
 			'core.modify_posting_parameters'	=>	'change_subject_tpl',
 			'core.modify_submit_post_data'		=>	'change_subject_when_sending',
 			'core.posting_modify_template_vars'	=>	'delete_re',
-			'core.submit_post_end'				=>	'ajax_submit',
+			'core.submit_post_end'				=>	array('ajax_submit', -2), // Set lower priority for the case another ext want to use 'core.submit_post_end'
 			'rxu.postsmerging.posts_merging_end'=>	'ajax_submit',
 			'core.search_get_posts_data'		=>	'hide_posts_subjects_in_searchresults_sql',
 			'core.search_modify_tpl_ary'		=>	'hide_posts_subjects_in_searchresults_tpl',
