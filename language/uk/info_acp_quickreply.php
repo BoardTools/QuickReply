@@ -44,6 +44,7 @@ $lang = array_merge($lang, array(
 	'ACP_QR_AJAX_SUBMIT'			=> 'Включить ajax-отправку сообщений',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Разрешить отправку сообщений без перезагрузки страницы',
 	'ACP_QR_SHOW_SUBJECTS'			=> 'Отображать заголовки сообщений',
+	'ACP_QR_SHOW_BUTTON_TRANSLIT'			=> 'Отображать кнопку «Транслит»',
 	'ACP_QR_SOURCE_POST'			=> 'Добавлять в цитату ссылку на процитированное сообщение',
 	'ACP_QR_ATTACH'					=> 'Разрешить загрузку вложений',
 	'ACP_QR_COLOUR_NICKNAME'		=> 'Добавлять цвет при обращении по нику',

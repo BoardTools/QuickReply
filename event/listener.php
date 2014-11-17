@@ -227,6 +227,10 @@ class listener implements EventSubscriberInterface
 				'S_QR_CAPS_ENABLE'		=> $this->config['qr_capslock_transfer'],
 				//end mod CapsLock Transfer
 
+				//begin mod Translit
+				'S_QR_SHOW_BUTTON_TRANSLIT'		=> $this->config['qr_show_button_translit'],
+				//end mod Translit
+
 				//Ajax submit
 				'CONFIG_POSTS_PER_PAGE'	=>  ($this->phpbb_extension_manager->is_enabled('rxu/FirstPostOnEveryPage') && $event['start'] > 0 && $topic_data['topic_first_post_show'] == 1) ? ($this->config['posts_per_page']+ 1) : $this->config['posts_per_page'],
 				'L_FULL_EDITOR'			=> ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],

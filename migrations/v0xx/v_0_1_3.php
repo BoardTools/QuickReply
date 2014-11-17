@@ -40,6 +40,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 			array('config.add', array('qr_attach', '1')),
 			array('config.add', array('qr_show_subjects', '0')),
 			array('config.add', array('qr_color_nickname', '1')),
+			array('config.add', array('qr_show_button_translit', '0')),
 
 			// Update exisiting configs
 			array('config.update', array('qr_version', '0.1.3')),

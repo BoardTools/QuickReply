@@ -41,6 +41,7 @@ $lang = array_merge($lang, array(
 	'ACP_QR_SMILIES'				=> 'Enable Smilies',
 	'ACP_QR_SMILIES_EXPLAIN'		=> 'Allow display of smiles in the Quick Reply form',
 	'ACP_QR_CAPSLOCK'				=> 'Enable text-to upper / lower case',
+	'ACP_QR_SHOW_BUTTON_TRANSLIT'			=> 'Show button “Транслит”',
 	'ACP_QR_AJAX_SUBMIT'			=> 'Enable ajax-posting',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Allow sending messages without reloading the page',
 	'ACP_QR_SHOW_SUBJECTS'			=> 'Show posts subjects',
