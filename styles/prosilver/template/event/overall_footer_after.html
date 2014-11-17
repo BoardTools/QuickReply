@@ -88,7 +88,7 @@
 		
 		var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="{LA_QR_QUICKNICK_TITLE}">{LA_QR_QUICKNICK}</a></li><li><a href="' + vievprofile_url + '" class="qr_profile" style="font-size: 11px !important;" title="{LA_QR_PROFILE}">{LA_QR_PROFILE}</a></li></ul></div>').appendTo('body');
 				
-		var comma = ({S_QR_COMMA_ENABLE}) ? ', ' : '';
+		var comma = ({S_QR_COMMA_ENABLE}) ? ', ' : '\r\n';
 		var qr_colour_nickname = {S_QR_COLOUR_NICKNAME};
 		var qr_color = (qr_colour_nickname && color) ? '=' + getHexColor(color) : '';
 		$('a.qr_quicknick', qrNickAlert).mousedown(function() {insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false); qrNickAlert.remove(); return false;});
@@ -129,7 +129,6 @@
 		});
 	<!-- ENDIF -->
 <!-- ENDIF -->
-
 
 <!-- IF S_QUICK_REPLY and S_QR_AJAX_SUBMIT -->
 <!-- ajax_submit -->
