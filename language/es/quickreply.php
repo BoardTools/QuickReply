@@ -28,6 +28,10 @@ $lang = array_merge($lang, array(
 	'QR_PROFILE'				=> 'Ir al Perfil',
 	'QR_QUICKNICK'				=> 'Referir por nombre de usuario',
 	'QR_QUICKNICK_TITLE'		=> 'Insertar nombre de usuario en el formulario de Respuesta Rápida',
+//begin mod Translit
+	'QR_TRANSLIT_TEXT'			=> 'Translit:',
+	'QR_TRANSLIT_TEXT_TOOLTIP'	=> 'For instant view in Russian click the button',
+//end mod Translit
 //begin mod CapsLock Transfer
 	'QR_TRANSFORM_TEXT'			=> 'Cambiar mayúsculas y minúsculas del texto:',
 	'QR_TRANSFORM_TEXT_TOOLTIP'	=> 'Presione un botón para cambiar el caso del texto resaltado',

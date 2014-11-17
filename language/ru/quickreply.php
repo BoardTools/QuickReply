@@ -29,6 +29,10 @@ $lang = array_merge($lang, array(
 	'QR_PROFILE'				=> 'Перейти в профиль',
 	'QR_QUICKNICK'				=> 'Обратиться по никнейму',
 	'QR_QUICKNICK_TITLE'		=> 'Вставить имя пользователя в окно быстрого ответа',
+//begin mod Translit
+	'QR_TRANSLIT_TEXT'			=> 'Транслит:',
+	'QR_TRANSLIT_TEXT_TOOLTIP'	=> 'Для мнгновенного отображения на русском языке нажмите  кнопку',
+//end mod Translit
 //begin mod CapsLock Transfer
 	'QR_TRANSFORM_TEXT'			=> 'Изменение регистра текста:',
 	'QR_TRANSFORM_TEXT_TOOLTIP'	=> 'Для изменения регистра выделите часть текста и нажмите нужную кнопку',

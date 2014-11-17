@@ -194,14 +194,24 @@
 <!-- EVENT ext_quickreply_editor_buttons_after -->
 </div>
 <!-- ENDIF -->
-<!-- IF S_QR_CAPS_ENABLE -->
+<!-- IF S_QR_CAPS_ENABLE  or S_QR_SHOW_BUTTON_TRANSLIT-->
 <div>	
+<!-- IF S_QR_CAPS_ENABLE -->
 	<acronym style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}</acronym>&nbsp;
 	<input type="button" class="button2" accesskey="t" name="uppercase" value="{L_QR_TRANSFORM_TEXT_UPPER}" onclick="qr_updateCase(1)"  title="{L_QR_TRANSFORM_TEXT_UPPER_TOOLTIP}" />
     <input type="button" class="button2" accesskey="t" name="lowercase" value="{L_QR_TRANSFORM_TEXT_LOWER}" onclick="qr_updateCase(0)"  title="{L_QR_TRANSFORM_TEXT_LOWER_TOOLTIP}" />
 	<input type="button" class="button2" accesskey="t" name="inverscase" value="{L_QR_TRANSFORM_TEXT_INVERS}" onclick="qr_updateCase(2)"  title="{L_QR_TRANSFORM_TEXT_INVERS_TOOLTIP}" />
+<!-- ENDIF -->
+<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
+	<acronym style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}</acronym>&nbsp;
+	<input type="button" class="button2" accesskey="t" name="uppercase" value="en/ru" onclick="translit()"  title="{L_QR_TRANSLIT_TEXT_TOOLTIP}" />
+<!-- ENDIF -->
 </div>
 <!-- ENDIF -->
+
+
+
+
 
 	<div id="smiley-box">
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->

@@ -47,6 +47,7 @@ class quickreply_module
 				'legend3'			=> '',
 				'qr_enable_re'			=> array('lang' => 'ACP_QR_ENABLE_RE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_show_subjects'		=> array('lang' => 'ACP_QR_SHOW_SUBJECTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_show_button_translit'		=> array('lang' => 'ACP_QR_SHOW_BUTTON_TRANSLIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend4'					=> 'ACP_SUBMIT_CHANGES',
 			),
