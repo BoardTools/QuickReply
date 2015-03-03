@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'ACP_QR_AJAX_SUBMIT'			=> 'Activer la réponse Ajax',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'	=> 'Permet d’envoyer les messages sans recharger la page.',
 	'ACP_QR_SHOW_SUBJECTS'			=> 'Afficher les sujets des messages',
-	'ACP_QR_SOURCE_POST'			=> 'Ajouter un lien vers le message cité en citant',
+	'ACP_QR_SOURCE_POST'			=> 'Ajouter un lien vers le message cité dans la citation',
 	'ACP_QR_ATTACH'					=> 'Activer les fichiers joints',
 	'ACP_QR_COLOUR_NICKNAME'		=> 'Ajouter de la couleur lorsque l’on se réfère à un nom d’utilisateur',
 ));
