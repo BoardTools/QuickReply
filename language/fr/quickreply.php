@@ -30,7 +30,7 @@ $lang = array_merge($lang, array(
 	'QR_QUICKNICK'				=> 'Se référer au nom d’utilisateur',
 	'QR_QUICKNICK_TITLE'		=> 'Insérer le nom d’utilisateur dans le formulaire de la réponse rapide',
 //begin mod Translit
-	'QR_TRANSLIT_TEXT'			=> 'Translittération :',
+	'QR_TRANSLIT_TEXT'			=> 'Translittérer :',
 	'QR_TRANSLIT_TEXT_TOOLTIP'	=> 'Pour une vue instantanée en russe cliquez sur le bouton',
 //end mod Translit
 //begin mod CapsLock Transfer
