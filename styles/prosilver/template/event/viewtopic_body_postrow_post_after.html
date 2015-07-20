@@ -1,8 +1,10 @@
-<!-- IF postrow.S_LAST_ROW -->
-		</div>
-	</div>
+<div id="qr_author_p{postrow.POST_ID}" style="display: none;" data-url="{postrow.U_POST_AUTHOR}">{postrow.POST_AUTHOR_FULL}</div>
+<!-- IF S_QR_FULL_QUOTE and postrow.DECODED_MESSAGE != '' -->
+<div id="decoded_p{postrow.POST_ID}" style="display: none;">{postrow.DECODED_MESSAGE}</div>
+<!-- ENDIF -->
+<!-- IF postrow.S_LAST_ROW and not S_QUICKREPLY_REQUEST -->
 </div>
-
+<div id="qr_temp_container" style="display: none;"></div>
 	<!-- IF S_QR_AJAX_SUBMIT -->
 		<div id="preview" class="post bg2" style="display: none; margin-top: 50px;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>
 	<!-- ENDIF -->

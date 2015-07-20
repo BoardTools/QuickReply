@@ -1,8 +1,8 @@
 <?php
 /**
 *
-* @package quickreply
-* @copyright (c) 2014 Татьяна5
+* @package QuickReply Reloaded
+* @copyright (c) 2014 - 2015 Tatiana5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -21,6 +21,7 @@ class quickreply_module
 
 		$this->page_title = 'ACP_QUICKREPLY';
 		$this->tpl_name = 'acp_quickreply';
+		$user->add_lang_ext('tatiana5/quickreply', 'quickreply');
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$form_key = 'config_quickreply';
@@ -35,18 +36,26 @@ class quickreply_module
 				'qr_ctrlenter'			=> array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer'	=> array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_ajax_submit'		=> array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_ajax_pagination'	=> array('lang' => 'ACP_QR_AJAX_PAGINATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_scroll_time'		=> array('lang' => 'ACP_QR_SCROLL_TIME', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true),
 				'qr_attach'				=> array('lang' => 'ACP_QR_ATTACH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_allow_for_guests'	=> array('lang' => 'ACP_QR_ALLOW_FOR_GUESTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend2'			=> '',
 				'qr_quickquote'			=> array('lang' => 'ACP_QR_QUICKQUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_source_post'		=> array('lang' => 'ACP_QR_SOURCE_POST', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_quickquote_link'	=> array('lang' => 'ACP_QR_QUICKQUOTE_LINK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_full_quote'			=> array('lang' => 'ACP_QR_FULL_QUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_quicknick'			=> array('lang' => 'ACP_QR_QUICKNICK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_quicknick_ref'		=> array('lang' => 'ACP_QR_QUICKNICK_REF', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_comma'				=> array('lang' => 'ACP_QR_COMMA', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_color_nickname'		=> array('lang' => 'ACP_QR_COLOUR_NICKNAME', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_quicknick_pm'		=> array('lang' => 'ACP_QR_QUICKNICK_PM', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend3'			=> '',
 				'qr_enable_re'			=> array('lang' => 'ACP_QR_ENABLE_RE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_show_subjects'		=> array('lang' => 'ACP_QR_SHOW_SUBJECTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_show_subjects_in_search'	=> array('lang' => 'ACP_QR_SHOW_SUBJECTS_IN_SEARCH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_show_button_translit'		=> array('lang' => 'ACP_QR_SHOW_BUTTON_TRANSLIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend4'					=> 'ACP_SUBMIT_CHANGES',

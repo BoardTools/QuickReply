@@ -1,7 +1,20 @@
-<!-- IF S_QR_NOT_CHANGE_SUBJECT -->	
+<!-- IF S_QR_NOT_CHANGE_SUBJECT -->
 	<input type="hidden" name="subject" value="{SUBJECT}" />
 <!-- ENDIF -->
-<input type="hidden" name="qr" value="1" />
+
+<!-- IF S_DISPLAY_USERNAME -->
+<dl style="clear: left;">
+	<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
+	<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
+</dl>
+<!-- ENDIF -->
+
+<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
+<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+<div id="qr_captcha_container">
+<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+</div>
+<!-- ENDIF -->
 
 <script type="text/javascript">
 // <![CDATA[
@@ -52,19 +65,19 @@
 	}
 
 <!-- IF S_QR_CAPS_ENABLE -->
-	function qr_formatToggle(s) 
+	function qr_formatToggle(s)
 	{
 		var t = new String();
 		var sc = s.length;
 		var c;
-		for (i = 0; i < sc; i++) 
+		for (i = 0; i < sc; i++)
 		{
 			c = s.charAt(i);
-			if (c.toLowerCase() == c) 
+			if (c.toLowerCase() == c)
 			{
 				c = c.toUpperCase();
-			} 
-			else if (c.toUpperCase() == c) 
+			}
+			else if (c.toUpperCase() == c)
 			{
 				c = c.toLowerCase();
 			}
@@ -73,7 +86,7 @@
 		return t;
 	}
     //param: reg = 0 -  lowercase, reg = 1 - uppercase, reg = 2 - inverse
-	function qr_updateCase(reg) 
+	function qr_updateCase(reg)
 	{
 		var buf = new String;
 		var selection = false;
@@ -83,16 +96,16 @@
 		var start;
 		var end;
 
-		if (document.selection) 
+		if (document.selection)
 		{
 			selection = document.selection.createRange().text;
 			buf = selection;
 		}
-		else if (typeof (txtarea.selectionStart) == "number") 
+		else if (typeof (txtarea.selectionStart) == "number")
 		{
 			start = txtarea.selectionStart;
 			end = txtarea.selectionEnd;
-			if (start != end) 
+			if (start != end)
 			{
 				buf = txtarea.value.substr(start, end - start);
 			}
@@ -106,23 +119,23 @@
 			case 0:
 				buf = buf.toLowerCase();
 			break;
-			
+
 			case 1:
 				buf = buf.toUpperCase();
 			break;
-			
+
 			case 2:
 				buf = qr_formatToggle(buf);
 			break;
 		}
-		
+
 
 		if (selection)
 		{
 			eval('regexp = /' + selection + '/');
 			txtarea.value = txtarea.value.replace(regexp, buf);
 		}
-		else 
+		else
 		{
 			if (start != end)
 			{
@@ -196,23 +209,19 @@
 </div>
 <!-- ENDIF -->
 <!-- IF S_QR_CAPS_ENABLE  or S_QR_SHOW_BUTTON_TRANSLIT-->
-<div>	
+<div id="register-and-translit">
 <!-- IF S_QR_CAPS_ENABLE -->
-	<acronym style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}</acronym>&nbsp;
+	<abbr style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}</abbr>&nbsp;
 	<input type="button" class="button2" accesskey="t" name="uppercase" value="{L_QR_TRANSFORM_TEXT_UPPER}" onclick="qr_updateCase(1)"  title="{L_QR_TRANSFORM_TEXT_UPPER_TOOLTIP}" />
     <input type="button" class="button2" accesskey="t" name="lowercase" value="{L_QR_TRANSFORM_TEXT_LOWER}" onclick="qr_updateCase(0)"  title="{L_QR_TRANSFORM_TEXT_LOWER_TOOLTIP}" />
 	<input type="button" class="button2" accesskey="t" name="inverscase" value="{L_QR_TRANSFORM_TEXT_INVERS}" onclick="qr_updateCase(2)"  title="{L_QR_TRANSFORM_TEXT_INVERS_TOOLTIP}" />
 <!-- ENDIF -->
 <!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
-	<acronym style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}</acronym>&nbsp;
+	<abbr style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}</abbr>&nbsp;
 	<input type="button" class="button2" accesskey="t" name="uppercase" value="en/ru" onclick="translit()"  title="{L_QR_TRANSLIT_TEXT_TOOLTIP}" />
 <!-- ENDIF -->
 </div>
 <!-- ENDIF -->
-
-
-
-
 
 	<div id="smiley-box">
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->

@@ -11,6 +11,7 @@ services:
             - @request
             - @content.visibility
             - @cache
+            - @captcha.factory
             - @plupload
             - @mimetype.guesser
             - %core.root_path%

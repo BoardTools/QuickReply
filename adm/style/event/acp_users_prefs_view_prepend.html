@@ -1,0 +1,25 @@
+{% if S_AJAX_PAGINATION %}
+<dl>
+	<dt><label for="ajax_pagination1">{{ lang('QR_ENABLE_AJAX_PAGINATION') }}{{ lang('COLON') }}</label></dt>
+	<dd>
+		<label for="ajax_pagination1"><input type="radio" class="radio" name="ajax_pagination" id="ajax_pagination1" value="1"{% if S_ENABLE_AJAX_PAGINATION %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+		<label for="ajax_pagination0"><input type="radio" class="radio" name="ajax_pagination" id="ajax_pagination0" value="0"{% if not S_ENABLE_AJAX_PAGINATION %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+	</dd>
+</dl>
+{% endif %}
+<dl>
+	<dt><label for="qr_enable_scroll1">{{ lang('QR_ENABLE_SCROLL') }}{{ lang('COLON') }}</label></dt>
+	<dd>
+		<label for="qr_enable_scroll1"><input type="radio" class="radio" name="qr_enable_scroll" id="qr_enable_scroll1" value="1"{% if S_QR_ENABLE_SCROLL %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+		<label for="qr_enable_scroll0"><input type="radio" class="radio" name="qr_enable_scroll" id="qr_enable_scroll0" value="0"{% if not S_QR_ENABLE_SCROLL %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+	</dd>
+</dl>
+{% if S_QR_ALLOW_SOFT_SCROLL %}
+<dl>
+	<dt><label for="qr_soft_scroll1">{{ lang('QR_ENABLE_SOFT_SCROLL') }}{{ lang('COLON') }}</label></dt>
+	<dd>
+		<label for="qr_soft_scroll1"><input type="radio" class="radio" name="qr_soft_scroll" id="qr_soft_scroll1" value="1"{% if S_QR_SOFT_SCROLL %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+		<label for="qr_soft_scroll0"><input type="radio" class="radio" name="qr_soft_scroll" id="qr_soft_scroll0" value="0"{% if not S_QR_SOFT_SCROLL %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+	</dd>
+</dl>
+{% endif %}

@@ -1,15 +1,19 @@
 {
     "name": "tatiana5/quickreply",
     "type": "phpbb-extension",
-    "description": "Расширенные возможности быстрого ответа",
+    "description": "Extended possibilities to use the QuickReply feature.",
     "homepage": "http://phpbbguru.net",
-    "version": "0.1.4-dev",
-    "time": "2014-02-03",
+    "version": "1.0.0-beta5",
     "license": "GPL-2.0",
     "authors": [
         {
-            "name": "Татьяна5",
+            "name": "Tatiana5",
             "homepage": "http://phpbbguru.net",
+            "role": "Developer"
+        },
+        {
+            "name": "Igor Lavrov",
+            "homepage": "https://github.com/lavigor",
             "role": "Developer"
         }
     ],
@@ -20,9 +24,14 @@
         "phpbb/epv": "dev-master"
     },
     "extra": {
-        "display-name": "QuickReply",
+        "display-name": "QuickReply Reloaded",
         "soft-require": {
-           "phpbb/phpbb": "3.1.*@dev"
+           "phpbb/phpbb": "3.1.*"
+        },
+        "version-check": {
+            "host": "Tatiana5.github.io",
+            "directory": "/QuickReply",
+            "filename": "version.json"
         }
     }
 }
