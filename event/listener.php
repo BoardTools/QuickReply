@@ -569,7 +569,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		// Whether the user can change post subject or not
-		if(!$this->auth->acl_get('f_qr_change_subject', $forum_id) && $event['mode'] != 'post' && $post_data['topic_first_post_id'] != $event['post_id'])
+		if (!$this->auth->acl_get('f_qr_change_subject', $forum_id) && $event['mode'] != 'post' && $post_data['topic_first_post_id'] != $event['post_id'])
 		{
 			$this->template->assign_var('S_QR_NOT_CHANGE_SUBJECT', true);
 		};
