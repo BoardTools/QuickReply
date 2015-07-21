@@ -133,7 +133,7 @@
 				url = viewtopic_link + ((viewtopic_link.indexOf('?') < 0) ? '?' : '&') + 'view=unread';
 			}
 			else if (url.indexOf('hilit=')) {
-				url = url.replace(/(&amp;|&|\?)hilit=([^&])*(&amp;|&)?/, function (str, p1, p2, p3) {
+				url = url.replace(/(&amp;|&|\?)hilit=([^&]*)(&amp;|&)?/, function (str, p1, p2, p3) {
 					$.extend(qr_data_object, { hilit: p2 });
 					return (p3) ? p1 : '';
 				});
@@ -477,10 +477,6 @@
 						}
 					}
 
-					//if (res.prew_url) {
-					//	$('#post_ajax').before('<div class="post bg1"><div class="inner"><a href="' + res.prew_url + '">' + quickreply.language.PREW_POSTS + '</a></div></div>');
-					//}
-
 					if (quickreply.settings.attachBox) {
 						$('#file-list-container').css('display', 'none');
 						$('#file-list').empty();
@@ -564,11 +560,6 @@
 				}
 				// else qr_ajax_error();
 			}
-			//if (quickreply.settings.allowedGuest) {
-			//	$('#qr_posts').one('qr_loaded', function () {
-			//		qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
-			//	});
-			//}
 		});
 	}
 
