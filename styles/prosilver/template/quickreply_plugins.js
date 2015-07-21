@@ -28,7 +28,7 @@
 	function qr_insert_quote(qr_post_id) {
 		var qr_post_author = $('#qr_author_p' + qr_post_id),
 			nickname = qr_post_author.text(),
-			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL),
+			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function (str, p1, p2) { return (p2) ? p1 : ''; }),
 			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.enableBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
 
 		// Link to the source post

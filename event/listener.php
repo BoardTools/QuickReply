@@ -112,7 +112,6 @@ class listener implements EventSubscriberInterface
 			'core.viewtopic_get_post_data'				=> 'viewtopic_modify_sql',
 			'core.viewtopic_modify_post_row'			=> 'viewtopic_modify_post_row',
 			'core.viewtopic_modify_page_title'			=> array('viewtopic_modify_data', -2),
-			'core.modify_posting_parameters'			=> 'change_subject_tpl',
 			'core.modify_submit_post_data'				=> 'change_subject_when_sending',
 			'core.posting_modify_submission_errors'		=> 'detect_new_posts',
 			'core.posting_modify_template_vars'			=> 'delete_re',
@@ -332,7 +331,7 @@ class listener implements EventSubscriberInterface
 			$quote_status	= true;
 
 			// Build custom bbcodes array
-			if($bbcode_status)
+			if ($bbcode_status)
 			{
 				display_custom_bbcodes();
 			}
@@ -347,7 +346,7 @@ class listener implements EventSubscriberInterface
 			$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_attachments'] || !$this->auth->acl_get('u_attach') || !$this->auth->acl_get('f_attach', $forum_id)) ? '' : '" enctype="multipart/form-data';
 			$allowed = ($this->auth->acl_get('f_attach', $forum_id) && $this->auth->acl_get('u_attach') && $this->config['allow_attachments'] && $form_enctype);
 
-			if($bbcode_status || $smilies_status || $this->config['qr_attach'] && $allowed)
+			if ($bbcode_status || $smilies_status || $this->config['qr_attach'] && $allowed)
 			{
 				$this->user->add_lang('posting');
 			}
@@ -453,30 +452,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	* User can change post subject or not
-	*
-	* @param object $event The event object
-	* @return null
-	* @access public
-	*/
-	public function change_subject_tpl($event)
-	{
-		$forum_id	= $event['forum_id'];
-		$topic_id	= $event['topic_id'];
-		$post_id	= $event['post_id'];
-
-		$can_change_subject = ($this->auth->acl_get('f_qr_change_subject', $forum_id)) ? true : false;
-
-		if(!$can_change_subject && $event['mode'] != 'post' && (!empty($topic_id) || !empty($post_id)))
-		{
-			$this->template->assign_vars(array(
-				'S_QR_NOT_CHANGE_SUBJECT'	=> true,
-			));
-		};
-	}
-
-	/**
-	* User can change post subject or not
+	* Lock post subject if the user cannot change it.
 	*
 	* @param object $event The event object
 	* @return null
@@ -486,11 +462,9 @@ class listener implements EventSubscriberInterface
 	{
 		$data = $event['data'];
 
-		$can_change_subject = ($this->auth->acl_get('f_qr_change_subject', $data['forum_id'])) ? true : false;
-
-		if(!$can_change_subject && ($data['topic_first_post_id'] != $data['post_id']))
+		if (!$this->auth->acl_get('f_qr_change_subject', $data['forum_id']) && ($data['topic_first_post_id'] != $data['post_id']))
 		{
-			if($this->config['qr_enable_re'] == 0)
+			if ($this->config['qr_enable_re'] == 0)
 			{
 				$subject = $data['topic_title'];
 			}
@@ -569,10 +543,12 @@ class listener implements EventSubscriberInterface
 				));
 			}
 		}
+		// This is needed for BBCode QR_BBPOST.
+		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
 	}
 
 	/**
-	* Delete Re:
+	* Delete Re:, lock post subject
 	* Ctrl+Enter submit - template variables in the full editor
 	* Ajax submit - error messages and preview
 	*
@@ -582,13 +558,21 @@ class listener implements EventSubscriberInterface
 	*/
 	public function delete_re($event)
 	{
+		$forum_id	= $event['forum_id'];
 		$page_data	= $event['page_data'];
+		$post_data	= $event['post_data'];
 
 		// Delete Re:
 		if ($this->config['qr_enable_re'] == 0)
 		{
 			$page_data['SUBJECT'] = preg_replace('/^Re: /', '', $page_data['SUBJECT']);
 		}
+
+		// Whether the user can change post subject or not
+		if(!$this->auth->acl_get('f_qr_change_subject', $forum_id) && $event['mode'] != 'post' && $post_data['topic_first_post_id'] != $event['post_id'])
+		{
+			$this->template->assign_var('S_QR_NOT_CHANGE_SUBJECT', true);
+		};
 
 		// Ctrl+Enter submit
 		$page_data = array_merge($page_data, array(
@@ -648,7 +632,8 @@ class listener implements EventSubscriberInterface
 				$error_text = $preview_message;
 			}
 
-			if (isset($error_text)) {
+			if (isset($error_text))
+			{
 				$json_response = new \phpbb\json_response;
 
 				if (!sizeof($error) && $preview)
@@ -700,28 +685,6 @@ class listener implements EventSubscriberInterface
 					)
 				));
 			}
-
-//			if ($topic_cur_post_id != $data['topic_last_post_id'] && $data['topic_id'] > 0)
-//			{
-//				$forum_id = $data['forum_id'];
-//				$topic_id = $data['topic_id'];
-//				$sql = 'SELECT post_id
-//						FROM ' . POSTS_TABLE . '
-//						WHERE topic_id = ' . $data['topic_id'] . '
-//							AND ' . $this->phpbb_content_visibility->get_visibility_sql('post', $data['forum_id'], '') . '
-//							AND post_id > ' . $topic_cur_post_id . '
-//							ORDER BY post_time ASC';
-//				$result = $this->db->sql_query_limit($sql, 1);
-//				$post_id_next =  (int) $this->db->sql_fetchfield('post_id');
-//				$this->db->sql_freeresult($result);
-//
-//				$json_response->send(array(
-//					'success'		=> true,
-//					'url'			=> $event['url'],
-//					'prew_url'		=> append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next#p$post_id_next")
-//				));
-//			}
-//
 
 			$qr_cur_post_id	= $this->request->variable('qr_cur_post_id', 0);
 			$url_hash = strpos($event['url'], '#');

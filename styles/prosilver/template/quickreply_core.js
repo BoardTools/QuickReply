@@ -126,8 +126,20 @@
 			$loadingIndicator.finish().show();
 		},  100);
 		// var url_add_mark = (url.indexOf('?') < 0) ? '?' : '&';
-		var qr_request_method = (quickreply.plugins.seo && (qr_get_unread || url.indexOf('hilit='))) ? 'POST' : 'GET',
-			qr_data_object = { qr_cur_post_id: qr_current_post, qr_request: 1 };
+		var qr_request_method = 'GET', qr_data_object = { qr_cur_post_id: qr_current_post, qr_request: 1 };
+		if (quickreply.plugins.seo) {
+			if (qr_get_unread) {
+				var viewtopic_link = quickreply.editor.viewtopicLink;
+				url = viewtopic_link + ((viewtopic_link.indexOf('?') < 0) ? '?' : '&') + 'view=unread';
+			}
+			else if (url.indexOf('hilit=')) {
+				url = url.replace(/(&amp;|&|\?)hilit=([^&]).(&amp;|&)?/, function (str, p1, p2, p3) {
+					$.extend(qr_data_object, { hilit: p2 });
+					return (p3) ? p1 : '';
+				});
+				qr_request_method = 'POST';
+			}
+		}
 		if (request_data) $.extend(qr_data_object, request_data);
 		$.ajax({
 			url: url, // + url_add_mark + 'qr_cur_post_id=' + qr_current_post + '&qr_request=1',
