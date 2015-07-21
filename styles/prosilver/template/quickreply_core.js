@@ -133,7 +133,7 @@
 				url = viewtopic_link + ((viewtopic_link.indexOf('?') < 0) ? '?' : '&') + 'view=unread';
 			}
 			else if (url.indexOf('hilit=')) {
-				url = url.replace(/(&amp;|&|\?)hilit=([^&]).(&amp;|&)?/, function (str, p1, p2, p3) {
+				url = url.replace(/(&amp;|&|\?)hilit=([^&])*(&amp;|&)?/, function (str, p1, p2, p3) {
 					$.extend(qr_data_object, { hilit: p2 });
 					return (p3) ? p1 : '';
 				});
