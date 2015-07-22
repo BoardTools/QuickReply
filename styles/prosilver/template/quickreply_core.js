@@ -443,13 +443,23 @@
 					$.extend(reply_set_data, { qr_get_current: 1 });
 					if (quickreply.settings.softScroll) {
 						$('#qr_posts').find('div.post').last().slideUp(qr_slide_interval, function () {
+							var merged_post_id = $(this).attr('id');
 							$('#qr_posts').find('.divider').last().remove();
 							$(this).remove();
+							var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
+							if (decoded_post.length) decoded_post.remove();
+							if (qr_author.length) qr_author.remove();
 						});
 					}
 					else {
 						$('#qr_posts').one('qr_insert_before', function () {
-							$('#qr_posts').find('div.post').last().remove();
+							var reply_posts = $('#qr_posts'), merged_post = reply_posts.find('div.post').last(),
+								merged_post_id = merged_post.attr('id');
+							merged_post.remove();
+							reply_posts.find('.divider').last().remove();
+							var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
+							if (decoded_post.length) decoded_post.remove();
+							if (qr_author.length) qr_author.remove();
 						});
 					}
 				}

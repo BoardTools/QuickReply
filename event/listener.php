@@ -109,7 +109,7 @@ class listener implements EventSubscriberInterface
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
 		return array(
-			'core.viewtopic_get_post_data'				=> 'viewtopic_modify_sql',
+			'core.viewtopic_get_post_data'				=> array('viewtopic_modify_sql', -2),
 			'core.viewtopic_modify_post_row'			=> 'viewtopic_modify_post_row',
 			'core.viewtopic_modify_page_title'			=> array('viewtopic_modify_data', -2),
 			'core.modify_submit_post_data'				=> 'change_subject_when_sending',

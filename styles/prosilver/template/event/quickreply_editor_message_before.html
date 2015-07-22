@@ -67,89 +67,51 @@
 <!-- IF S_QR_CAPS_ENABLE -->
 	function qr_formatToggle(s)
 	{
-		var t = new String();
-		var sc = s.length;
-		var c;
+		var t = '', sc = s.length, c;
 		for (i = 0; i < sc; i++)
 		{
 			c = s.charAt(i);
-			if (c.toLowerCase() == c)
-			{
-				c = c.toUpperCase();
-			}
-			else if (c.toUpperCase() == c)
-			{
-				c = c.toLowerCase();
-			}
+			if (c.toLowerCase() == c) c = c.toUpperCase();
+			else if (c.toUpperCase() == c) c = c.toLowerCase();
 			t += c;
 		}
 		return t;
 	}
-    //param: reg = 0 -  lowercase, reg = 1 - uppercase, reg = 2 - inverse
+    // param: reg = 0 - lowercase, reg = 1 - uppercase, reg = 2 - inverse
 	function qr_updateCase(reg)
 	{
-		var buf = new String;
-		var selection = false;
+		var buf = '', selection = null, start, end;
 		var txtarea = document.forms[form_name].elements[text_name];
-		var regexp;
-		var i;
-		var start;
-		var end;
 
-		if (document.selection)
-		{
-			selection = document.selection.createRange().text;
-			buf = selection;
+		if (document.selection) {
+			selection = document.selection.createRange();
+			buf = selection.text;
 		}
-		else if (typeof (txtarea.selectionStart) == "number")
-		{
+		else if (typeof (txtarea.selectionStart) == "number") {
 			start = txtarea.selectionStart;
 			end = txtarea.selectionEnd;
-			if (start != end)
-			{
-				buf = txtarea.value.substr(start, end - start);
-			}
-			else
-			{
-				buf = txtarea.value;
-			}
+			if (start != end)  buf = txtarea.value.substr(start, end - start);
+			else buf = txtarea.value;
 		}
-		switch (parseInt(reg))
-		{
-			case 0:
-				buf = buf.toLowerCase();
-			break;
-
-			case 1:
-				buf = buf.toUpperCase();
-			break;
-
-			case 2:
-				buf = qr_formatToggle(buf);
-			break;
+		else {
+			buf = txtarea.value;
 		}
 
-
-		if (selection)
-		{
-			eval('regexp = /' + selection + '/');
-			txtarea.value = txtarea.value.replace(regexp, buf);
-		}
-		else
-		{
-			if (start != end)
-			{
-				txtarea.value = txtarea.value.substr(0, start) + buf + txtarea.value.substr(end);
-			}
-			else
-			{
-				txtarea.value = buf;
-			}
+		switch (parseInt(reg)) {
+			case 0: buf = buf.toLowerCase(); break;
+			case 1: buf = buf.toUpperCase(); break;
+			case 2: buf = qr_formatToggle(buf); break;
 		}
 
-		selection = '';
-		buf = '';
-
+		if (selection) {
+			selection.text = buf;
+		}
+		else if (start != end) {
+			txtarea.value = txtarea.value.substr(0, start) + buf + txtarea.value.substr(end);
+		}
+		else {
+			txtarea.value = buf;
+		}
 		txtarea.focus();
 	}
 <!-- ENDIF -->
