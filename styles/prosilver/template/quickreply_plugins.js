@@ -134,19 +134,37 @@
 	/* Full Quote Plugin */
 	/*********************/
 	if (quickreply.settings.fullQuote) {
+		function qr_add_full_quote(e, element) {
+			e.preventDefault();
+			var qr_post_id = element.parents('.post').attr('id').replace('p', '');
+			qr_insert_quote(qr_post_id);
+		}
 		function qr_full_quote(e, elements) {
-			elements.find('.post-buttons .quote-icon').click(function (e) {
-				e.preventDefault();
-				var $this = $(this),
-					qr_post_id = $this.parents('.post').attr('id').replace('p', '');
-				qr_insert_quote(qr_post_id);
+			elements.find('.post-buttons .quote-icon').not('.responsive-menu .quote-icon').click(function (e) {
+				qr_add_full_quote(e, $(this));
 			});
 		}
+		function qr_full_quote_responsive(e) {
+			qr_add_full_quote(e, $(this));
+			var $container = $(this).parents('.dropdown-container'),
+				$trigger = $container.find('.dropdown-trigger:first'),
+				data;
 
-		$(document).ready(function (e) {
-			qr_full_quote(e, $('#qr_posts'));
+			if (!$trigger.length) {
+				data = $container.attr('data-dropdown-trigger');
+				$trigger = data ? $container.children(data) : $container.children('a:first');
+			}
+			$trigger.click();
+		}
+		$(window).on('load', function (e) {
+			var reply_posts = $('#qr_posts');
+			qr_full_quote(e, reply_posts);
+			reply_posts.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
 		});
-		$('#qr_posts').on('qr_loaded', qr_full_quote);
+		$('#qr_posts').on('qr_loaded', qr_full_quote)
+			.on('qr_completed', function (e, elements) {
+				elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
+			});
 	}
 
 	/*********************/
