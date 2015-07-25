@@ -11,10 +11,10 @@ namespace tatiana5\quickreply\acp;
 
 class quickreply_module
 {
-	var $u_action;
-	var $new_config = array();
+	public $u_action;
+	public $new_config = array();
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
 		global $cache, $config, $db, $user, $auth, $template, $request;
 		global $phpbb_root_path, $phpEx, $phpbb_admin_path, $phpbb_container;
@@ -23,7 +23,7 @@ class quickreply_module
 		$this->tpl_name = 'acp_quickreply';
 		$user->add_lang_ext('tatiana5/quickreply', 'quickreply');
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = ($request->is_set_post('submit')) ? true : false;
 		$form_key = 'config_quickreply';
 		add_form_key($form_key);
 
@@ -68,7 +68,7 @@ class quickreply_module
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = ($request->is_set('config')) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -96,7 +96,6 @@ class quickreply_module
 
 			if ($submit)
 			{
-				//set_config($config_name, $config_value);
 				$config->set($config_name, $config_value);
 			}
 		}
@@ -128,8 +127,8 @@ class quickreply_module
 			{
 				$template->assign_block_vars('options', array(
 					'S_LEGEND'		=> true,
-					'LEGEND'		=> (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
-				);
+					'LEGEND'		=> $user->lang($vars)
+				));
 
 				continue;
 			}

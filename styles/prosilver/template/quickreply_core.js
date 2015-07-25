@@ -202,6 +202,7 @@
 							if (quickreply.settings.softScroll) {
 								reply_temp_container.slideDown(qr_slide_interval, function () {
 									qr_responsive_links(reply_temp_container);
+									$('#qr_posts').trigger('qr_completed', [reply_temp_container]);
 									reply_temp_container.children().appendTo('#qr_posts');
 									reply_temp_container.hide();
 									if (quickreply.settings.enableScroll) {
@@ -218,6 +219,7 @@
 								}
 								reply_temp_container.show();
 								qr_responsive_links(reply_temp_container);
+								reply_posts.trigger('qr_completed', [reply_temp_container]);
 								var reply_posts_inserted = reply_temp_container.children().appendTo('#qr_posts');
 								reply_temp_container.hide();
 								if (quickreply.settings.enableScroll) {
@@ -234,6 +236,7 @@
 								qr_show_response($(this), function (element) {
 									reply_posts.slideDown(qr_slide_interval, function () {
 										qr_responsive_links(reply_posts);
+										reply_posts.trigger('qr_completed', [reply_posts]);
 										if (quickreply.settings.enableScroll) {
 											qr_soft_scroll(element);
 										}
@@ -245,6 +248,7 @@
 							reply_posts.html(res.result);
 							qr_show_response(reply_posts);
 							qr_responsive_links(reply_posts);
+							reply_posts.trigger('qr_completed', [reply_posts]);
 							if (quickreply.settings.enableScroll) {
 								qr_soft_scroll(reply_posts);
 							}

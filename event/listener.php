@@ -345,6 +345,7 @@ class listener implements EventSubscriberInterface
 			// Show attachment box for adding attachments if true
 			$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_attachments'] || !$this->auth->acl_get('u_attach') || !$this->auth->acl_get('f_attach', $forum_id)) ? '' : '" enctype="multipart/form-data';
 			$allowed = ($this->auth->acl_get('f_attach', $forum_id) && $this->auth->acl_get('u_attach') && $this->config['allow_attachments'] && $form_enctype);
+			$attachment_data = false;
 
 			if ($bbcode_status || $smilies_status || $this->config['qr_attach'] && $allowed)
 			{
@@ -422,7 +423,6 @@ class listener implements EventSubscriberInterface
 				// end mod Translit
 
 				// Ajax submit
-				'CONFIG_POSTS_PER_PAGE'	=>  ($this->phpbb_extension_manager->is_enabled('rxu/FirstPostOnEveryPage') && $event['start'] > 0 && $topic_data['topic_first_post_show'] == 1) ? ($this->config['posts_per_page']+ 1) : $this->config['posts_per_page'],
 				'L_FULL_EDITOR'			=> ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
 				'S_QR_AJAX_SUBMIT'		=> $this->config['qr_ajax_submit'],
 
@@ -439,7 +439,7 @@ class listener implements EventSubscriberInterface
 
 				// Upload attachments
 				'S_QR_SHOW_ATTACH_BOX'	=> $this->config['qr_attach'] && $allowed,
-				'S_ATTACH_DATA'			=> (isset($message_parser->attachment_data)) ? json_encode($message_parser->attachment_data) : '[]',
+				'S_ATTACH_DATA'			=> ($attachment_data) ? json_encode($attachment_data) : '[]',
 			));
 
 			$add_re = ($this->config['qr_enable_re']) ? 'Re: ' : '';
