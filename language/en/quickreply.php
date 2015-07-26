@@ -31,6 +31,7 @@ $lang = array_merge($lang, array(
 	'QR_REPLY_IN_PM'			=> 'Reply in PM',
 //begin mod Translit
 	'QR_TRANSLIT_TEXT'			=> 'Translit:',
+	'QR_TRANSLIT_TEXT_TO_RU'	=> 'to russian',
 	'QR_TRANSLIT_TEXT_TOOLTIP'	=> 'For instant view in Russian click the button',
 //end mod Translit
 //begin mod CapsLock Transfer
