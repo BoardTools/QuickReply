@@ -25,14 +25,14 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'QR_BBPOST'					=> 'Источник цитаты',
 	'QR_INSERT_TEXT'			=> 'Вставить цитату в окно ответа',
-	'QR_PREW_POSTS'				=> 'В теме появились новые сообщения. Нажмите на ссылку, чтобы увидеть их.',
 	'QR_PROFILE'				=> 'Перейти в профиль',
 	'QR_QUICKNICK'				=> 'Обратиться по никнейму',
 	'QR_QUICKNICK_TITLE'		=> 'Вставить имя пользователя в окно быстрого ответа',
 	'QR_REPLY_IN_PM'			=> 'Ответить в ЛС',
 //begin mod Translit
 	'QR_TRANSLIT_TEXT'			=> 'Транслит:',
-	'QR_TRANSLIT_TEXT_TOOLTIP'	=> 'Для мнгновенного отображения на русском языке нажмите на кнопку',
+	'QR_TRANSLIT_TEXT_TO_RU'	=> 'на русский',
+	'QR_TRANSLIT_TEXT_TOOLTIP'	=> 'Для мгновенного отображения на русском языке нажмите на кнопку',
 //end mod Translit
 //begin mod CapsLock Transfer
 	'QR_TRANSFORM_TEXT'			=> 'Изменение регистра текста:',
