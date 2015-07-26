@@ -198,6 +198,7 @@
 						qr_mark_read($('#qr_posts'));
 						var reply_temp_container = $(quickreply.editor.tempContainer);
 						reply_temp_container.html(res.result);
+						qr_stop_history = true;
 						qr_show_response(reply_temp_container, function (element) {
 							if (quickreply.settings.softScroll) {
 								reply_temp_container.slideDown(qr_slide_interval, function () {

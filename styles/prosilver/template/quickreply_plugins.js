@@ -92,6 +92,9 @@
 	/**********************/
 	if (quickreply.settings.quickQuote) {
 		$('#qr_posts').on('mouseup', '.content', function (evt) {
+			var $target = $(evt.target);
+			if ($target.is('a') && $target.parents('.codebox').length) return;
+
 			// Get cursor coordinates
 			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
 			var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
