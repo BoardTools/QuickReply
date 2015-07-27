@@ -152,7 +152,7 @@
 				quickquote_cancel_event = true;
 			}
 		}
-		if ('ontouchstart' in window) reply_posts.on('mousedown', '.content', qr_handle_quickquote).on('touchstart', '.content', qr_handle_quickquote);
+		if ('ontouchstart' in window) reply_posts.on('mousedown touchstart', '.content', qr_handle_quickquote);
 		reply_posts.on('mouseup', '.content', qr_quickquote);
 	}
 
