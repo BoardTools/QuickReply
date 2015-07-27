@@ -25,7 +25,7 @@
 	/**************************************/
 	/* Quick Quote and Full Quote Plugins */
 	/**************************************/
-	function qr_insert_quote(qr_post_id) {
+	function qr_insert_quote(qr_post_id, selected_text) {
 		var qr_post_author = $('#qr_author_p' + qr_post_id),
 			nickname = qr_post_author.text(),
 			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function (str, p1, p2) { return (p2) ? p1 : ''; }),
@@ -49,7 +49,9 @@
 
 		// Get text selection - not only the post content :(
 		// IE9 must use the document.selection method but has the *.getSelection so we just force no IE
-		if (window.getSelection && !is_ie && !window.opera) {
+		if (selected_text) {
+			theSelection = selected_text;
+		} else if (window.getSelection && !is_ie && !window.opera) {
 			theSelection = window.getSelection().toString();
 		} else if (document.getSelection && !is_ie) {
 			theSelection = document.getSelection();
@@ -91,11 +93,25 @@
 	/* Quick Quote Plugin */
 	/**********************/
 	if (quickreply.settings.quickQuote) {
-		function qr_quickquote(evt, element, pageX, pageY) {
-			var $target = $(evt.target);
+		var qrAlert = false;
+		function qr_alert_remove(e) {
+			if (qrAlert) {
+				qrAlert.remove();
+				$(document.body).unbind('mousedown', qr_alert_remove);
+				qrAlert = false;
+			}
+		}
+		function qr_quickquote(evt, element) {
+			var $target = $(evt.target), $element = element || $(this);
 			if ($target.is('a') && $target.parents('.codebox').length) return;
 
-			var qr_post_id = element.parent().attr('id').replace('post_content', '');
+			// Get cursor coordinates
+			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
+			var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
+			// Which mouse button is pressed?
+			var key = evt.button || evt.which || null; // IE || FF || Unknown
+
+			var qr_post_id = $element.parent().attr('id').replace('post_content', '');
 
 			setTimeout(function () { // Timeout prevents popup when clicking on selected text
 				var sel = '';
@@ -106,40 +122,29 @@
 				else if (document.selection)
 					sel = document.selection.createRange().text;
 
-				if (sel) { // If text selected && right mouse button not pressed
-					var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" style="font-size: 11px !important;">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').appendTo('body');
+				if (sel && key <= 1) { // If text selected && right mouse button not pressed
 					function qr_insert_quickquote() {
-						qr_insert_quote(qr_post_id);
-						qrAlert.remove();
+						qr_insert_quote(qr_post_id, sel);
+						qr_alert_remove();
 						return false;
 					}
-					$('a', qrAlert).mousedown(qr_insert_quickquote);
-					$(qrAlert).mousedown(qr_insert_quickquote);
-					function qr_alert_remove(e) {
-						qrAlert.remove();
-						$(document.body).unbind('mousedown', qr_alert_remove);
-					}
+					if (qrAlert) qr_alert_remove();
+					qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px; cursor: pointer;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" style="font-size: 11px !important;">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').mousedown(qr_insert_quickquote).appendTo('body');
 					setTimeout(function () {
-						$(document.body).mousedown(qr_alert_remove);
+						$(document.body).one('mousedown', qr_alert_remove);
 					}, 10);
 				}
 			}, 0);
 		}
-		$('#qr_posts').on('mouseup', '.content', function (evt) {
-			// Get cursor coordinates
-			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
-			var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
-			// Which mouse button is pressed?
-			var key = evt.button || evt.which || null; // IE || FF || Unknown
-			if (key <= 1) {
-				qr_quickquote(evt, $(this), pageX, pageY);
-			}
-		}).on('touchend', '.content', function (evt) {
-			// Get cursor coordinates
-			var pageX = evt.originalEvent.touches[0].pageX || evt.originalEvent.touches[0].clientX + document.documentElement.scrollLeft; // FF || IE
-			var pageY = evt.originalEvent.touches[0].pageY || evt.originalEvent.touches[0].clientY + document.documentElement.scrollTop;
-			qr_quickquote(evt, $(this), pageX, pageY);
+		var reply_posts = $('#qr_posts');
+		if ('ontouchstart' in window) reply_posts.on('mousedown', '.content', function(evt) {
+			qr_quickquote(evt, $(this));
+			reply_posts.on('mousemove', '.content', qr_quickquote);
+			$(document.body).one('mouseup', function(evt) {
+				reply_posts.off('mousemove', '.content', qr_quickquote);
+			});
 		});
+		reply_posts.on('mouseup', '.content', qr_quickquote);
 	}
 
 	/*********************/
