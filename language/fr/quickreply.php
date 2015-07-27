@@ -58,6 +58,6 @@ $lang = array_merge($lang, array(
 	'QR_TRANSFORM_TEXT_INVERS'	=> '&#9660;&#9650; aBC',
 	'QR_TRANSFORM_TEXT_LOWER_TOOLTIP'	=> 'minuscules',
 	'QR_TRANSFORM_TEXT_UPPER_TOOLTIP'	=> 'MAJUSCULES',
-	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP'	=> 'inverser la casse',
+	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP'	=> 'iNVERSER lA cASSE',
 //end mod CapsLock Transfer
 ));
