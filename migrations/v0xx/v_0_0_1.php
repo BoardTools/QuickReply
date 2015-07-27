@@ -16,7 +16,7 @@ class v_0_0_1 extends \phpbb\db\migration\migration
 		return isset($this->config['qr_version']) && version_compare($this->config['qr_version'], '0.0.1', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 			return array('\phpbb\db\migration\data\v310\dev');
 	}

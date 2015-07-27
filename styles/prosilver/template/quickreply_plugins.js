@@ -91,17 +91,11 @@
 	/* Quick Quote Plugin */
 	/**********************/
 	if (quickreply.settings.quickQuote) {
-		$('#qr_posts').on('mouseup', '.content', function (evt) {
+		function qr_quickquote(evt, element, pageX, pageY) {
 			var $target = $(evt.target);
 			if ($target.is('a') && $target.parents('.codebox').length) return;
 
-			// Get cursor coordinates
-			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
-			var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
-			// Which mouse button is pressed?
-			var key = evt.button || evt.which || null; // IE || FF || Unknown
-
-			var qr_post_id = $(this).parent().attr('id').replace('post_content', '');
+			var qr_post_id = element.parent().attr('id').replace('post_content', '');
 
 			setTimeout(function () { // Timeout prevents popup when clicking on selected text
 				var sel = '';
@@ -112,8 +106,8 @@
 				else if (document.selection)
 					sel = document.selection.createRange().text;
 
-				if (sel && key <= 1) { // If text selected && right mouse button not pressed
-					var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 184 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" style="font-size: 11px !important;">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').appendTo('body');
+				if (sel) { // If text selected && right mouse button not pressed
+					var qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" style="font-size: 11px !important;">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').appendTo('body');
 					function qr_insert_quickquote() {
 						qr_insert_quote(qr_post_id);
 						qrAlert.remove();
@@ -130,6 +124,21 @@
 					}, 10);
 				}
 			}, 0);
+		}
+		$('#qr_posts').on('mouseup', '.content', function (evt) {
+			// Get cursor coordinates
+			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
+			var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
+			// Which mouse button is pressed?
+			var key = evt.button || evt.which || null; // IE || FF || Unknown
+			if (key <= 1) {
+				qr_quickquote(evt, $(this), pageX, pageY);
+			}
+		}).on('touchend', '.content', function (evt) {
+			// Get cursor coordinates
+			var pageX = evt.originalEvent.touches[0].pageX || evt.originalEvent.touches[0].clientX + document.documentElement.scrollLeft; // FF || IE
+			var pageY = evt.originalEvent.touches[0].pageY || evt.originalEvent.touches[0].clientY + document.documentElement.scrollTop;
+			qr_quickquote(evt, $(this), pageX, pageY);
 		});
 	}
 

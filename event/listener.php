@@ -105,7 +105,7 @@ class listener implements EventSubscriberInterface
 	* @static
 	* @access public
 	*/
-	static public function getSubscribedEvents()
+	public static function getSubscribedEvents()
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
 		return array(
