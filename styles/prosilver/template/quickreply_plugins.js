@@ -136,14 +136,23 @@
 				}
 			}, 0);
 		}
-		var reply_posts = $('#qr_posts');
-		if ('ontouchstart' in window) reply_posts.on('mousedown', '.content', function(evt) {
+		var reply_posts = $('#qr_posts'), quickquote_cancel_event = false;
+		function qr_handle_quickquote(evt) {
+			if (evt.type == 'touchstart') {
+				evt.pageX = evt.originalEvent.touches[0].pageX;
+				evt.pageY = evt.originalEvent.touches[0].pageY;
+			}
 			qr_quickquote(evt, $(this));
-			reply_posts.on('mousemove', '.content', qr_quickquote);
-			$(document.body).one('mouseup', function(evt) {
-				reply_posts.off('mousemove', '.content', qr_quickquote);
-			});
-		});
+			if (!quickquote_cancel_event) {
+				reply_posts.on('mousemove', '.content', qr_quickquote);
+				$(document.body).one('mouseup', function (evt) {
+					reply_posts.off('mousemove', '.content', qr_quickquote);
+					quickquote_cancel_event = false;
+				});
+				quickquote_cancel_event = true;
+			}
+		}
+		if ('ontouchstart' in window) reply_posts.on('mousedown', '.content', qr_handle_quickquote).on('touchstart', '.content', qr_handle_quickquote);
 		reply_posts.on('mouseup', '.content', qr_quickquote);
 	}
 
