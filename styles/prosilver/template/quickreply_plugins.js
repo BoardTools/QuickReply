@@ -1,4 +1,4 @@
-/* global quickreply */
+/* global quickreply, grecaptcha */
 ; (function ($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
@@ -298,6 +298,19 @@
 			if (bbvideo.length > 0) {
 				bbvideo.bbvideo();
 			}
+		});
+	}
+
+	/*********************/
+	/* reCAPTCHA2 Plugin */
+	/*********************/
+	if (quickreply.plugins.reCAPTCHA2) {
+		$('#qr_postform').on('qr_captcha_refreshed', function (e) {
+			var recaptcha2_wrapper = $('.g-recaptcha');
+			recaptcha2_wrapper.html('');
+			grecaptcha.render(document.getElementsByClassName('g-recaptcha')[0], {
+				'sitekey': recaptcha2_wrapper.attr('data-sitekey')
+			});
 		});
 	}
 })(jQuery, window, document);

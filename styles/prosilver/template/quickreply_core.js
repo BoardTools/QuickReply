@@ -280,7 +280,9 @@
 							});
 						}, alert_delay);
 						$loadingIndicator.fadeOut(phpbb.alertTime);
-						$(this).html(res.captcha_result).slideDown(qr_slide_interval);
+						$(this).html(res.captcha_result).slideDown(qr_slide_interval, function () {
+							$('#qr_postform').trigger('qr_captcha_refreshed');
+						});
 					})
 				}
 				else {
