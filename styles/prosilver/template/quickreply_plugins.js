@@ -197,17 +197,16 @@
 	/* Quick Nick Plugin */
 	/*********************/
 	if (quickreply.settings.quickNick) {
-		function getHexColor(color) {
-			color = color.replace(/\s/g, "");
-			var colorRGB = color.match(/^rgb\((\d{1,3}[%]?),(\d{1,3}[%]?),(\d{1,3}[%]?)\)$/i);
-			colorHEX = '';
-			for (var i = 1; i <= 3; i++) {
-				colorHEX += Math.round((colorRGB[i][colorRGB[i].length - 1] == "%" ? 2.55 : 1) * parseInt(colorRGB[i])).toString(16).replace(/^(.)$/, '0$1');
-			}
-			return "#" + colorHEX;
-		}
-
-		function qr_quicknick(evt, link, color) {
+		quickreply.functions.quickNick = function(link) {
+			var nickname = link.text(),
+				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
+				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
+				qr_color = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
+			if (!quickreply.settings.enableBBCode) insert_text(nickname + comma, false);
+			else if (!quickreply.settings.quickNickRef) insert_text('[b]' + nickname + '[/b]' + comma, false);
+			else insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
+		};
+		function qr_quicknick(evt, link) {
 			// Get cursor coordinates
 			if (!evt) evt = window.event;
 			evt.preventDefault();
@@ -218,17 +217,12 @@
 
 			//Get nick and id
 			var viewprofile_url = link.attr('href');
-			var nickname = link.text();
 			var qr_pm_link = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
 
 			var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="' + quickreply.language.QUICKNICK_TITLE + '">' + quickreply.language.QUICKNICK + '</a></li>' + ((quickreply.settings.quickNickPM && qr_pm_link.length) ? '<li><a href="' + qr_pm_link.attr('href') + '" class="qr_reply_in_pm" style="font-size: 11px !important;" title="' + quickreply.language.REPLY_IN_PM + '">' + quickreply.language.REPLY_IN_PM + '</a></li>' : '') + '<li><a href="' + viewprofile_url + '" class="qr_profile" style="font-size: 11px !important;" title="' + quickreply.language.PROFILE + '">' + quickreply.language.PROFILE + '</a></li></ul></div>').appendTo('body');
 
-			var comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
-				qr_color = (quickreply.settings.colouredNick && color) ? '=' + getHexColor(color) : '';
 			$('a.qr_quicknick', qrNickAlert).mousedown(function () {
-				if (!quickreply.settings.enableBBCode) insert_text(nickname + comma, false);
-				else if (!quickreply.settings.quickNickRef) insert_text('[b]' + nickname + '[/b]' + comma, false);
-				else insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
+				quickreply.functions.quickNick(link);
 				qrNickAlert.remove();
 				return false;
 			});
@@ -246,12 +240,8 @@
 		}
 
 		/* Ajax Submit */
-		$('#qr_posts').on('click', 'a.username', function (e) {
-			qr_quicknick(e, $(this), false);
-		});
-
-		$('#qr_posts').on('click', 'a.username-coloured', function (e) {
-			qr_quicknick(e, $(this), $(this).css('color'));
+		$('#qr_posts').on('click', 'a.username, a.username-coloured', function (e) {
+			qr_quicknick(e, $(this));
 		});
 
 		function quicknick_handle_posts(e, elements) {
