@@ -61,6 +61,9 @@ class listener implements EventSubscriberInterface
 	/** @var bool */
 	protected $qr_insert;
 
+	/** @var bool */
+	protected $qr_first;
+
 	/**
 	* Constructor
 	*
@@ -96,6 +99,7 @@ class listener implements EventSubscriberInterface
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->qr_insert = false;
+		$this->qr_first = false;
 	}
 
 	/**
@@ -164,10 +168,12 @@ class listener implements EventSubscriberInterface
 		if ($this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list))
 		{
 			$sql_ary = $event['sql_ary'];
-			$compare = ($this->request->is_set('qr_get_current')) ? ' >= ' : ' > ';
+			$qr_get_current = $this->request->is_set('qr_get_current');
+			$compare = ($qr_get_current) ? ' >= ' : ' > ';
 			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
 			$event['sql_ary'] = $sql_ary;
 			$this->qr_insert = true;
+			$this->qr_first = ($current_post == min($post_list)) && $qr_get_current;
 
 			/* Check whether no posts are found. */
 			if ($compare == ' > ' && max($post_list) <= $current_post)
@@ -295,6 +301,13 @@ class listener implements EventSubscriberInterface
 				{
 					$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields($captcha->get_hidden_fields()));
 				}
+			}
+			// Fix issues if the inserted post is not the first.
+			if ($this->qr_insert && !$this->qr_first)
+			{
+				$this->template->alter_block_array('postrow', array(
+					'S_FIRST_ROW'	=> false,
+				), false, 'change');
 			}
 			$page_title = $event['page_title'];
 			$this->template->assign_vars(array(
