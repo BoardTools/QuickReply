@@ -187,10 +187,10 @@
 			qr_full_quote(e, reply_posts);
 			reply_posts.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
 		});
-		$('#qr_posts').on('qr_loaded', qr_full_quote)
-			.on('qr_completed', function (e, elements) {
-				elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
-			});
+		$('#qr_posts').on('qr_completed', function (e, elements) {
+			qr_full_quote(e, elements);
+			elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
+		});
 	}
 
 	/*********************/
