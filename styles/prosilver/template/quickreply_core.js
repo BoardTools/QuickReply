@@ -91,7 +91,7 @@
 	}
 
 	/* Work with browser's history. */
-	var qr_stop_history = false;
+	var qr_stop_history = false, qr_replace_history = false;
 	$(window).on("popstate", function(e) {
 		qr_stop_history = true;
 		document.title = e.originalEvent.state.title;
@@ -168,7 +168,12 @@
 						$('.action-bar .pagination').html(reply_pagination.html());
 						reply_form_submit_buttons.children(':not(input[type="submit"])').remove();
 						reply_form_submit_buttons.prepend(reply_submit_buttons.html());
-						if (qr_stop_history) qr_stop_history = false;
+						if (qr_replace_history) {
+							qr_replace_history = false;
+							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title')});
+							document.title = reply_submit_buttons.attr('data-page-title');
+						}
+						else if (qr_stop_history) qr_stop_history = false;
 						else {
 							phpbb.history.pushUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title')});
 							document.title = reply_submit_buttons.attr('data-page-title');
@@ -198,7 +203,7 @@
 						qr_mark_read($('#qr_posts'));
 						var reply_temp_container = $(quickreply.editor.tempContainer);
 						reply_temp_container.html(res.result);
-						qr_stop_history = true;
+						qr_replace_history = true;
 						qr_show_response(reply_temp_container, function (element) {
 							if (quickreply.settings.softScroll) {
 								reply_temp_container.slideDown(qr_slide_interval, function () {
