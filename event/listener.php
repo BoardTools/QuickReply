@@ -396,7 +396,7 @@ class listener implements EventSubscriberInterface
 				'qr_cur_post_id'	=> (int) max($post_list)
 			)));
 
-			if ($this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') && $this->user->data['is_registered'])
+			if ($this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') && $this->user->data['is_registered'] && $this->config['merge_interval'])
 			{
 				// Always show the checkbox if PostsMerging extension is installed.
 				$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
