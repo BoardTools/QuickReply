@@ -184,8 +184,10 @@
 <!-- ENDIF -->
 </div>
 <!-- ENDIF -->
+<!-- EVENT ext_quickreply_transform_text_buttons_after -->
 
 	<div id="smiley-box">
+        <!-- EVENT ext_quickreply_smyle_box_prepend -->
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
@@ -195,4 +197,5 @@
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
+        <!-- EVENT ext_quickreply_smyle_box_append -->
 	</div>
