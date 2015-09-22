@@ -4,7 +4,7 @@
 * quickreply [Turkish]
 *
 * @package quickreply
-* @copyright (c) 2014 William Jacoby (bonelifer)
+* @copyright (c) 2015 Edip Dincer
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
