@@ -475,7 +475,7 @@ class listener implements EventSubscriberInterface
 	{
 		$data = $event['data'];
 
-		if (!$this->auth->acl_get('f_qr_change_subject', $data['forum_id']) && ($data['topic_first_post_id'] != $data['post_id']))
+		if (!$this->auth->acl_get('f_qr_change_subject', $data['forum_id']) && isset($data['topic_first_post_id']) && isset($data['post_id']) && ($data['topic_first_post_id'] != $data['post_id']))
 		{
 			if ($this->config['qr_enable_re'] == 0)
 			{
