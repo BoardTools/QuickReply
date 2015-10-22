@@ -7,7 +7,7 @@
 *
 */
 
-namespace tatiana5\quickreply\acp;
+namespace boardtools\quickreply\acp;
 
 class quickreply_module
 {
@@ -21,7 +21,7 @@ class quickreply_module
 
 		$this->page_title = 'ACP_QUICKREPLY';
 		$this->tpl_name = 'acp_quickreply';
-		$user->add_lang_ext('tatiana5/quickreply', 'quickreply');
+		$user->add_lang_ext('boardtools/quickreply', 'quickreply');
 
 		$submit = ($request->is_set_post('submit')) ? true : false;
 		$form_key = 'config_quickreply';

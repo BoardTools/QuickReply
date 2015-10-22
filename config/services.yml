@@ -1,6 +1,6 @@
 services:
-    tatiana5.quickreply.listener:
-        class: tatiana5\quickreply\event\listener
+    boardtools.quickreply.listener:
+        class: boardtools\quickreply\event\listener
         arguments:
             - @auth
             - @config

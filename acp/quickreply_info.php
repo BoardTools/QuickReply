@@ -7,18 +7,18 @@
 *
 */
 
-namespace tatiana5\quickreply\acp;
+namespace boardtools\quickreply\acp;
 
 class quickreply_info
 {
 	function module()
 	{
 		return array(
-			'filename'	=> '\tatiana5\quickreply\acp\quickreply_module',
+			'filename'	=> '\boardtools\quickreply\acp\quickreply_module',
 			'title'		=> 'ACP_QUICKREPLY',
 			'version'	=> '0.0.1',
 			'modes'		=> array(
-				'config_quickreply'		=> array('title' => 'ACP_QR_CONFIG', 'auth' => 'ext_tatiana5/quickreply && acl_a_quickreply', 'cat' => array('ACP_QR_CONFIG')),
+				'config_quickreply'		=> array('title' => 'ACP_QR_CONFIG', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QR_CONFIG')),
 			),
 		);
 	}

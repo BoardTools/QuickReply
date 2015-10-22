@@ -1,8 +1,8 @@
 {
-    "name": "tatiana5/quickreply",
+    "name": "boardtools/quickreply",
     "type": "phpbb-extension",
     "description": "Extended possibilities to use the QuickReply feature.",
-    "homepage": "http://phpbbguru.net",
+    "homepage": "https://github.com/BoardTools/QuickReply",
     "version": "1.0.0-beta5",
     "license": "GPL-2.0",
     "authors": [
@@ -29,7 +29,7 @@
            "phpbb/phpbb": "3.1.*"
         },
         "version-check": {
-            "host": "Tatiana5.github.io",
+            "host": "boardtools.github.io",
             "directory": "/QuickReply",
             "filename": "version.json"
         }

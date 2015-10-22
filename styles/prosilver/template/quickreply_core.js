@@ -92,12 +92,26 @@
 
 	/* Work with browser's history. */
 	var qr_stop_history = false, qr_replace_history = false;
-	$(window).on("popstate", function(e) {
-		qr_stop_history = true;
-		document.title = e.originalEvent.state.title;
-		qr_ajax_reload(e.originalEvent.state.url);
-	});
-	phpbb.history.replaceUrl(location.href, '', {url: location.href, title: document.title});
+	if (quickreply.settings.ajaxSubmit || quickreply.settings.ajaxPagination) {
+		$(window).on("popstate", function (e) {
+			qr_stop_history = true;
+			document.title = e.originalEvent.state.title;
+			qr_ajax_reload(e.originalEvent.state.url);
+		});
+
+		/* Workaround for browser's cache. */
+		$(window).on("load", function (e) {
+			if (phpbb.history.isSupported("state")) {
+				var qr_current_state = history.state;
+				if (qr_current_state !== null && qr_current_state.replaced) {
+					qr_stop_history = true;
+					qr_ajax_reload(qr_current_state.url);
+				}
+			}
+
+			phpbb.history.replaceUrl(location.href, '', {url: location.href, title: document.title});
+		});
+	}
 
 	/**
 	 * The function for handling Ajax requests.
@@ -170,7 +184,7 @@
 						reply_form_submit_buttons.prepend(reply_submit_buttons.html());
 						if (qr_replace_history) {
 							qr_replace_history = false;
-							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title')});
+							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title'), replaced: true});
 							document.title = reply_submit_buttons.attr('data-page-title');
 						}
 						else if (qr_stop_history) qr_stop_history = false;

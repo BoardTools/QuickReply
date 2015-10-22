@@ -7,7 +7,7 @@
 *
 */
 
-namespace tatiana5\quickreply\migrations\v0xx;
+namespace boardtools\quickreply\migrations\v0xx;
 
 class v_0_1_3 extends \phpbb\db\migration\migration
 {
@@ -18,7 +18,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\tatiana5\quickreply\migrations\v0xx\v_0_1_2');
+		return array('\boardtools\quickreply\migrations\v0xx\v_0_1_2');
 	}
 
 	public function update_schema()
@@ -42,7 +42,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 			array('config.add', array('qr_color_nickname', '1')),
 			array('config.add', array('qr_show_button_translit', '0')),
 
-			// Update exisiting configs
+			// Update existing configs
 			array('config.update', array('qr_version', '0.1.3')),
 		);
 	}
@@ -94,7 +94,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 
 			if ($row_exists)
 			{
-				// Update exisiting BBCode
+				// Update existing BBCode
 				$bbcode_id = $row_exists['bbcode_id'];
 
 				$sql = 'UPDATE ' . $this->table_prefix . 'bbcodes

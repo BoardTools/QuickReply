@@ -7,7 +7,7 @@
 *
 */
 
-namespace tatiana5\quickreply\migrations\v0xx;
+namespace boardtools\quickreply\migrations\v0xx;
 
 class v_0_0_1 extends \phpbb\db\migration\migration
 {
@@ -39,10 +39,10 @@ class v_0_0_1 extends \phpbb\db\migration\migration
 			// Add ACP modules
 			array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'ACP_QUICKREPLY')),
 			array('module.add', array('acp', 'ACP_QUICKREPLY', array(
-					'module_basename'	=> '\tatiana5\quickreply\acp\quickreply_module',
+					'module_basename'	=> '\boardtools\quickreply\acp\quickreply_module',
 					'module_langname'	=> 'ACP_QUICKREPLY_EXPLAIN',
 					'module_mode'		=> 'config_quickreply',
-					'module_auth'		=> 'ext_tatiana5/quickreply && acl_a_quickreply',
+					'module_auth'		=> 'ext_boardtools/quickreply && acl_a_quickreply',
 			))),
 
 			// Add permissions

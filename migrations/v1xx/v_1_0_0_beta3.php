@@ -7,7 +7,7 @@
 *
 */
 
-namespace tatiana5\quickreply\migrations\v1xx;
+namespace boardtools\quickreply\migrations\v1xx;
 
 class v_1_0_0_beta3 extends \phpbb\db\migration\migration
 {
@@ -18,7 +18,7 @@ class v_1_0_0_beta3 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\tatiana5\quickreply\migrations\v1xx\v_1_0_0_beta2');
+		return array('\boardtools\quickreply\migrations\v1xx\v_1_0_0_beta2');
 	}
 
 	public function update_schema()
@@ -47,7 +47,7 @@ class v_1_0_0_beta3 extends \phpbb\db\migration\migration
 			// Add configs
 			array('config.add', array('qr_scroll_time', 500)),
 
-			// Update exisiting configs
+			// Update existing configs
 			array('config.update', array('qr_version', '1.0.0-beta3')),
 		);
 	}

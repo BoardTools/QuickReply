@@ -7,7 +7,7 @@
 *
 */
 
-namespace tatiana5\quickreply\event;
+namespace boardtools\quickreply\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -159,7 +159,7 @@ class listener implements EventSubscriberInterface
 			$json_response = new \phpbb\json_response;
 			$json_response->send(array(
 				'captcha_refreshed' => true,
-				'captcha_result' => $this->template->assign_display('@tatiana5_quickreply/quickreply_captcha_template.html', '', true),
+				'captcha_result' => $this->template->assign_display('@boardtools_quickreply/quickreply_captcha_template.html', '', true),
 			));
 		}
 
@@ -186,7 +186,7 @@ class listener implements EventSubscriberInterface
 				));
 			}
 		}
-		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
 
 	/**
@@ -325,7 +325,7 @@ class listener implements EventSubscriberInterface
 			$json_response = new \phpbb\json_response();
 			$json_response->send(array(
 				'success'			=> true,
-				'result'			=> $this->template->assign_display('@tatiana5_quickreply/quickreply_template.html', '', true),
+				'result'			=> $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
 				'insert'			=> $this->qr_insert
 				// 'current_max_id'	=> max($event['post_list']),
 			));
@@ -557,7 +557,7 @@ class listener implements EventSubscriberInterface
 			}
 		}
 		// This is needed for BBCode QR_BBPOST.
-		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply');
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
 
 	/**
@@ -781,7 +781,7 @@ class listener implements EventSubscriberInterface
 		));
 
 		// Output the data vars to the template
-		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply_ucp');
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
 		$this->template->assign_vars(array(
 			'S_AJAX_PAGINATION'			=> $this->config['qr_ajax_pagination'],
 			'S_ENABLE_AJAX_PAGINATION'	=> $event['data']['ajax_pagination'],
@@ -835,7 +835,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function acp_prefs_template_data($event)
 	{
-		$this->user->add_lang_ext('tatiana5/quickreply', 'quickreply_ucp');
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
 		$data = $event['data'];
 		$user_prefs_data = $event['user_prefs_data'];
 		$user_prefs_data = array_merge($user_prefs_data, array(
