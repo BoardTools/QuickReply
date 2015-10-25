@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "Extended possibilities to use the QuickReply feature.",
     "homepage": "http://phpbbguru.net",
-    "version": "1.0.0-beta5",
+    "version": "1.0.0-dev",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -24,14 +24,9 @@
         "phpbb/epv": "dev-master"
     },
     "extra": {
-        "display-name": "QuickReply Reloaded",
+        "display-name": "QuickReply Reloaded (old)",
         "soft-require": {
            "phpbb/phpbb": "3.1.*"
-        },
-        "version-check": {
-            "host": "Tatiana5.github.io",
-            "directory": "/QuickReply",
-            "filename": "version.json"
         }
     }
 }
