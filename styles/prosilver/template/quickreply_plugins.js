@@ -28,7 +28,9 @@
 	function qr_insert_quote(qr_post_id, selected_text) {
 		var qr_post_author = $('#qr_author_p' + qr_post_id),
 			nickname = qr_post_author.text(),
-			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function (str, p1, p2) { return (p2) ? p1 : ''; }),
+			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function (str, p1, p2) {
+				return (p2) ? p1 : '';
+			}),
 			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.enableBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
 
 		// Link to the source post
@@ -94,6 +96,7 @@
 	/**********************/
 	if (quickreply.settings.quickQuote) {
 		var qrAlert = false;
+
 		function qr_alert_remove(e) {
 			if (qrAlert) {
 				qrAlert.remove();
@@ -101,9 +104,12 @@
 				qrAlert = false;
 			}
 		}
+
 		function qr_quickquote(evt, element) {
 			var $target = $(evt.target), $element = element || $(this);
-			if ($target.is('a') && $target.parents('.codebox').length) return;
+			if ($target.is('a') && $target.parents('.codebox').length) {
+				return;
+			}
 
 			// Get cursor coordinates
 			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
@@ -115,12 +121,13 @@
 
 			setTimeout(function () { // Timeout prevents popup when clicking on selected text
 				var sel = '';
-				if (window.getSelection)
+				if (window.getSelection) {
 					sel = window.getSelection().toString();
-				else if (document.getSelection)
+				} else if (document.getSelection) {
 					sel = document.getSelection();
-				else if (document.selection)
+				} else if (document.selection) {
 					sel = document.selection.createRange().text;
+				}
 
 				if (sel && key <= 1) { // If text selected && right mouse button not pressed
 					function qr_insert_quickquote() {
@@ -128,7 +135,10 @@
 						qr_alert_remove();
 						return false;
 					}
-					if (qrAlert) qr_alert_remove();
+
+					if (qrAlert) {
+						qr_alert_remove();
+					}
 					qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px; cursor: pointer;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" style="font-size: 11px !important;">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').mousedown(qr_insert_quickquote).appendTo('body');
 					setTimeout(function () {
 						$(document.body).one('mousedown', qr_alert_remove);
@@ -136,7 +146,9 @@
 				}
 			}, 0);
 		}
+
 		var reply_posts = $('#qr_posts'), quickquote_cancel_event = false;
+
 		function qr_handle_quickquote(evt) {
 			if (evt.type == 'touchstart') {
 				evt.pageX = evt.originalEvent.touches[0].pageX;
@@ -152,7 +164,10 @@
 				quickquote_cancel_event = true;
 			}
 		}
-		if ('ontouchstart' in window) reply_posts.on('mousedown touchstart', '.content', qr_handle_quickquote);
+
+		if ('ontouchstart' in window) {
+			reply_posts.on('mousedown touchstart', '.content', qr_handle_quickquote);
+		}
 		reply_posts.on('mouseup', '.content', qr_quickquote);
 	}
 
@@ -165,11 +180,13 @@
 			var qr_post_id = element.parents('.post').attr('id').replace('p', '');
 			qr_insert_quote(qr_post_id);
 		}
+
 		function qr_full_quote(e, elements) {
 			elements.find('.post-buttons .quote-icon').not('.responsive-menu .quote-icon').click(function (e) {
 				qr_add_full_quote(e, $(this));
 			});
 		}
+
 		function qr_full_quote_responsive(e) {
 			qr_add_full_quote(e, $(this));
 			var $container = $(this).parents('.dropdown-container'),
@@ -182,6 +199,7 @@
 			}
 			$trigger.click();
 		}
+
 		$(window).on('load', function (e) {
 			var reply_posts = $('#qr_posts');
 			qr_full_quote(e, reply_posts);
@@ -197,18 +215,24 @@
 	/* Quick Nick Plugin */
 	/*********************/
 	if (quickreply.settings.quickNick) {
-		quickreply.functions.quickNick = function(link) {
+		quickreply.functions.quickNick = function (link) {
 			var nickname = link.text(),
 				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
 				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
 				qr_color = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
-			if (!quickreply.settings.enableBBCode) insert_text(nickname + comma, false);
-			else if (!quickreply.settings.quickNickRef) insert_text('[b]' + nickname + '[/b]' + comma, false);
-			else insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
+			if (!quickreply.settings.enableBBCode) {
+				insert_text(nickname + comma, false);
+			} else if (!quickreply.settings.quickNickRef) {
+				insert_text('[b]' + nickname + '[/b]' + comma, false);
+			} else {
+				insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
+			}
 		};
 		function qr_quicknick(evt, link) {
 			// Get cursor coordinates
-			if (!evt) evt = window.event;
+			if (!evt) {
+				evt = window.event;
+			}
 			evt.preventDefault();
 			var pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
 			var pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
@@ -234,6 +258,7 @@
 				qrNickAlert.remove();
 				$(document.body).unbind('mousedown', qr_alert_remove);
 			}
+
 			setTimeout(function () {
 				$(document.body).mousedown(qr_alert_remove);
 			}, 10);

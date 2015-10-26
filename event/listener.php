@@ -333,7 +333,10 @@ class listener implements EventSubscriberInterface
 
 		if ($s_quick_reply)
 		{
-			include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+			if (!function_exists('generate_smilies'))
+			{
+				include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+			}
 
 			// HTML, BBCode, Smilies, Images and Flash status
 			$bbcode_status	= ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
@@ -371,7 +374,10 @@ class listener implements EventSubscriberInterface
 					'U_QR_ACTION'			=> append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id") . $form_enctype,
 				));
 
-				include_once($this->phpbb_root_path . 'includes/message_parser.' . $this->php_ext);
+				if (!class_exists('parse_message'))
+				{
+					include($this->phpbb_root_path . 'includes/message_parser.' . $this->php_ext);
+				}
 				$message_parser = new \parse_message();
 				$message_parser->set_plupload($this->plupload);
 				$message_parser->set_mimetype_guesser($this->mimetype_guesser);
@@ -502,13 +508,11 @@ class listener implements EventSubscriberInterface
 		// Ajax submit
 		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
 		{
-			include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-
 			$error = $event['error'];
 			$post_data = $event['post_data'];
 			$forum_id = (int) $post_data['forum_id'];
 			$topic_id = (int) $post_data['topic_id'];
-			// $topic_cur_post_id = (int) $post_data['topic_cur_post_id'];
+
 			$current_post = $this->request->variable('qr_cur_post_id', 0);
 			$lastclick = $this->request->variable('lastclick', time());
 
@@ -548,7 +552,6 @@ class listener implements EventSubscriberInterface
 			else if ($post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 			{
 				// Send new post number as a response.
-				// @todo Add the possibility to reload the page.
 				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'post_update'	=> true,
@@ -594,11 +597,9 @@ class listener implements EventSubscriberInterface
 
 		$event['page_data'] = $page_data;
 
-		//Ajax submit
+		// Ajax submit
 		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
 		{
-			include_once($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-
 			$error = $event['error'];
 			$preview = $event['preview'];
 
@@ -624,8 +625,6 @@ class listener implements EventSubscriberInterface
 				{
 					$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>';
 
-					//$this->template->assign_var('S_HAS_ATTACHMENTS', true);
-
 					$update_count = array();
 					$attachment_data = $message_parser->attachment_data;
 
@@ -633,9 +632,6 @@ class listener implements EventSubscriberInterface
 
 					foreach ($attachment_data as $i => $attachment)
 					{
-						//$this->template->assign_block_vars('attachment', array(
-						//	'DISPLAY_ATTACHMENT'	=> $attachment)
-						//);
 						$preview_attachments .= '<dd>' . $attachment . '</dd>';
 					}
 					$preview_attachments .= '</dl>';

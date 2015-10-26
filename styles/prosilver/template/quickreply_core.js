@@ -122,14 +122,15 @@
 	 * @param {bool}     [scroll_to_last]  Whether we need to scroll to the last post.
 	 */
 	function qr_ajax_reload(url, request_data, result_function, scroll_to_last) {
-		if (url.indexOf('?') < 0) url = url.replace(/&/, '?');
+		if (url.indexOf('?') < 0) {
+			url = url.replace(/&/, '?');
+		}
 		var url_hash = url.indexOf('#'), qr_get_unread = false, originalURL = url;
 		if (url_hash > -1)
 		{
 			qr_get_unread = (url.substr(url_hash) === '#unread');
 			url = url.substr(0, url_hash);
 		}
-		// var qr_current_post = $('#qr_posts').find('div.post').last().attr('id').substr(1);
 		var qr_current_post = $(quickreply.editor.mainForm).find('input[name="qr_cur_post_id"]').val();
 		var $loadingIndicator = phpbb.loadingIndicator(), $dark = $('#darkenwrapper');
 		phpbb.clearLoadingTimeout();
@@ -139,14 +140,12 @@
 		setTimeout(function() {
 			$loadingIndicator.finish().show();
 		},  100);
-		// var url_add_mark = (url.indexOf('?') < 0) ? '?' : '&';
 		var qr_request_method = 'GET', qr_data_object = { qr_cur_post_id: qr_current_post, qr_request: 1 };
 		if (quickreply.plugins.seo) {
 			if (qr_get_unread) {
 				var viewtopic_link = quickreply.editor.viewtopicLink;
 				url = viewtopic_link + ((viewtopic_link.indexOf('?') < 0) ? '?' : '&') + 'view=unread';
-			}
-			else if (url.indexOf('hilit=') > -1) {
+			} else if (url.indexOf('hilit=') > -1) {
 				url = url.replace(/(&amp;|&|\?)hilit=([^&]*)(&amp;|&)?/, function (str, p1, p2, p3) {
 					$.extend(qr_data_object, { hilit: p2 });
 					return (p3) ? p1 : '';
@@ -154,18 +153,12 @@
 				qr_request_method = 'POST';
 			}
 		}
-		if (request_data) $.extend(qr_data_object, request_data);
+		if (request_data) {
+			$.extend(qr_data_object, request_data);
+		}
 		$.ajax({
-			url: url, // + url_add_mark + 'qr_cur_post_id=' + qr_current_post + '&qr_request=1',
+			url: url,
 			data: qr_data_object,
-			/*xhrFields: {
-				onprogress: function (e) {
-					if (e.lengthComputable) {
-						var percentComplete = ((e.position || e.loaded) * 100 / (e.totalSize || e.total)).toFixed();
-						$("#loading_status").html(percentComplete + " %");
-					}
-				}
-			},*/
 			method: qr_request_method,
 			error: function (e, text, ee) {
 				if (qr_stop_history) qr_stop_history = false;
@@ -174,8 +167,6 @@
 			success: function (res, x) {
 				if (res.result) {
 					function qr_show_response(elements, res_function) {
-						//var reply_current_id = $(quickreply.editor.mainForm).find('input[name="topic_cur_post_id"]');
-						//reply_current_id.val(Math.max(reply_current_id.val(), res.current_max_id));
 						var reply_pagination = $('#qr_pagination'),
 							reply_submit_buttons = $('#qr_submit_buttons'),
 							reply_form_submit_buttons = $(quickreply.editor.mainForm).children().children().children('.submit-buttons');
@@ -186,13 +177,14 @@
 							qr_replace_history = false;
 							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title'), replaced: true});
 							document.title = reply_submit_buttons.attr('data-page-title');
-						}
-						else if (qr_stop_history) qr_stop_history = false;
-						else {
+						} else if (qr_stop_history) {
+							qr_stop_history = false;
+						} else {
 							phpbb.history.pushUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title')});
 							document.title = reply_submit_buttons.attr('data-page-title');
 						}
-						reply_pagination.remove(); reply_submit_buttons.remove();
+						reply_pagination.remove();
+						reply_submit_buttons.remove();
 						handle_drops($('.action-bar .pagination'));
 						qr_bind_pagination();
 						qr_add_ajax(elements);
@@ -211,7 +203,9 @@
 						}, alert_delay);
 						$loadingIndicator.fadeOut(phpbb.alertTime);
 						var qr_scroll_element = (typeof scroll_to_last !== "undefined") ? elements.children('.post').last() : ((qr_get_unread && $('.unreadpost').length) ? $('.unreadpost').first() : elements.children().first());
-						if (typeof res_function === "function") res_function(qr_scroll_element);
+						if (typeof res_function === "function") {
+							res_function(qr_scroll_element);
+						}
 					}
 					if (res.insert) {
 						qr_mark_read($('#qr_posts'));
@@ -229,8 +223,7 @@
 										qr_soft_scroll(element);
 									}
 								});
-							}
-							else {
+							} else {
 								var reply_posts = $('#qr_posts');
 								reply_posts.trigger('qr_insert_before');
 								// Restore the subject of the first post.
@@ -247,8 +240,7 @@
 								}
 							}
 						});
-					}
-					else {
+					} else {
 						var reply_posts = $('#qr_posts');
 						if (quickreply.settings.softScroll) {
 							reply_posts.slideUp(qr_slide_interval, function () {
@@ -263,8 +255,7 @@
 									});
 								});
 							});
-						}
-						else {
+						} else {
 							reply_posts.html(res.result);
 							qr_show_response(reply_posts);
 							qr_responsive_links(reply_posts);
@@ -273,19 +264,11 @@
 								qr_soft_scroll(reply_posts);
 							}
 						}
-						//reply_posts.css('min-height', reply_posts.height() + 'px').fadeOut(500, function () {
-						//	$(this).html(res.result);
-						//	qr_show_response($(this), function (element) {
-						//		reply_posts.fadeIn(500, function () {
-						//			$(this).css('min-height', '');
-						//			qr_soft_scroll(element);
-						//		});
-						//	});
-						//});
 					}
-					if (typeof result_function === "function") result_function();
-				}
-				else if (res.captcha_refreshed) {
+					if (typeof result_function === "function") {
+						result_function();
+					}
+				} else if (res.captcha_refreshed) {
 					$('#qr_captcha_container').slideUp(qr_slide_interval, function () {
 						var alert_box = $('#phpbb_alert'), alert_delay = (alert_box.is(':visible')) ? 3000 : 0;
 						if (alert_box.is(':visible')) alert_box.find('.alert_close').off('click').click(function (e) {
@@ -303,9 +286,10 @@
 							$('#qr_postform').trigger('qr_captcha_refreshed');
 						});
 					})
-				}
-				else {
-					if (qr_stop_history) qr_stop_history = false;
+				} else {
+					if (qr_stop_history) {
+						qr_stop_history = false;
+					}
 					qr_ajax_error(res.MESSAGE_TEXT);
 				}
 			},
@@ -349,17 +333,17 @@
 				anchor = '',
 				anchor_parts = base_url.split('#');
 
-			if ( anchor_parts[1] ) {
+			if (anchor_parts[1]) {
 				base_url = anchor_parts[0];
 				anchor = '#' + anchor_parts[1];
 			}
 
 			phpbb_seo.page = (page - 1) * per_page;
 
-			if ( phpbb_seo.page > 0 ) {
+			if (phpbb_seo.page > 0) {
 				var phpEXtest = false;
 
-				if ( start_name !== 'start' || base_url.indexOf('?') >= 0 || ( phpEXtest = base_url.match("/\." + phpbb_seo.phpEX + "$/i"))) {
+				if (start_name !== 'start' || base_url.indexOf('?') >= 0 || (phpEXtest = base_url.match("/\." + phpbb_seo.phpEX + "$/i"))) {
 					qr_ajax_reload(base_url.replace(/&amp;/g, '&') + (phpEXtest ? '?' : '&') + start_name + '=' + phpbb_seo.page + anchor);
 				} else {
 					var ext = base_url.match(/\.[a-z0-9]+$/i);
@@ -383,8 +367,7 @@
 	 * Adds Ajax functionality for the pagination.
 	 */
 	function qr_bind_pagination() {
-		if (quickreply.settings.ajaxPagination)
-		{
+		if (quickreply.settings.ajaxPagination) {
 			$('.action-bar .pagination a:not(.dropdown-trigger, .mark)').click(function (event) {
 				event.preventDefault();
 				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
@@ -405,17 +388,25 @@
 
 		$('.action-bar .pagination .page-jump-form :button').click(function() {
 			var $input = $(this).siblings('input.inputbox');
-			if (!quickreply.settings.ajaxPagination) pageJump($input);
-			else if (quickreply.plugins.seo) qr_seo_page_jump($input);
-			else qr_page_jump($input);
+			if (!quickreply.settings.ajaxPagination) {
+				pageJump($input);
+			} else if (quickreply.plugins.seo) {
+				qr_seo_page_jump($input);
+			} else {
+				qr_page_jump($input);
+			}
 		});
 
 		$('.action-bar .pagination .page-jump-form input.inputbox').on('keypress', function(event) {
 			if (event.which === 13 || event.keyCode === 13) {
 				event.preventDefault();
-				if (!quickreply.settings.ajaxPagination) pageJump($(this));
-				else if (quickreply.plugins.seo) qr_seo_page_jump($(this));
-				else qr_page_jump($(this));
+				if (!quickreply.settings.ajaxPagination) {
+					pageJump($(this));
+				} else if (quickreply.plugins.seo) {
+					qr_seo_page_jump($(this));
+				} else {
+					qr_page_jump($(this));
+				}
 			}
 		});
 
@@ -473,8 +464,12 @@
 							$('#qr_posts').find('.divider').last().remove();
 							$(this).remove();
 							var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
-							if (decoded_post.length) decoded_post.remove();
-							if (qr_author.length) qr_author.remove();
+							if (decoded_post.length) {
+								decoded_post.remove();
+							}
+							if (qr_author.length) {
+								qr_author.remove();
+							}
 						});
 					}
 					else {
@@ -484,8 +479,12 @@
 							merged_post.remove();
 							reply_posts.find('.divider').last().remove();
 							var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
-							if (decoded_post.length) decoded_post.remove();
-							if (qr_author.length) qr_author.remove();
+							if (decoded_post.length) {
+								decoded_post.remove();
+							}
+							if (qr_author.length) {
+								qr_author.remove();
+							}
 						});
 					}
 				}
@@ -534,8 +533,7 @@
 								$('#qr_posts').find('.divider').last().remove();
 								$(this).remove();
 							});
-						}
-						else {
+						} else {
 							$('#qr_posts').one('qr_insert_before', function () {
 								$('#qr_posts').find('div.post').last().remove();
 							});
@@ -546,8 +544,7 @@
 							qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
 						}
 					});
-				}
-				else if (res.preview) {
+				} else if (res.preview) {
 					$('#preview').css('display', 'block');
 					$('#preview h3').html(res.PREVIEW_TITLE);
 					$('#preview .content').html(res.PREVIEW_TEXT);
@@ -559,8 +556,7 @@
 						qr_soft_scroll($('#preview'));
 					}
 					$('#qr_postform').trigger('ajax_submit_preview');
-				}
-				else if (res.noapprove) {
+				} else if (res.noapprove) {
 					$('input[name="post"]').removeAttr('data-clicked');
 					$('#message-box textarea').val('').attr('style', 'height: 9em;');
 
@@ -584,14 +580,12 @@
 					if (quickreply.settings.allowedGuest) {
 						qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
 					}
-				}
-				else if (res.post_update) {
+				} else if (res.post_update) {
 					// Send the message again with the updated ID of the last post.
 					$(quickreply.editor.mainForm)
 						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id)
 						.end().find('input[name="post"]').click();
-				}
-				else if (quickreply.settings.allowedGuest) {
+				} else if (quickreply.settings.allowedGuest) {
 					qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
 				}
 				// else qr_ajax_error();
@@ -604,8 +598,7 @@
 	 *
 	 * @param {jQuery} container
 	 */
-	function handle_drops(container)
-	{
+	function handle_drops(container) {
 		/**
 		 * Dropdowns
 		 */
@@ -629,12 +622,22 @@
 				contents = data ? $this.children(data) : $this.children('div:first');
 			}
 
-			if (!trigger.length || !contents.length) return;
+			if (!trigger.length || !contents.length) {
+				return;
+			}
 
-			if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
-			if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
-			if ($this.hasClass('dropdown-left')) options.direction = 'left';
-			if ($this.hasClass('dropdown-right')) options.direction = 'right';
+			if ($this.hasClass('dropdown-up')) {
+				options.verticalDirection = 'up';
+			}
+			if ($this.hasClass('dropdown-down')) {
+				options.verticalDirection = 'down';
+			}
+			if ($this.hasClass('dropdown-left')) {
+				options.direction = 'left';
+			}
+			if ($this.hasClass('dropdown-right')) {
+				options.direction = 'right';
+			}
 
 			phpbb.registerDropdown(trigger, contents, options);
 		});
@@ -663,30 +666,21 @@
 				slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
 			if (!persist) {
-				if (links.is('.rightside'))
-				{
+				if (links.is('.rightside')) {
 					links.filter('.rightside:first').before(html);
 					$this.children('.responsive-menu').addClass('rightside');
-				}
-				else
-				{
+				} else {
 					$this.append(html);
 				}
 			}
 
 			var item = $this.children('.responsive-menu'),
 				menu = item.find('.dropdown-contents'),
-				//lastWidth = false,
 				compact = false,
 				responsive = false,
 				copied = false;
 
 			function check() {
-				//var width = $body.width();
-				//if (responsive && width <= lastWidth) {
-				//	return;
-				//}
-
 				// Unhide the quick-links menu if it has content
 				if (persist) {
 					item.addClass('hidden');
@@ -700,7 +694,9 @@
 					responsive = false;
 					$this.removeClass('responsive');
 					links.css('display', '');
-					if (!persist) item.css('display', 'none');
+					if (!persist) {
+						item.css('display', 'none');
+					}
 				}
 
 				if (compact) {
@@ -711,7 +707,9 @@
 				// Find tallest element
 				var maxHeight = 0;
 				allLinks.each(function() {
-					if (!$(this).height()) return;
+					if (!$(this).height()) {
+						return;
+					}
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 				});
 
@@ -730,7 +728,9 @@
 
 				var compactMaxHeight = 0;
 				allLinks.each(function() {
-					if (!$(this).height()) return;
+					if (!$(this).height()) {
+						return;
+					}
 					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 				});
 
@@ -746,7 +746,9 @@
 				if (!copied) {
 					var clone = links.clone(true);
 					clone.filter('.rightside').each(function() {
-						if (persist) $(this).addClass('clone');
+						if (persist) {
+							$(this).addClass('clone');
+						}
 						menu.prepend(this);
 					});
 
@@ -778,7 +780,9 @@
 
 					maxHeight = 0;
 					filterLastList.each(function() {
-						if (!$(this).height()) return;
+						if (!$(this).height()) {
+							return;
+						}
 						maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 					});
 
@@ -795,7 +799,9 @@
 				links.css('display', 'none');
 			}
 
-			if (!persist) phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+			if (!persist) {
+				phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+			}
 
 			check();
 			$(window).resize(check);
