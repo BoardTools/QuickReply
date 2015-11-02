@@ -16,7 +16,7 @@
 	 * @param {jQuery} element
 	 */
 	function qr_add_ajax(element) {
-		element.find('[data-ajax]').each(function() {
+		element.find('[data-ajax]').each(function () {
 			var $this = $(this);
 			var ajax = $this.attr('data-ajax');
 			var filter = $this.attr('data-filter');
@@ -37,7 +37,7 @@
 		/**
 		 * Make the display post links to use JS
 		 */
-		element.find('.display_post').click(function(e) {
+		element.find('.display_post').click(function (e) {
 			// Do not follow the link
 			e.preventDefault();
 
@@ -83,11 +83,11 @@
 	 */
 	function qr_ajax_error(text) {
 		var alert = phpbb.alert(quickreply.language.AJAX_ERROR_TITLE, quickreply.language.AJAX_ERROR + ((text) ? '<br />' + text : ''));
-		setTimeout(function() {
-			$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
+		setTimeout(function () {
+			$('#darkenwrapper').fadeOut(phpbb.alertTime, function () {
 				alert.hide();
 			});
-		},  3000);
+		}, 3000);
 	}
 
 	/* Work with browser's history. */
@@ -126,8 +126,7 @@
 			url = url.replace(/&/, '?');
 		}
 		var url_hash = url.indexOf('#'), qr_get_unread = false, originalURL = url;
-		if (url_hash > -1)
-		{
+		if (url_hash > -1) {
 			qr_get_unread = (url.substr(url_hash) === '#unread');
 			url = url.substr(0, url_hash);
 		}
@@ -137,17 +136,17 @@
 		if (!$dark.is(':visible') && $(window).width() >= 700) {
 			$dark.fadeIn(phpbb.alertTime);
 		}
-		setTimeout(function() {
+		setTimeout(function () {
 			$loadingIndicator.finish().show();
-		},  100);
-		var qr_request_method = 'GET', qr_data_object = { qr_cur_post_id: qr_current_post, qr_request: 1 };
+		}, 100);
+		var qr_request_method = 'GET', qr_data_object = {qr_cur_post_id: qr_current_post, qr_request: 1};
 		if (quickreply.plugins.seo) {
 			if (qr_get_unread) {
 				var viewtopic_link = quickreply.editor.viewtopicLink;
 				url = viewtopic_link + ((viewtopic_link.indexOf('?') < 0) ? '?' : '&') + 'view=unread';
 			} else if (url.indexOf('hilit=') > -1) {
 				url = url.replace(/(&amp;|&|\?)hilit=([^&]*)(&amp;|&)?/, function (str, p1, p2, p3) {
-					$.extend(qr_data_object, { hilit: p2 });
+					$.extend(qr_data_object, {hilit: p2});
 					return (p3) ? p1 : '';
 				});
 				qr_request_method = 'POST';
@@ -161,7 +160,9 @@
 			data: qr_data_object,
 			method: qr_request_method,
 			error: function (e, text, ee) {
-				if (qr_stop_history) qr_stop_history = false;
+				if (qr_stop_history) {
+					qr_stop_history = false;
+				}
 				qr_ajax_error();
 			},
 			success: function (res, x) {
@@ -175,12 +176,19 @@
 						reply_form_submit_buttons.prepend(reply_submit_buttons.html());
 						if (qr_replace_history) {
 							qr_replace_history = false;
-							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title'), replaced: true});
+							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {
+								url: url,
+								title: reply_submit_buttons.attr('data-page-title'),
+								replaced: true
+							});
 							document.title = reply_submit_buttons.attr('data-page-title');
 						} else if (qr_stop_history) {
 							qr_stop_history = false;
 						} else {
-							phpbb.history.pushUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {url: url, title: reply_submit_buttons.attr('data-page-title')});
+							phpbb.history.pushUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {
+								url: url,
+								title: reply_submit_buttons.attr('data-page-title')
+							});
 							document.title = reply_submit_buttons.attr('data-page-title');
 						}
 						reply_pagination.remove();
@@ -191,10 +199,12 @@
 						qr_hide_subject(elements);
 						$('#qr_posts').trigger('qr_loaded', [$(elements)]);
 						var alert_box = $('#phpbb_alert'), alert_delay = (alert_box.is(':visible')) ? 3000 : 0;
-						if (alert_box.is(':visible')) alert_box.find('.alert_close').off('click').click(function (e) {
-							phpbb.alert.close(alert_box, true);
-							e.preventDefault();
-						});
+						if (alert_box.is(':visible')) {
+							alert_box.find('.alert_close').off('click').click(function (e) {
+								phpbb.alert.close(alert_box, true);
+								e.preventDefault();
+							});
+						}
 						setTimeout(function () {
 							$dark.fadeOut(phpbb.alertTime, function () {
 								alert_box.hide();
@@ -207,6 +217,7 @@
 							res_function(qr_scroll_element);
 						}
 					}
+
 					if (res.insert) {
 						qr_mark_read($('#qr_posts'));
 						var reply_temp_container = $(quickreply.editor.tempContainer);
@@ -271,10 +282,12 @@
 				} else if (res.captcha_refreshed) {
 					$('#qr_captcha_container').slideUp(qr_slide_interval, function () {
 						var alert_box = $('#phpbb_alert'), alert_delay = (alert_box.is(':visible')) ? 3000 : 0;
-						if (alert_box.is(':visible')) alert_box.find('.alert_close').off('click').click(function (e) {
-							phpbb.alert.close(alert_box, true);
-							e.preventDefault();
-						});
+						if (alert_box.is(':visible')) {
+							alert_box.find('.alert_close').off('click').click(function (e) {
+								phpbb.alert.close(alert_box, true);
+								e.preventDefault();
+							});
+						}
 						setTimeout(function () {
 							$dark.fadeOut(phpbb.alertTime, function () {
 								alert_box.hide();
@@ -386,7 +399,7 @@
 			qr_soft_scroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
 		});
 
-		$('.action-bar .pagination .page-jump-form :button').click(function() {
+		$('.action-bar .pagination .page-jump-form :button').click(function () {
 			var $input = $(this).siblings('input.inputbox');
 			if (!quickreply.settings.ajaxPagination) {
 				pageJump($input);
@@ -397,7 +410,7 @@
 			}
 		});
 
-		$('.action-bar .pagination .page-jump-form input.inputbox').on('keypress', function(event) {
+		$('.action-bar .pagination .page-jump-form input.inputbox').on('keypress', function (event) {
 			if (event.which === 13 || event.keyCode === 13) {
 				event.preventDefault();
 				if (!quickreply.settings.ajaxPagination) {
@@ -410,35 +423,20 @@
 			}
 		});
 
-		$('.action-bar .pagination .dropdown-trigger').click(function() {
+		$('.action-bar .pagination .dropdown-trigger').click(function () {
 			var $dropdownContainer = $(this).parent();
 			// Wait a little bit to make sure the dropdown has activated
-			setTimeout(function() {
+			setTimeout(function () {
 				if ($dropdownContainer.hasClass('dropdown-visible')) {
 					$dropdownContainer.find('input.inputbox').focus();
 				}
 			}, 100);
 		});
 	}
+
 	$('.action-bar .pagination').find('.page-jump-form :button').unbind('click');
 	$('.action-bar .pagination').find('.page-jump-form input.inputbox').off('keypress');
 	qr_bind_pagination();
-
-	/**
-	 * Hides subjects of the posts within the specified elements (if needed).
-	 *
-	 * @param {jQuery} elements
-	 */
-	function qr_hide_subject(elements) {
-		if (quickreply.settings.hideSubject) {
-			elements.find('.post .postbody div').each(function () {
-				var qr_post_subject = $(this).find('h3:first').not('.first');
-				qr_post_subject.css('display', 'none');
-				//qr_post_subject.next().next('p.author').css('display', 'inline');
-			});
-		}
-	}
-	qr_hide_subject($('#qr_posts'));
 
 	/* Save message when navigating the topic. */
 	var restored_message = $(quickreply.editor.messageStorage).html();
@@ -455,9 +453,9 @@
 	if (quickreply.settings.ajaxSubmit) {
 		phpbb.addAjaxCallback('qr_ajax_submit', function (res) {
 			if (res.success) {
-				var reply_set_data = { qr_no_refresh: 1 };
+				var reply_set_data = {qr_no_refresh: 1};
 				if (res.merged === 'merged') {
-					$.extend(reply_set_data, { qr_get_current: 1 });
+					$.extend(reply_set_data, {qr_get_current: 1});
 					if (quickreply.settings.softScroll) {
 						$('#qr_posts').find('div.post').last().slideUp(qr_slide_interval, function () {
 							var merged_post_id = $(this).attr('id');
@@ -520,14 +518,14 @@
 					}
 
 					if (quickreply.settings.allowedGuest) {
-						qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
+						qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 					}
 				}, true);
 			} else {
 				if (res.NEXT_URL) {
-					var reply_set_data = { qr_no_refresh: 1 };
+					var reply_set_data = {qr_no_refresh: 1};
 					if (res.merged === 'merged') {
-						$.extend(reply_set_data, { qr_get_current: 1 });
+						$.extend(reply_set_data, {qr_get_current: 1});
 						if (quickreply.settings.softScroll) {
 							$('#qr_posts').find('div.post').last().slideUp(qr_slide_interval, function () {
 								$('#qr_posts').find('.divider').last().remove();
@@ -541,7 +539,7 @@
 					}
 					qr_ajax_reload(res.NEXT_URL.replace(/&amp;/ig, '&') + '#unread', reply_set_data, function () {
 						if (quickreply.settings.allowedGuest) {
-							qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
+							qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 						}
 					});
 				} else if (res.preview) {
@@ -578,7 +576,7 @@
 					}
 
 					if (quickreply.settings.allowedGuest) {
-						qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
+						qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 					}
 				} else if (res.post_update) {
 					// Send the message again with the updated ID of the last post.
@@ -586,7 +584,7 @@
 						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id)
 						.end().find('input[name="post"]').click();
 				} else if (quickreply.settings.allowedGuest) {
-					qr_ajax_reload(document.location.href, { qr_captcha_refresh: 1 });
+					qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 				}
 				// else qr_ajax_error();
 			}
@@ -602,7 +600,7 @@
 		/**
 		 * Dropdowns
 		 */
-		container.find('.dropdown-container').each(function() {
+		container.find('.dropdown-container').each(function () {
 			var $this = $(this),
 				trigger = $this.find('.dropdown-trigger:first'),
 				contents = $this.find('.dropdown'),
@@ -648,12 +646,11 @@
 	 *
 	 * @param {jQuery} container
 	 */
-	function qr_responsive_links(container)
-	{
+	function qr_responsive_links(container) {
 		/**
 		 * Responsive link lists
 		 */
-		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
+		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function () {
 			var $this = $(this),
 				$body = $('body'),
 				filterSkip = '.breadcrumbs, [data-skip-responsive]',
@@ -706,7 +703,7 @@
 
 				// Find tallest element
 				var maxHeight = 0;
-				allLinks.each(function() {
+				allLinks.each(function () {
 					if (!$(this).height()) {
 						return;
 					}
@@ -727,7 +724,7 @@
 				$this.addClass('compact');
 
 				var compactMaxHeight = 0;
-				allLinks.each(function() {
+				allLinks.each(function () {
 					if (!$(this).height()) {
 						return;
 					}
@@ -745,7 +742,7 @@
 
 				if (!copied) {
 					var clone = links.clone(true);
-					clone.filter('.rightside').each(function() {
+					clone.filter('.rightside').each(function () {
 						if (persist) {
 							$(this).addClass('clone');
 						}
@@ -779,7 +776,7 @@
 					links.not(filterLast).css('display', 'none');
 
 					maxHeight = 0;
-					filterLastList.each(function() {
+					filterLastList.each(function () {
 						if (!$(this).height()) {
 							return;
 						}

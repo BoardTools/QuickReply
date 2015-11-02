@@ -139,7 +139,7 @@
 					if (qrAlert) {
 						qr_alert_remove();
 					}
-					qrAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px; cursor: pointer;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" style="font-size: 11px !important;">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').mousedown(qr_insert_quickquote).appendTo('body');
+					qrAlert = $('<div class="dropdown qr_dropdown qr_quickquote" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').mousedown(qr_insert_quickquote).appendTo('body');
 					setTimeout(function () {
 						$(document.body).one('mousedown', qr_alert_remove);
 					}, 10);
@@ -243,7 +243,7 @@
 			var viewprofile_url = link.attr('href');
 			var qr_pm_link = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
 
-			var qrNickAlert = $('<div class="dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" class="qr_quicknick" style="font-size: 11px !important;" title="' + quickreply.language.QUICKNICK_TITLE + '">' + quickreply.language.QUICKNICK + '</a></li>' + ((quickreply.settings.quickNickPM && qr_pm_link.length) ? '<li><a href="' + qr_pm_link.attr('href') + '" class="qr_reply_in_pm" style="font-size: 11px !important;" title="' + quickreply.language.REPLY_IN_PM + '">' + quickreply.language.REPLY_IN_PM + '</a></li>' : '') + '<li><a href="' + viewprofile_url + '" class="qr_profile" style="font-size: 11px !important;" title="' + quickreply.language.PROFILE + '">' + quickreply.language.PROFILE + '</a></li></ul></div>').appendTo('body');
+			var qrNickAlert = $('<div class="dropdown qr_dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" class="qr_quicknick" title="' + quickreply.language.QUICKNICK_TITLE + '">' + quickreply.language.QUICKNICK + '</a></li>' + ((quickreply.settings.quickNickPM && qr_pm_link.length) ? '<li><a href="' + qr_pm_link.attr('href') + '" class="qr_reply_in_pm" title="' + quickreply.language.REPLY_IN_PM + '">' + quickreply.language.REPLY_IN_PM + '</a></li>' : '') + '<li><a href="' + viewprofile_url + '" class="qr_profile" title="' + quickreply.language.PROFILE + '">' + quickreply.language.PROFILE + '</a></li></ul></div>').appendTo('body');
 
 			$('a.qr_quicknick', qrNickAlert).mousedown(function () {
 				quickreply.functions.quickNick(link);

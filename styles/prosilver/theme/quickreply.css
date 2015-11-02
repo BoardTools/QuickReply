@@ -1,0 +1,13 @@
+/* Styling for some features of QuickReply Reloaded. */
+.qr_dropdown a {
+	font-size: 11px !important;
+}
+
+.qr_quickquote {
+	cursor: pointer;
+}
+
+.post.hidden_subject .postbody p.author {
+	padding-top: 10px;
+	padding-bottom: 5px;
+}

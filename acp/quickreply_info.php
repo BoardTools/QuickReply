@@ -18,7 +18,7 @@ class quickreply_info
 			'title'		=> 'ACP_QUICKREPLY',
 			'version'	=> '0.0.1',
 			'modes'		=> array(
-				'config_quickreply'		=> array('title' => 'ACP_QR_CONFIG', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QR_CONFIG')),
+				'config_quickreply'		=> array('title' => 'ACP_QUICKREPLY_EXPLAIN', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QUICKREPLY_EXPLAIN')),
 			),
 		);
 	}

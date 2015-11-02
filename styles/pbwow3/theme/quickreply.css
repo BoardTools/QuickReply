@@ -1,0 +1,8 @@
+/* Styling for some features of QuickReply Reloaded. */
+.qr_dropdown a {
+	font-size: 11px !important;
+}
+
+.qr_quickquote {
+	cursor: pointer;
+}
