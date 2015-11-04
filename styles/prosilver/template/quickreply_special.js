@@ -1,4 +1,4 @@
-/* global phpbb, phpbb_seo, quickreply */
+/* global quickreply */
 ; (function ($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
@@ -7,7 +7,7 @@
 	 *
 	 * @param {jQuery} elements
 	 */
-	function qr_hide_subject(elements) {
+	quickreply.functions.qr_hide_subject = function (elements) {
 		if (quickreply.settings.hideSubject) {
 			elements.find('.post').each(function () {
 				var qr_post_subject = $(this).find('.postbody div h3:first').not('.first');
@@ -17,6 +17,6 @@
 				}
 			});
 		}
-	}
-	qr_hide_subject($('#qr_posts'));
+	};
+	quickreply.functions.qr_hide_subject($('#qr_posts'));
 })(jQuery, window, document);
