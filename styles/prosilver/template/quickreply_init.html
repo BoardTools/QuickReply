@@ -1,8 +1,11 @@
+<!-- IF S_QUICK_REPLY -->
 <div id="qr_message" style="display: none;">{MESSAGE}</div>
 <div id="qr_read_post_img" style="display: none;">{READ_POST_IMG}</div>
+<!-- ENDIF -->
 <script type="text/javascript">
 //<![CDATA[
 var quickreply = {};
+<!-- IF S_QUICK_REPLY -->
 
 // External plugins compatible with QuickReply.
 quickreply.plugins = {
@@ -24,7 +27,6 @@ quickreply.settings = {
 	enableComma: <!-- IF S_QR_COMMA_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	enableScroll: <!-- IF S_QR_ENABLE_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
 	fullQuote: <!-- IF S_QR_FULL_QUOTE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	hideSubject: <!-- IF QR_HIDE_POSTS_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->,
 	pluploadEnabled: <!-- IF S_PLUPLOAD and S_QR_SHOW_ATTACH_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickNick: <!-- IF S_QR_QUICKNICK_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickNickRef: <!-- IF S_QR_QUICKNICK_REF -->true<!-- ELSE -->false<!-- ENDIF -->,
@@ -71,8 +73,20 @@ quickreply.language = {
 	REPLY_IN_PM: '{LA_QR_REPLY_IN_PM}',
 	WROTE: '{LA_WROTE}'
 };
+<!-- ENDIF -->
+
+// Special features for QuickReply - settings.
+quickreply.special = {
+	hideSubject: <!-- IF QR_HIDE_POSTS_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
+};
+
+// Special features for QuickReply - functions.
+quickreply.special.functions = {};
 //]]>
 </script>
+<!-- IF S_QUICK_REPLY -->
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_core.js -->
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_plugins.js -->
 <!-- IF S_QR_SHOW_BUTTON_TRANSLIT --><!-- INCLUDEJS @boardtools_quickreply/translit.js --><!-- ENDIF -->
+<!-- ENDIF -->
+<!-- INCLUDEJS @boardtools_quickreply/quickreply_special.js -->

@@ -7,8 +7,8 @@
 	 *
 	 * @param {jQuery} elements
 	 */
-	quickreply.functions.qr_hide_subject = function (elements) {
-		if (quickreply.settings.hideSubject) {
+	quickreply.special.functions.qr_hide_subject = function (elements) {
+		if (quickreply.special.hideSubject) {
 			elements.find('.post').each(function () {
 				var qr_post_subject = $(this).find('.postbody div h3:first').not('.first');
 				if (qr_post_subject.length) {
@@ -18,5 +18,5 @@
 			});
 		}
 	};
-	quickreply.functions.qr_hide_subject($('#qr_posts'));
+	quickreply.special.functions.qr_hide_subject($('#qr_posts'));
 })(jQuery, window, document);

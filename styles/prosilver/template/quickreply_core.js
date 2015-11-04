@@ -196,7 +196,7 @@
 						handle_drops($('.action-bar .pagination'));
 						qr_bind_pagination();
 						qr_add_ajax(elements);
-						quickreply.functions.qr_hide_subject(elements);
+						quickreply.special.functions.qr_hide_subject(elements);
 						$('#qr_posts').trigger('qr_loaded', [$(elements)]);
 						var alert_box = $('#phpbb_alert'), alert_delay = (alert_box.is(':visible')) ? 3000 : 0;
 						if (alert_box.is(':visible')) {
