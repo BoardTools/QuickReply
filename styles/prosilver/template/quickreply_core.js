@@ -100,17 +100,24 @@
 		});
 
 		/* Workaround for browser's cache. */
-		$(window).on("load", function (e) {
-			if (phpbb.history.isSupported("state")) {
-				var qr_current_state = history.state;
-				if (qr_current_state !== null && qr_current_state.replaced) {
-					qr_stop_history = true;
-					qr_ajax_reload(qr_current_state.url);
+		if (phpbb.history.isSupported("state")) {
+			$(window).on("unload", function() {
+				var current_state = history.state, d = new Date();
+				if (current_state !== null && current_state.replaced) {
+					phpbb.history.replaceUrl(window.location.href + '&ajax_time=' + d.getTime(), document.title, current_state);
 				}
-			}
+			});
 
-			phpbb.history.replaceUrl(location.href, '', {url: location.href, title: document.title});
-		});
+			var current_state = history.state;
+			if (current_state !== null) {
+				phpbb.history.replaceUrl(window.location.href.replace(/&ajax_time=\d*/i, ''), document.title, current_state);
+			} else {
+				phpbb.history.replaceUrl(window.location.href, document.title, {
+					url: window.location.href,
+					title: document.title
+				});
+			}
+		}
 	}
 
 	/**
@@ -546,9 +553,11 @@
 					$('#preview').css('display', 'block');
 					$('#preview h3').html(res.PREVIEW_TITLE);
 					$('#preview .content').html(res.PREVIEW_TEXT);
-					if (quickreply.settings.attachBox && res.PREVIEW_ATTACH) {
+					if (quickreply.settings.attachBox) {
 						$('#preview').find('dl.attachbox').remove();
-						$('#preview .content').after(res.PREVIEW_ATTACH);
+						if (res.PREVIEW_ATTACH) {
+							$('#preview .content').after(res.PREVIEW_ATTACH);
+						}
 					}
 					if (quickreply.settings.enableScroll) {
 						qr_soft_scroll($('#preview'));

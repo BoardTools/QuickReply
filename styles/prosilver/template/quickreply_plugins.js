@@ -6,9 +6,15 @@
 	/* Not Change Subject Plugin */
 	/*****************************/
 	if (quickreply.settings.unchangedSubject) {
-		$(document).ready(function () {
-			$("#subject").attr('disabled', 'disabled').css('color', 'grey');
-		});
+		if (quickreply.settings.hideSubjectBox) {
+			$(document).ready(function () {
+				$("#subject").closest("dl").remove();
+			});
+		} else {
+			$(document).ready(function() {
+				$("#subject").attr('disabled', 'disabled').css('color', 'grey');
+			});
+		}
 	}
 
 	/*********************/

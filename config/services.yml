@@ -7,14 +7,26 @@ services:
             - @template
             - @user
             - @dbal.conn
-            - @ext.manager
             - @request
             - @content.visibility
+            - @boardtools.quickreply.listener_helper
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: event.listener }
+
+    boardtools.quickreply.listener_helper:
+        class: boardtools\quickreply\event\listener_helper
+        arguments:
+            - @auth
+            - @config
+            - @template
+            - @user
+            - @ext.manager
+            - @request
             - @cache
             - @captcha.factory
             - @plupload
             - @mimetype.guesser
             - %core.root_path%
             - %core.php_ext%
-        tags:
-            - { name: event.listener }
