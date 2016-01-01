@@ -59,18 +59,18 @@ class listener_helper
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\auth\auth                  $auth
-	 * @param \phpbb\config\config              $config
-	 * @param \phpbb\template\template          $template
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\extension\manager          $phpbb_extension_manager
-	 * @param \phpbb\request\request            $request
-	 * @param \phpbb\cache\service              $cache
-	 * @param \phpbb\captcha\factory            $captcha
-	 * @param \phpbb\plupload\plupload          $plupload
-	 * @param \phpbb\mimetype\guesser           $mimetype_guesser
-	 * @param string                            $phpbb_root_path Root path
-	 * @param string                            $php_ext
+	 * @param \phpbb\auth\auth         $auth
+	 * @param \phpbb\config\config     $config
+	 * @param \phpbb\template\template $template
+	 * @param \phpbb\user              $user
+	 * @param \phpbb\extension\manager $phpbb_extension_manager
+	 * @param \phpbb\request\request   $request
+	 * @param \phpbb\cache\service     $cache
+	 * @param \phpbb\captcha\factory   $captcha
+	 * @param \phpbb\plupload\plupload $plupload
+	 * @param \phpbb\mimetype\guesser  $mimetype_guesser
+	 * @param string                   $phpbb_root_path Root path
+	 * @param string                   $php_ext
 	 */
 	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, \phpbb\cache\service $cache, \phpbb\captcha\factory $captcha, \phpbb\plupload\plupload $plupload, \phpbb\mimetype\guesser $mimetype_guesser, $phpbb_root_path, $php_ext)
 	{
@@ -115,6 +115,13 @@ class listener_helper
 		}
 	}
 
+	/**
+	 * Output the page for QuickReply
+	 *
+	 * @param string $page_title      The title of the page
+	 * @param int    $current_post_id ID of the current last post
+	 * @param int    $forum_id        Forum ID
+	 */
 	public function ajax_response($page_title, $current_post_id, $forum_id)
 	{
 		// Fix issues if the inserted post is not the first.
@@ -143,6 +150,12 @@ class listener_helper
 		));
 	}
 
+	/**
+	 * Assign template variables for guests if quick reply is available for them
+	 *
+	 * @param int   $forum_id   Forum ID
+	 * @param array $topic_data Array with topic data
+	 */
 	public function enable_qr_for_guests($forum_id, $topic_data)
 	{
 		$topic_id = $topic_data['topic_id'];
@@ -218,6 +231,11 @@ class listener_helper
 		));
 	}
 
+	/**
+	 * Assign template variables if quick reply is enabled
+	 *
+	 * @param int $forum_id Forum ID
+	 */
 	public function assign_template_variables_for_qr($forum_id)
 	{
 		if ($this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') && $this->user->data['is_registered'] && $this->config['merge_interval'])
@@ -263,10 +281,10 @@ class listener_helper
 			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
 			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll'],
 
-			'S_QR_ALLOWED_GUEST'   => $this->config['qr_allow_for_guests'] && $this->user->data['user_id'] == ANONYMOUS,
+			'S_QR_ALLOWED_GUEST' => $this->config['qr_allow_for_guests'] && $this->user->data['user_id'] == ANONYMOUS,
 
 			// ABBC3
-			'S_ABBC3_INSTALLED'    => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
+			'S_ABBC3_INSTALLED'  => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
 		));
 	}
 }
