@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* quickreply [English]
+* quickreply [Arabic]
 *
 * @package language quickreply
 * @copyright (c) 2014 William Jacoby (bonelifer)
