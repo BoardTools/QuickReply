@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2015 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -151,6 +151,104 @@ class listener_helper
 	}
 
 	/**
+	 * Sends ajax response in case of errors
+	 *
+	 * @param array $error Array with error strings
+	 */
+	public function ajax_check_errors($error)
+	{
+		if (sizeof($error))
+		{
+			$json_response = new \phpbb\json_response;
+			$json_response->send(array(
+				'error'         => true,
+				'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
+				'MESSAGE_TEXT'  => implode('<br />', $error),
+			));
+		}
+	}
+
+	/**
+	 * Define BBCode and smilies status, handle attachments
+	 *
+	 * @param int $forum_id Forum ID
+	 * @param int $topic_id Topic ID
+	 */
+	public function prepare_qr_form($forum_id, $topic_id)
+	{
+		if (!function_exists('generate_smilies'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+		}
+
+		// HTML, BBCode, Smilies, Images, Url, Flash and Quote status
+		$bbcode_status = ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
+		$smilies_status = ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
+		$img_status = ($bbcode_status && $this->auth->acl_get('f_img', $forum_id)) ? true : false;
+		$url_status = ($this->config['allow_post_links']) ? true : false;
+		$flash_status = ($bbcode_status && $this->auth->acl_get('f_flash', $forum_id) && $this->config['allow_post_flash']) ? true : false;
+		$quote_status = true;
+
+		// Build custom bbcodes array
+		if ($bbcode_status)
+		{
+			display_custom_bbcodes();
+		}
+
+		// Generate smiley listing
+		if ($smilies_status)
+		{
+			generate_smilies('inline', $forum_id);
+		}
+
+		$this->template->assign_vars(array(
+			'S_BBCODE_ALLOWED'  => ($bbcode_status) ? 1 : 0,
+			'S_SMILIES_ALLOWED' => $smilies_status,
+			'S_BBCODE_IMG'      => $img_status,
+			'S_LINKS_ALLOWED'   => $url_status,
+			'S_BBCODE_FLASH'    => $flash_status,
+			'S_BBCODE_QUOTE'    => $quote_status,
+		));
+
+		// Show attachment box for adding attachments
+		$show_attach_box = (
+			@ini_get('file_uploads') != '0' &&
+			strtolower(@ini_get('file_uploads')) != 'off' &&
+			$this->config['allow_attachments'] &&
+			$this->auth->acl_get('u_attach') &&
+			$this->auth->acl_get('f_attach', $forum_id)
+		);
+
+		if ($bbcode_status || $smilies_status || $this->config['qr_attach'] && $show_attach_box)
+		{
+			$this->user->add_lang('posting');
+		}
+
+		if ($this->config['qr_attach'] && $show_attach_box)
+		{
+			$this->handle_attachments($forum_id, $topic_id, $show_attach_box);
+		}
+	}
+
+	/**
+	 * Sets keys for the specified array of hidden fields if their values in another array are true
+	 *
+	 * @param array $hidden_fields Reference to the array of hidden fields
+	 * @param array $set_array     Array containing keys and values.
+	 *                             Each key will be set to 1 if the corresponding value is true
+	 */
+	protected function set_hidden_fields(&$hidden_fields, $set_array)
+	{
+		foreach ($set_array as $key => $value)
+		{
+			if ($value)
+			{
+				$hidden_fields[$key] = 1;
+			}
+		}
+	}
+
+	/**
 	 * Assign template variables for guests if quick reply is available for them
 	 *
 	 * @param int   $forum_id   Forum ID
@@ -174,12 +272,14 @@ class listener_helper
 		);
 
 		// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
-		(!$s_bbcode) ? $qr_hidden_fields['disable_bbcode'] = 1 : true;
-		(!$s_smilies) ? $qr_hidden_fields['disable_smilies'] = 1 : true;
-		(!$this->config['allow_post_links']) ? $qr_hidden_fields['disable_magic_url'] = 1 : true;
-		($s_attach_sig) ? $qr_hidden_fields['attach_sig'] = 1 : true;
-		($s_notify) ? $qr_hidden_fields['notify'] = 1 : true;
-		($topic_data['topic_status'] == ITEM_LOCKED) ? $qr_hidden_fields['lock_topic'] = 1 : true;
+		$this->set_hidden_fields($qr_hidden_fields, array(
+			'disable_bbcode'    => !$s_bbcode,
+			'disable_smilies'   => !$s_smilies,
+			'disable_magic_url' => !$this->config['allow_post_links'],
+			'attach_sig'        => $s_attach_sig,
+			'notify'            => $s_notify,
+			'lock_topic'        => $topic_data['topic_status'] == ITEM_LOCKED,
+		));
 
 		$this->template->assign_vars(array(
 			'S_QUICK_REPLY'    => true,

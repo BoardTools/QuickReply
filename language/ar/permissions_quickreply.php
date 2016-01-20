@@ -1,18 +1,15 @@
 <?php
 /**
-*
-* quickreply [Arabic]
-*
-* @package quickreply
-* @copyright (c) 2014 William Jacoby (bonelifer)
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
-*
-* Translated By : Bassel Taha Alhitary - www.alhitary.net
-*/
+ *
+ * @package       QuickReply Reloaded
+ * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 /**
-* DO NOT CHANGE
-*/
+ * DO NOT CHANGE
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -24,9 +21,9 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'ACP_QUICKREPLY'				=> 'الرد السريع',
-	'ACP_QUICKREPLY_EXPLAIN'		=> 'الإعدادات',
-
-	'ACL_A_QUICKREPLY'			=> 'يستطيع تعديل إعدادات الرد السريع',
-	'ACL_F_QR_CHANGE_SUBJECT'	=> 'يستطيع تعديل عنوان المُشاركة',
+	'ACP_QUICKREPLY'          => 'الرد السريع',
+	'ACP_QUICKREPLY_EXPLAIN'  => 'الإعدادات',
+	//
+	'ACL_A_QUICKREPLY'        => 'يستطيع تعديل إعدادات الرد السريع',
+	'ACL_F_QR_CHANGE_SUBJECT' => 'يستطيع تعديل عنوان المُشاركة',
 ));

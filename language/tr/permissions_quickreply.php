@@ -1,17 +1,15 @@
 <?php
 /**
-*
-* quickreply [Turkish]
-*
-* @package quickreply
-* @copyright (c) 2015 Edip Dincer
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
-*
-*/
+ *
+ * @package       QuickReply Reloaded
+ * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 /**
-* DO NOT CHANGE
-*/
+ * DO NOT CHANGE
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -23,9 +21,9 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'ACP_QUICKREPLY'				=> 'Quick Reply',
-	'ACP_QUICKREPLY_EXPLAIN'		=> 'Quick Reply Ayarları',
-
-	'ACL_A_QUICKREPLY'			=> 'Quick Reply (Hızlı Cevap) için ayarları değiştirebilirsiniz',
-	'ACL_F_QR_CHANGE_SUBJECT'	=> 'Gönderi konu başlığını değiştirebilirsiniz',
+	'ACP_QUICKREPLY'          => 'Quick Reply',
+	'ACP_QUICKREPLY_EXPLAIN'  => 'Quick Reply Ayarları',
+	//
+	'ACL_A_QUICKREPLY'        => 'Quick Reply (Hızlı Cevap) için ayarları değiştirebilirsiniz',
+	'ACL_F_QR_CHANGE_SUBJECT' => 'Gönderi konu başlığını değiştirebilirsiniz',
 ));

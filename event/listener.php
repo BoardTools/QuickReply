@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2015 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -78,8 +78,6 @@ class listener implements EventSubscriberInterface
 	 * Assign functions defined in this class to event listeners in the core
 	 *
 	 * @return array
-	 * @static
-	 * @access public
 	 */
 	public static function getSubscribedEvents()
 	{
@@ -109,7 +107,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function viewtopic_modify_sql($event)
 	{
@@ -157,7 +154,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function viewtopic_modify_post_row($event)
 	{
@@ -183,7 +179,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function viewtopic_modify_data($event)
 	{
@@ -212,58 +207,7 @@ class listener implements EventSubscriberInterface
 
 		if ($s_quick_reply)
 		{
-			if (!function_exists('generate_smilies'))
-			{
-				include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-			}
-
-			// HTML, BBCode, Smilies, Images, Url, Flash and Quote status
-			$bbcode_status = ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
-			$smilies_status = ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
-			$img_status = ($bbcode_status && $this->auth->acl_get('f_img', $forum_id)) ? true : false;
-			$url_status = ($this->config['allow_post_links']) ? true : false;
-			$flash_status = ($bbcode_status && $this->auth->acl_get('f_flash', $forum_id) && $this->config['allow_post_flash']) ? true : false;
-			$quote_status = true;
-
-			// Build custom bbcodes array
-			if ($bbcode_status)
-			{
-				display_custom_bbcodes();
-			}
-
-			// Generate smiley listing
-			if ($smilies_status)
-			{
-				generate_smilies('inline', $forum_id);
-			}
-
-			$this->template->assign_vars(array(
-				'S_BBCODE_ALLOWED'  => ($bbcode_status) ? 1 : 0,
-				'S_SMILIES_ALLOWED' => $smilies_status,
-				'S_BBCODE_IMG'      => $img_status,
-				'S_LINKS_ALLOWED'   => $url_status,
-				'S_BBCODE_FLASH'    => $flash_status,
-				'S_BBCODE_QUOTE'    => $quote_status,
-			));
-
-			// Show attachment box for adding attachments
-			$show_attach_box = (
-				@ini_get('file_uploads') != '0' &&
-				strtolower(@ini_get('file_uploads')) != 'off' &&
-				$this->config['allow_attachments'] &&
-				$this->auth->acl_get('u_attach') &&
-				$this->auth->acl_get('f_attach', $forum_id)
-			);
-
-			if ($bbcode_status || $smilies_status || $this->config['qr_attach'] && $show_attach_box)
-			{
-				$this->user->add_lang('posting');
-			}
-
-			if ($this->config['qr_attach'] && $show_attach_box)
-			{
-				$this->helper->handle_attachments($forum_id, $topic_id, $show_attach_box);
-			}
+			$this->helper->prepare_qr_form($forum_id, $topic_id);
 
 			$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
 				'qr'             => 1,
@@ -286,7 +230,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function change_subject_when_sending($event)
 	{
@@ -312,14 +255,14 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function detect_new_posts($event)
 	{
 		// Ajax submit
 		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
 		{
-			$error = $event['error'];
+			$this->helper->ajax_check_errors($event['error']);
+
 			$post_data = $event['post_data'];
 			$forum_id = (int) $post_data['forum_id'];
 			$topic_id = (int) $post_data['topic_id'];
@@ -327,16 +270,7 @@ class listener implements EventSubscriberInterface
 			$current_post = $this->request->variable('qr_cur_post_id', 0);
 			$lastclick = $this->request->variable('lastclick', time());
 
-			if (sizeof($error))
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'error'         => true,
-					'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-					'MESSAGE_TEXT'  => implode('<br />', $error),
-				));
-			}
-			else if (($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW))
+			if (($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW))
 			{
 				$sql = 'SELECT post_id
 						FROM ' . POSTS_TABLE . '
@@ -381,7 +315,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function delete_re($event)
 	{
@@ -414,21 +347,10 @@ class listener implements EventSubscriberInterface
 		// Ajax submit
 		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
 		{
-			$error = $event['error'];
-			$preview = $event['preview'];
-
-			if (sizeof($error))
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-						'error'         => true,
-						'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-						'MESSAGE_TEXT'  => implode('<br />', $error),
-				));
-			}
+			$this->helper->ajax_check_errors($event['error']);
 
 			// Preview
-			if (!sizeof($error) && $preview)
+			if ($event['preview'])
 			{
 				$post_data = $event['post_data'];
 				$forum_id = (int) $post_data['forum_id'];
@@ -460,10 +382,10 @@ class listener implements EventSubscriberInterface
 
 				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
-						'preview'        => true,
-						'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
-						'PREVIEW_TEXT'   => $preview_message,
-						'PREVIEW_ATTACH' => $preview_attachments,
+					'preview'        => true,
+					'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
+					'PREVIEW_TEXT'   => $preview_message,
+					'PREVIEW_ATTACH' => $preview_attachments,
 				));
 			}
 		}
@@ -473,8 +395,7 @@ class listener implements EventSubscriberInterface
 	 * Ajax submit
 	 *
 	 * @param object $event The event object
-	 * @return array
-	 * @access public
+	 * @return null
 	 */
 	public function ajax_submit($event)
 	{
@@ -513,7 +434,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function hide_posts_subjects_in_searchresults_sql($event)
 	{
@@ -541,7 +461,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function hide_posts_subjects_in_searchresults_tpl($event)
 	{
@@ -567,7 +486,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function ucp_prefs_get_data($event)
 	{
@@ -594,7 +512,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function ucp_prefs_set_data($event)
 	{
@@ -610,7 +527,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function acp_prefs_get_data($event)
 	{
@@ -629,7 +545,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function acp_prefs_template_data($event)
 	{
@@ -651,7 +566,6 @@ class listener implements EventSubscriberInterface
 	 *
 	 * @param object $event The event object
 	 * @return null
-	 * @access public
 	 */
 	public function add_permission($event)
 	{
