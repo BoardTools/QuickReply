@@ -91,7 +91,7 @@ class quickreply_module
 	 *
 	 * @return array
 	 */
-	public function generate_display_vars()
+	protected function generate_display_vars()
 	{
 		return array(
 			'title' => 'ACP_QUICKREPLY',
@@ -131,13 +131,34 @@ class quickreply_module
 	}
 
 	/**
+	 * Get text for title explanation (if exists)
+	 *
+	 * @param array       $vars Array of vars
+	 * @param \phpbb\user $user User object
+	 * @return string
+	 */
+	protected function get_title_explain($vars, $user)
+	{
+		$l_explain = '';
+		if ($vars['explain'] && isset($vars['lang_explain']))
+		{
+			$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+		}
+		else if ($vars['explain'])
+		{
+			$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+		}
+		return $l_explain;
+	}
+
+	/**
 	 * Output the page
 	 *
 	 * @param array                    $display_vars Array of display_vars
 	 * @param \phpbb\template\template $template     Template object
 	 * @param \phpbb\user              $user         User object
 	 */
-	public function output_page($display_vars, $template, $user)
+	protected function output_page($display_vars, $template, $user)
 	{
 		foreach ($display_vars['vars'] as $config_key => $vars)
 		{
@@ -158,16 +179,6 @@ class quickreply_module
 
 			$type = explode(':', $vars['type']);
 
-			$l_explain = '';
-			if ($vars['explain'] && isset($vars['lang_explain']))
-			{
-				$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
-			}
-			else if ($vars['explain'])
-			{
-				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
-			}
-
 			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 
 			if (empty($content))
@@ -179,7 +190,7 @@ class quickreply_module
 					'KEY'           => $config_key,
 					'TITLE'         => (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
 					'S_EXPLAIN'     => $vars['explain'],
-					'TITLE_EXPLAIN' => $l_explain,
+					'TITLE_EXPLAIN' => $this->get_title_explain($vars, $user),
 					'CONTENT'       => $content,
 				)
 			);

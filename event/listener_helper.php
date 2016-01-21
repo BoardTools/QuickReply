@@ -169,6 +169,45 @@ class listener_helper
 	}
 
 	/**
+	 * Checks whether quick reply is enabled
+	 *
+	 * @param int   $forum_id   Forum ID
+	 * @param array $topic_data Array with topic data
+	 * @return bool
+	 */
+	public function qr_is_enabled($forum_id, $topic_data)
+	{
+		if (($this->user->data['is_registered'] || $this->config['qr_allow_for_guests']) &&
+			$this->config['allow_quick_reply'] &&
+			($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) &&
+			$this->auth->acl_get('f_reply', $forum_id)
+		)
+		{
+			// Quick reply enabled forum
+			return (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $this->auth->acl_get('m_edit', $forum_id));
+		}
+		return false;
+	}
+
+	/**
+	 * Checks whether attachments are allowed in quick reply in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool
+	 */
+	public function qr_attachments_allowed($forum_id)
+	{
+		return (
+			@ini_get('file_uploads') != '0' &&
+			strtolower(@ini_get('file_uploads')) != 'off' &&
+			$this->config['allow_attachments'] &&
+			$this->auth->acl_get('u_attach') &&
+			$this->auth->acl_get('f_attach', $forum_id) &&
+			$this->config['qr_attach']
+		);
+	}
+
+	/**
 	 * Define BBCode and smilies status, handle attachments
 	 *
 	 * @param int $forum_id Forum ID
@@ -211,20 +250,14 @@ class listener_helper
 		));
 
 		// Show attachment box for adding attachments
-		$show_attach_box = (
-			@ini_get('file_uploads') != '0' &&
-			strtolower(@ini_get('file_uploads')) != 'off' &&
-			$this->config['allow_attachments'] &&
-			$this->auth->acl_get('u_attach') &&
-			$this->auth->acl_get('f_attach', $forum_id)
-		);
+		$show_attach_box = $this->qr_attachments_allowed($forum_id);
 
-		if ($bbcode_status || $smilies_status || $this->config['qr_attach'] && $show_attach_box)
+		if ($bbcode_status || $smilies_status || $show_attach_box)
 		{
 			$this->user->add_lang('posting');
 		}
 
-		if ($this->config['qr_attach'] && $show_attach_box)
+		if ($show_attach_box)
 		{
 			$this->handle_attachments($forum_id, $topic_id, $show_attach_box);
 		}
@@ -326,7 +359,7 @@ class listener_helper
 
 		$this->template->assign_vars(array(
 			// Upload attachments
-			'S_QR_SHOW_ATTACH_BOX' => $this->config['qr_attach'] && $show_attach_box,
+			'S_QR_SHOW_ATTACH_BOX' => $show_attach_box,
 			'S_ATTACH_DATA'        => ($attachment_data) ? json_encode($attachment_data) : '[]',
 		));
 	}

@@ -138,12 +138,7 @@ class listener implements EventSubscriberInterface
 			// Check whether no posts are found.
 			if ($compare == ' > ' && max($post_list) <= $current_post)
 			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'error'         => true,
-					'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-					'MESSAGE_TEXT'  => $this->user->lang['NO_POSTS_TIME_FRAME'],
-				));
+				$this->helper->ajax_check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
 		}
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
@@ -187,12 +182,7 @@ class listener implements EventSubscriberInterface
 		$post_list = $event['post_list'];
 		$topic_id = $topic_data['topic_id'];
 
-		$s_quick_reply = false;
-		if (($this->user->data['is_registered'] || $this->config['qr_allow_for_guests']) && $this->config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) && $this->auth->acl_get('f_reply', $forum_id))
-		{
-			// Quick reply enabled forum
-			$s_quick_reply = (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $this->auth->acl_get('m_edit', $forum_id)) ? true : false;
-		}
+		$s_quick_reply = $this->helper->qr_is_enabled($forum_id, $topic_data);
 
 		if (!$this->user->data['is_registered'] && $s_quick_reply)
 		{
