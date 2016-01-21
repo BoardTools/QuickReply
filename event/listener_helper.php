@@ -208,6 +208,73 @@ class listener_helper
 	}
 
 	/**
+	 * Display BBCodes in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool Whether BBCode is enabled for quick reply
+	 */
+	protected function handle_bbcodes($forum_id)
+	{
+		$bbcode_status = (
+			$this->config['allow_bbcode'] &&
+			$this->config['qr_bbcode'] &&
+			$this->auth->acl_get('f_bbcode', $forum_id)
+		);
+		$img_status = $flash_status = false;
+		$quote_status = true;
+
+		if ($bbcode_status)
+		{
+			$img_status = $this->auth->acl_get('f_img', $forum_id);
+			$flash_status = (
+				$this->auth->acl_get('f_flash', $forum_id) &&
+				$this->config['allow_post_flash']
+			);
+
+			// Build custom bbcodes array
+			display_custom_bbcodes();
+		}
+
+		$this->template->assign_vars(array(
+			'S_BBCODE_ALLOWED' => ($bbcode_status) ? 1 : 0,
+			'S_BBCODE_IMG'     => $img_status,
+			'S_BBCODE_FLASH'   => $flash_status,
+			'S_BBCODE_QUOTE'   => $quote_status,
+		));
+
+		return $bbcode_status;
+	}
+
+	/**
+	 * Display smilies in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool Whether smilies are enabled for quick reply
+	 */
+	protected function handle_smilies($forum_id)
+	{
+		$smilies_status = (
+			$this->config['allow_smilies'] &&
+			$this->config['qr_smilies'] &&
+			$this->auth->acl_get('f_smilies', $forum_id)
+		);
+
+		// Generate smiley listing
+		if ($smilies_status)
+		{
+			if (!function_exists('generate_smilies'))
+			{
+				include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+			}
+			generate_smilies('inline', $forum_id);
+		}
+
+		$this->template->assign_var('S_SMILIES_ALLOWED', $smilies_status);
+
+		return $smilies_status;
+	}
+
+	/**
 	 * Define BBCode and smilies status, handle attachments
 	 *
 	 * @param int $forum_id Forum ID
@@ -215,39 +282,10 @@ class listener_helper
 	 */
 	public function prepare_qr_form($forum_id, $topic_id)
 	{
-		if (!function_exists('generate_smilies'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-		}
-
-		// HTML, BBCode, Smilies, Images, Url, Flash and Quote status
-		$bbcode_status = ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
-		$smilies_status = ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
-		$img_status = ($bbcode_status && $this->auth->acl_get('f_img', $forum_id)) ? true : false;
-		$url_status = ($this->config['allow_post_links']) ? true : false;
-		$flash_status = ($bbcode_status && $this->auth->acl_get('f_flash', $forum_id) && $this->config['allow_post_flash']) ? true : false;
-		$quote_status = true;
-
-		// Build custom bbcodes array
-		if ($bbcode_status)
-		{
-			display_custom_bbcodes();
-		}
-
-		// Generate smiley listing
-		if ($smilies_status)
-		{
-			generate_smilies('inline', $forum_id);
-		}
-
-		$this->template->assign_vars(array(
-			'S_BBCODE_ALLOWED'  => ($bbcode_status) ? 1 : 0,
-			'S_SMILIES_ALLOWED' => $smilies_status,
-			'S_BBCODE_IMG'      => $img_status,
-			'S_LINKS_ALLOWED'   => $url_status,
-			'S_BBCODE_FLASH'    => $flash_status,
-			'S_BBCODE_QUOTE'    => $quote_status,
-		));
+		// BBCode, Smilies and URLs
+		$bbcode_status = $this->handle_bbcodes($forum_id);
+		$smilies_status = $this->handle_smilies($forum_id);
+		$this->template->assign_var('S_LINKS_ALLOWED', $this->config['allow_post_links']);
 
 		// Show attachment box for adding attachments
 		$show_attach_box = $this->qr_attachments_allowed($forum_id);

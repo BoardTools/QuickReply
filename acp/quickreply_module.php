@@ -34,7 +34,7 @@ class quickreply_module
 		}
 
 		$this->new_config = $config;
-		$cfg_array = ($request->is_set('config')) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = ($request->is_set('config')) ? $request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -51,21 +51,7 @@ class quickreply_module
 			$submit = false;
 		}
 
-		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
-		foreach ($display_vars['vars'] as $config_name => $null)
-		{
-			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
-			{
-				continue;
-			}
-
-			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
-
-			if ($submit)
-			{
-				$config->set($config_name, $config_value);
-			}
-		}
+		$this->set_config($display_vars, $cfg_array, $submit, $config);
 
 		if ($submit)
 		{
@@ -131,6 +117,33 @@ class quickreply_module
 	}
 
 	/**
+	 * Set the new configuration array
+	 *
+	 * @param array                $display_vars Array of display_vars
+	 * @param array                $cfg_array    Array with new values
+	 * @param bool                 $submit       Whether the form was submitted
+	 * @param \phpbb\config\config $config       Config object
+	 */
+	protected function set_config($display_vars, $cfg_array, $submit, $config)
+	{
+		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
+		foreach ($display_vars['vars'] as $config_name => $null)
+		{
+			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+			{
+				continue;
+			}
+
+			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
+
+			if ($submit)
+			{
+				$config->set($config_name, $config_value);
+			}
+		}
+	}
+
+	/**
 	 * Get text for title explanation (if exists)
 	 *
 	 * @param array       $vars Array of vars
@@ -187,13 +200,12 @@ class quickreply_module
 			}
 
 			$template->assign_block_vars('options', array(
-					'KEY'           => $config_key,
-					'TITLE'         => (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
-					'S_EXPLAIN'     => $vars['explain'],
-					'TITLE_EXPLAIN' => $this->get_title_explain($vars, $user),
-					'CONTENT'       => $content,
-				)
-			);
+				'KEY'           => $config_key,
+				'TITLE'         => (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
+				'S_EXPLAIN'     => $vars['explain'],
+				'TITLE_EXPLAIN' => $this->get_title_explain($vars, $user),
+				'CONTENT'       => $content,
+			));
 
 			unset($display_vars['vars'][$config_key]);
 		}
