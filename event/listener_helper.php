@@ -320,6 +320,36 @@ class listener_helper
 	}
 
 	/**
+	 * Checks variety of specified options
+	 *
+	 * @param string $config_var  Configuration variable name
+	 * @param string $user_option User option key
+	 * @param array  $acl_perms   Array with ACL options to check (key => forum ID)
+	 * @return bool
+	 */
+	protected function check_option($config_var, $user_option, $acl_perms = array())
+	{
+		if ($config_var && !$this->config[$config_var] ||
+			$user_option && !$this->user->optionget($user_option)
+		)
+		{
+			return false;
+		}
+		if (!sizeof($acl_perms))
+		{
+			return true;
+		}
+		foreach ($acl_perms as $key => $forum_id)
+		{
+			if (!$this->auth->acl_get($key, $forum_id))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Assign template variables for guests if quick reply is available for them
 	 *
 	 * @param int   $forum_id   Forum ID
@@ -330,9 +360,16 @@ class listener_helper
 		$topic_id = $topic_data['topic_id'];
 		add_form_key('posting');
 
-		$s_attach_sig = $this->config['allow_sig'] && $this->user->optionget('attachsig') && $this->auth->acl_get('f_sigs', $forum_id) && $this->auth->acl_get('u_sig');
-		$s_smilies = $this->config['allow_smilies'] && $this->user->optionget('smilies') && $this->auth->acl_get('f_smilies', $forum_id);
-		$s_bbcode = $this->config['allow_bbcode'] && $this->user->optionget('bbcode') && $this->auth->acl_get('f_bbcode', $forum_id);
+		$s_attach_sig = $this->check_option('allow_sig', 'attachsig', array(
+			'f_sigs' => $forum_id,
+			'u_sig'  => 0
+		));
+		$s_smilies = $this->check_option('allow_smilies', 'smilies', array(
+			'f_smilies' => $forum_id,
+		));
+		$s_bbcode = $this->check_option('allow_bbcode', 'bbcode', array(
+			'f_bbcode' => $forum_id,
+		));
 		$s_notify = false;
 
 		$qr_hidden_fields = array(
