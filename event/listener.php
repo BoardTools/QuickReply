@@ -156,7 +156,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		// Ajaxify viewtopic data
-		if ($this->request->is_ajax() && $this->request->is_set('qr_request'))
+		if ($this->helper->qr_is_ajax())
 		{
 			$this->helper->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
 		}
@@ -218,7 +218,7 @@ class listener implements EventSubscriberInterface
 	public function detect_new_posts($event)
 	{
 		// Ajax submit
-		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
+		if ($this->helper->qr_is_ajax_submit())
 		{
 			$this->helper->ajax_helper->check_errors($event['error']);
 
@@ -234,11 +234,7 @@ class listener implements EventSubscriberInterface
 			else if ($post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 			{
 				// Send new post number as a response.
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'post_update' => true,
-					'post_id'     => $post_data['topic_last_post_id'],
-				));
+				$this->helper->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
 			}
 		}
 		// This is needed for BBCode QR_BBPOST.
@@ -291,11 +287,7 @@ class listener implements EventSubscriberInterface
 	 */
 	public function ajax_submit($event)
 	{
-		if (
-			$this->config['qr_ajax_submit'] &&
-			$this->request->is_ajax() &&
-			$this->request->is_set_post('qr')
-		)
+		if ($this->helper->qr_is_ajax_submit())
 		{
 			$this->helper->ajax_helper->ajax_submit($event);
 		}

@@ -91,6 +91,26 @@ class listener_helper
 	}
 
 	/**
+	 * Checks whether quick reply form was submitted using Ajax
+	 *
+	 * @return bool
+	 */
+	public function qr_is_ajax_submit()
+	{
+		return $this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr');
+	}
+
+	/**
+	 * Checks whether this is a QuickReply Ajax request
+	 *
+	 * @return bool
+	 */
+	public function qr_is_ajax()
+	{
+		return $this->request->is_ajax() && $this->request->is_set('qr_request');
+	}
+
+	/**
 	 * Sets keys for the specified array of hidden fields if their values in another array are true
 	 *
 	 * @param array $hidden_fields Reference to the array of hidden fields

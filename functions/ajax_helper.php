@@ -293,4 +293,13 @@ class ajax_helper
 			)
 		));
 	}
+
+	public function send_last_post_id($post_id)
+	{
+		$json_response = new \phpbb\json_response;
+		$json_response->send(array(
+			'post_update' => true,
+			'post_id'     => $post_id,
+		));
+	}
 }
