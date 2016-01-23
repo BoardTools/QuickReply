@@ -11,6 +11,9 @@ namespace boardtools\quickreply\functions;
 
 class ajax_helper
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
 	/** @var \phpbb\config\config */
 	protected $config;
 
@@ -47,6 +50,7 @@ class ajax_helper
 	/**
 	 * Constructor
 	 *
+	 * @param \phpbb\auth\auth                  $auth
 	 * @param \phpbb\config\config              $config
 	 * @param \phpbb\template\template          $template
 	 * @param \phpbb\user                       $user
@@ -57,8 +61,9 @@ class ajax_helper
 	 * @param string                            $phpbb_root_path Root path
 	 * @param string                            $php_ext
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\request\request $request, \phpbb\captcha\factory $captcha, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\request\request $request, \phpbb\captcha\factory $captcha, $phpbb_root_path, $php_ext)
 	{
+		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
@@ -129,6 +134,32 @@ class ajax_helper
 			'success' => true,
 			'result'  => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
 			'insert'  => $this->qr_insert
+		));
+	}
+
+	/**
+	 * Ajax submit
+	 *
+	 * @param object $event The event object
+	 */
+	public function ajax_submit($event)
+	{
+		$data = $event['data'];
+		if ((!$this->auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
+		{
+			// No approve
+			$this->send_approval_notify();
+		}
+
+		$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
+		$url_hash = strpos($event['url'], '#');
+		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
+
+		$json_response = new \phpbb\json_response;
+		$json_response->send(array(
+			'success' => true,
+			'url'     => $result_url,
+			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
 		));
 	}
 

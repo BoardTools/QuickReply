@@ -285,7 +285,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Ajax submit
+	 * Check Ajax submit
 	 *
 	 * @param object $event The event object
 	 */
@@ -297,30 +297,7 @@ class listener implements EventSubscriberInterface
 			$this->request->is_set_post('qr')
 		)
 		{
-			$data = $event['data'];
-			if ((
-					!$this->auth->acl_get('f_noapprove', $data['forum_id']) &&
-					empty($data['force_approved_state'])
-				) || (
-					isset($data['force_approved_state']) &&
-					!$data['force_approved_state']
-				)
-			)
-			{
-				// No approve
-				$this->helper->ajax_helper->send_approval_notify();
-			}
-
-			$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
-			$url_hash = strpos($event['url'], '#');
-			$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
-
-			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
-				'success' => true,
-				'url'     => $result_url,
-				'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
-			));
+			$this->helper->ajax_helper->ajax_submit($event);
 		}
 	}
 

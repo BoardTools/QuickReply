@@ -14,6 +14,7 @@ services:
     boardtools.quickreply.ajax_helper:
         class: boardtools\quickreply\functions\ajax_helper
         arguments:
+            - @auth
             - @config
             - @template
             - @user
