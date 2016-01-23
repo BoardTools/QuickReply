@@ -156,7 +156,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		// Ajaxify viewtopic data
-		if ($this->helper->qr_is_ajax())
+		if ($this->helper->ajax_helper->qr_is_ajax())
 		{
 			$this->helper->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
 		}
@@ -218,7 +218,7 @@ class listener implements EventSubscriberInterface
 	public function detect_new_posts($event)
 	{
 		// Ajax submit
-		if ($this->helper->qr_is_ajax_submit())
+		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
 			$this->helper->ajax_helper->check_errors($event['error']);
 
@@ -287,7 +287,7 @@ class listener implements EventSubscriberInterface
 	 */
 	public function ajax_submit($event)
 	{
-		if ($this->helper->qr_is_ajax_submit())
+		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
 			$this->helper->ajax_helper->ajax_submit($event);
 		}

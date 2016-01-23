@@ -78,6 +78,26 @@ class ajax_helper
 	}
 
 	/**
+	 * Checks whether quick reply form was submitted using Ajax
+	 *
+	 * @return bool
+	 */
+	public function qr_is_ajax_submit()
+	{
+		return $this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr');
+	}
+
+	/**
+	 * Checks whether this is a QuickReply Ajax request
+	 *
+	 * @return bool
+	 */
+	public function qr_is_ajax()
+	{
+		return $this->request->is_ajax() && $this->request->is_set('qr_request');
+	}
+
+	/**
 	 * Initialize captcha instance
 	 *
 	 * @param bool $set_hidden_fields Whether we need to assign hidden fields to the template
@@ -188,11 +208,7 @@ class ajax_helper
 	 */
 	public function check_ajax_preview($event)
 	{
-		if (
-			$this->config['qr_ajax_submit'] &&
-			$this->request->is_ajax() &&
-			$this->request->is_set_post('qr')
-		)
+		if ($this->qr_is_ajax_submit())
 		{
 			$this->check_errors($event['error']);
 
