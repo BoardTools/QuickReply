@@ -6,17 +6,39 @@ services:
             - @config
             - @template
             - @user
-            - @dbal.conn
             - @request
-            - @content.visibility
             - @boardtools.quickreply.listener_helper
-            - %core.root_path%
-            - %core.php_ext%
         tags:
             - { name: event.listener }
 
+    boardtools.quickreply.ajax_helper:
+        class: boardtools\quickreply\functions\ajax_helper
+        arguments:
+            - @config
+            - @template
+            - @user
+            - @dbal.conn
+            - @content.visibility
+            - @request
+            - @captcha.factory
+            - %core.root_path%
+            - %core.php_ext%
+
+    boardtools.quickreply.form_helper:
+        class: boardtools\quickreply\functions\form_helper
+        arguments:
+            - @auth
+            - @config
+            - @template
+            - @user
+            - @cache
+            - @plupload
+            - @mimetype.guesser
+            - %core.root_path%
+            - %core.php_ext%
+
     boardtools.quickreply.listener_helper:
-        class: boardtools\quickreply\event\listener_helper
+        class: boardtools\quickreply\functions\listener_helper
         arguments:
             - @auth
             - @config
@@ -24,9 +46,7 @@ services:
             - @user
             - @ext.manager
             - @request
-            - @cache
-            - @captcha.factory
-            - @plupload
-            - @mimetype.guesser
+            - @boardtools.quickreply.ajax_helper
+            - @boardtools.quickreply.form_helper
             - %core.root_path%
             - %core.php_ext%

@@ -28,50 +28,30 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
-
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\content_visibility */
-	protected $phpbb_content_visibility;
-
-	/** @var \boardtools\quickreply\event\listener_helper */
+	/** @var \boardtools\quickreply\functions\listener_helper */
 	protected $helper;
-
-	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $php_ext;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\auth\auth                             $auth
-	 * @param \phpbb\config\config                         $config
-	 * @param \phpbb\template\template                     $template
-	 * @param \phpbb\user                                  $user
-	 * @param \phpbb\db\driver\driver_interface            $db
-	 * @param \phpbb\request\request                       $request
-	 * @param \phpbb\content_visibility                    $phpbb_content_visibility
-	 * @param \boardtools\quickreply\event\listener_helper $helper
-	 * @param string                                       $phpbb_root_path Root path
-	 * @param string                                       $php_ext
+	 * @param \phpbb\auth\auth                                 $auth
+	 * @param \phpbb\config\config                             $config
+	 * @param \phpbb\template\template                         $template
+	 * @param \phpbb\user                                      $user
+	 * @param \phpbb\request\request                           $request
+	 * @param \boardtools\quickreply\functions\listener_helper $helper
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\content_visibility $phpbb_content_visibility, \boardtools\quickreply\event\listener_helper $helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \boardtools\quickreply\functions\listener_helper $helper)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
-		$this->db = $db;
 		$this->request = $request;
-		$this->phpbb_content_visibility = $phpbb_content_visibility;
 		$this->helper = $helper;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -106,22 +86,10 @@ class listener implements EventSubscriberInterface
 	 * Reduce the set of elements to the one that we need to retrieve.
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function viewtopic_modify_sql($event)
 	{
-		if ($this->request->is_ajax() && $this->request->is_set('qr_captcha_refresh'))
-		{
-			if ($this->config['enable_post_confirm'])
-			{
-				$this->helper->set_captcha(false);
-			}
-			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
-				'captcha_refreshed' => true,
-				'captcha_result'    => $this->template->assign_display('@boardtools_quickreply/quickreply_captcha_template.html', '', true),
-			));
-		}
+		$this->helper->ajax_helper->check_captcha_refresh();
 
 		$post_list = $event['post_list'];
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
@@ -132,13 +100,13 @@ class listener implements EventSubscriberInterface
 			$compare = ($qr_get_current) ? ' >= ' : ' > ';
 			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
 			$event['sql_ary'] = $sql_ary;
-			$this->helper->qr_insert = true;
-			$this->helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
+			$this->helper->ajax_helper->qr_insert = true;
+			$this->helper->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
 
 			// Check whether no posts are found.
 			if ($compare == ' > ' && max($post_list) <= $current_post)
 			{
-				$this->helper->ajax_check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
+				$this->helper->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
 		}
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
@@ -148,7 +116,6 @@ class listener implements EventSubscriberInterface
 	 * Add decoded message text if full quotes are enabled.
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function viewtopic_modify_post_row($event)
 	{
@@ -173,7 +140,6 @@ class listener implements EventSubscriberInterface
 	 * Template data for Ajax submit
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function viewtopic_modify_data($event)
 	{
@@ -192,12 +158,12 @@ class listener implements EventSubscriberInterface
 		// Ajaxify viewtopic data
 		if ($this->request->is_ajax() && $this->request->is_set('qr_request'))
 		{
-			$this->helper->ajax_response($event['page_title'], max($post_list), $forum_id);
+			$this->helper->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
 		}
 
 		if ($s_quick_reply)
 		{
-			$this->helper->prepare_qr_form($forum_id, $topic_id);
+			$this->helper->form_helper->prepare_qr_form($forum_id, $topic_id);
 
 			$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
 				'qr'             => 1,
@@ -219,13 +185,17 @@ class listener implements EventSubscriberInterface
 	 * Lock post subject if the user cannot change it.
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function change_subject_when_sending($event)
 	{
 		$data = $event['data'];
 
-		if (!$this->auth->acl_get('f_qr_change_subject', $data['forum_id']) && isset($data['topic_first_post_id']) && isset($data['post_id']) && ($data['topic_first_post_id'] != $data['post_id']))
+		if (
+			!$this->auth->acl_get('f_qr_change_subject', $data['forum_id']) &&
+			isset($data['topic_first_post_id']) &&
+			isset($data['post_id']) &&
+			($data['topic_first_post_id'] != $data['post_id'])
+		)
 		{
 			if ($this->config['qr_enable_re'] == 0)
 			{
@@ -244,45 +214,22 @@ class listener implements EventSubscriberInterface
 	 * Do not post the message if there are some new ones
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function detect_new_posts($event)
 	{
 		// Ajax submit
 		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
 		{
-			$this->helper->ajax_check_errors($event['error']);
+			$this->helper->ajax_helper->check_errors($event['error']);
 
 			$post_data = $event['post_data'];
-			$forum_id = (int) $post_data['forum_id'];
-			$topic_id = (int) $post_data['topic_id'];
-
-			$current_post = $this->request->variable('qr_cur_post_id', 0);
 			$lastclick = $this->request->variable('lastclick', time());
 
 			if (($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW))
 			{
-				$sql = 'SELECT post_id
-						FROM ' . POSTS_TABLE . '
-						WHERE topic_id = ' . $topic_id . '
-							AND ' . $this->phpbb_content_visibility->get_visibility_sql('post', $forum_id, '') . '
-							AND post_time > ' . (int) $lastclick . '
-						ORDER BY post_time ASC';
-				$result = $this->db->sql_query_limit($sql, 1);
-				$post_id_next = (int) $this->db->sql_fetchfield('post_id');
-				$this->db->sql_freeresult($result);
-
-				$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
-				$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next"); // #p$post_id_next
-
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'error'         => true,
-					'merged'        => ($post_id_next === $current_post) ? 'merged' : 'not_merged',
-					'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-					'MESSAGE_TEXT'  => $error_text,
-					'NEXT_URL'      => $url_next_post,
-				));
+				$forum_id = (int) $post_data['forum_id'];
+				$topic_id = (int) $post_data['topic_id'];
+				$this->helper->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
 			}
 			else if ($post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 			{
@@ -304,7 +251,6 @@ class listener implements EventSubscriberInterface
 	 * Ajax submit - error messages and preview
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function delete_re($event)
 	{
@@ -335,82 +281,41 @@ class listener implements EventSubscriberInterface
 		$event['page_data'] = $page_data;
 
 		// Ajax submit
-		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
-		{
-			$this->helper->ajax_check_errors($event['error']);
-
-			// Preview
-			if ($event['preview'])
-			{
-				$post_data = $event['post_data'];
-				$forum_id = (int) $post_data['forum_id'];
-				$message_parser = $event['message_parser'];
-
-				$message_parser->message = $this->request->variable('message', '', true);
-				$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
-
-				$preview_attachments = false;
-				// Attachment Preview
-				if (sizeof($message_parser->attachment_data))
-				{
-					$update_count = array();
-					$attachment_data = $message_parser->attachment_data;
-
-					parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
-
-					$preview_attachments = '';
-					foreach ($attachment_data as $i => $attachment)
-					{
-						$preview_attachments .= '<dd>' . $attachment . '</dd>';
-					}
-					if (!empty($preview_attachments))
-					{
-						$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
-					}
-					unset($attachment_data);
-				}
-
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'preview'        => true,
-					'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
-					'PREVIEW_TEXT'   => $preview_message,
-					'PREVIEW_ATTACH' => $preview_attachments,
-				));
-			}
-		}
+		$this->helper->ajax_helper->check_ajax_preview($event);
 	}
 
 	/**
 	 * Ajax submit
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function ajax_submit($event)
 	{
-		if ($this->config['qr_ajax_submit'] && $this->request->is_ajax() && $this->request->is_set_post('qr'))
+		if (
+			$this->config['qr_ajax_submit'] &&
+			$this->request->is_ajax() &&
+			$this->request->is_set_post('qr')
+		)
 		{
-			$json_response = new \phpbb\json_response;
-
 			$data = $event['data'];
-
-			if ((!$this->auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
+			if ((
+					!$this->auth->acl_get('f_noapprove', $data['forum_id']) &&
+					empty($data['force_approved_state'])
+				) || (
+					isset($data['force_approved_state']) &&
+					!$data['force_approved_state']
+				)
+			)
 			{
 				// No approve
-				$json_response->send(array(
-					'noapprove'     => true,
-					'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-					'MESSAGE_TEXT'  => $this->user->lang['POST_STORED_MOD'] . (($this->user->data['user_id'] == ANONYMOUS) ? '' : ' ' . $this->user->lang['POST_APPROVAL_NOTIFY']),
-					'REFRESH_DATA'  => array(
-						'time' => 10,
-					)
-				));
+				$this->helper->ajax_helper->send_approval_notify();
 			}
 
 			$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
 			$url_hash = strpos($event['url'], '#');
 			$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
+
+			$json_response = new \phpbb\json_response;
 			$json_response->send(array(
 				'success' => true,
 				'url'     => $result_url,
@@ -423,7 +328,6 @@ class listener implements EventSubscriberInterface
 	 * Hide posts subjects in search results
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function hide_posts_subjects_in_searchresults_sql($event)
 	{
@@ -450,7 +354,6 @@ class listener implements EventSubscriberInterface
 	 * Hide posts subjects in search results
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function hide_posts_subjects_in_searchresults_tpl($event)
 	{
@@ -475,7 +378,6 @@ class listener implements EventSubscriberInterface
 	 * Get user's options and display them in UCP Prefs View page
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function ucp_prefs_get_data($event)
 	{
@@ -501,7 +403,6 @@ class listener implements EventSubscriberInterface
 	 * Add user options' state into the sql_array
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function ucp_prefs_set_data($event)
 	{
@@ -516,7 +417,6 @@ class listener implements EventSubscriberInterface
 	 * Get user's options and display them in ACP Prefs View page
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function acp_prefs_get_data($event)
 	{
@@ -534,7 +434,6 @@ class listener implements EventSubscriberInterface
 	 * Assign template data in the ACP
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function acp_prefs_template_data($event)
 	{
@@ -555,7 +454,6 @@ class listener implements EventSubscriberInterface
 	 * Add permissions
 	 *
 	 * @param object $event The event object
-	 * @return null
 	 */
 	public function add_permission($event)
 	{
