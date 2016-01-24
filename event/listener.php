@@ -89,7 +89,7 @@ class listener implements EventSubscriberInterface
 	 */
 	public function viewtopic_modify_sql($event)
 	{
-		$this->helper->ajax_helper->check_captcha_refresh();
+		$this->helper->captcha_helper->check_captcha_refresh();
 
 		$post_list = $event['post_list'];
 		$current_post = $this->request->variable('qr_cur_post_id', 0);

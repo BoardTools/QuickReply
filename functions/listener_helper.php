@@ -32,6 +32,9 @@ class listener_helper
 	/** @var \boardtools\quickreply\functions\ajax_helper */
 	public $ajax_helper;
 
+	/** @var \boardtools\quickreply\functions\captcha_helper */
+	public $captcha_helper;
+
 	/** @var \boardtools\quickreply\functions\form_helper */
 	public $form_helper;
 
@@ -51,11 +54,12 @@ class listener_helper
 	 * @param \phpbb\extension\manager $phpbb_extension_manager
 	 * @param \phpbb\request\request   $request
 	 * @param ajax_helper              $ajax_helper
+	 * @param captcha_helper           $captcha_helper
 	 * @param form_helper              $form_helper
 	 * @param string                   $phpbb_root_path Root path
 	 * @param string                   $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, ajax_helper $ajax_helper, form_helper $form_helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, ajax_helper $ajax_helper, captcha_helper $captcha_helper, form_helper $form_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -64,6 +68,7 @@ class listener_helper
 		$this->phpbb_extension_manager = $phpbb_extension_manager;
 		$this->request = $request;
 		$this->ajax_helper = $ajax_helper;
+		$this->captcha_helper = $captcha_helper;
 		$this->form_helper = $form_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -187,7 +192,7 @@ class listener_helper
 
 		if ($this->config['enable_post_confirm'])
 		{
-			$this->ajax_helper->set_captcha();
+			$this->captcha_helper->set_captcha();
 		}
 	}
 

@@ -11,6 +11,14 @@ services:
         tags:
             - { name: event.listener }
 
+    boardtools.quickreply.captcha_helper:
+        class: boardtools\quickreply\functions\captcha_helper
+        arguments:
+            - @config
+            - @template
+            - @request
+            - @captcha.factory
+
     boardtools.quickreply.ajax_helper:
         class: boardtools\quickreply\functions\ajax_helper
         arguments:
@@ -21,7 +29,6 @@ services:
             - @dbal.conn
             - @content.visibility
             - @request
-            - @captcha.factory
             - %core.root_path%
             - %core.php_ext%
 
@@ -48,6 +55,7 @@ services:
             - @ext.manager
             - @request
             - @boardtools.quickreply.ajax_helper
+            - @boardtools.quickreply.captcha_helper
             - @boardtools.quickreply.form_helper
             - %core.root_path%
             - %core.php_ext%
