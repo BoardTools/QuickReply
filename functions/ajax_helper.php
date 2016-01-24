@@ -149,8 +149,7 @@ class ajax_helper
 		// Output the page
 		page_header($page_title, false, $forum_id);
 		page_footer(false, false, false);
-		$json_response = new \phpbb\json_response();
-		$json_response->send(array(
+		$this->send_json(array(
 			'success' => true,
 			'result'  => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
 			'insert'  => $this->qr_insert
@@ -175,8 +174,7 @@ class ajax_helper
 		$url_hash = strpos($event['url'], '#');
 		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
 
-		$json_response = new \phpbb\json_response;
-		$json_response->send(array(
+		$this->send_json(array(
 			'success' => true,
 			'url'     => $result_url,
 			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
@@ -192,8 +190,7 @@ class ajax_helper
 	{
 		if (sizeof($error))
 		{
-			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
+			$this->send_json(array(
 				'error'         => true,
 				'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 				'MESSAGE_TEXT'  => implode('<br />', $error),
@@ -244,8 +241,7 @@ class ajax_helper
 					unset($attachment_data);
 				}
 
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
+				$this->send_json(array(
 					'preview'        => true,
 					'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
 					'PREVIEW_TEXT'   => $preview_message,
@@ -255,6 +251,9 @@ class ajax_helper
 		}
 	}
 
+	/**
+	 * Sends refreshed CAPTCHA if needed
+	 */
 	public function check_captcha_refresh()
 	{
 		if ($this->request->is_ajax() && $this->request->is_set('qr_captcha_refresh'))
@@ -263,14 +262,20 @@ class ajax_helper
 			{
 				$this->set_captcha(false);
 			}
-			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
+			$this->send_json(array(
 				'captcha_refreshed' => true,
 				'captcha_result'    => $this->template->assign_display('@boardtools_quickreply/quickreply_captcha_template.html', '', true),
 			));
 		}
 	}
 
+	/**
+	 * Sends the URL to the next post
+	 *
+	 * @param int $forum_id  Forum ID
+	 * @param int $topic_id  Topic ID
+	 * @param int $lastclick Time of the last click
+	 */
 	public function send_next_post_url($forum_id, $topic_id, $lastclick)
 	{
 		$sql = 'SELECT post_id
@@ -287,8 +292,7 @@ class ajax_helper
 		$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next"); // #p$post_id_next
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 
-		$json_response = new \phpbb\json_response;
-		$json_response->send(array(
+		$this->send_json(array(
 			'error'         => true,
 			'merged'        => ($post_id_next === $current_post) ? 'merged' : 'not_merged',
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
@@ -297,10 +301,12 @@ class ajax_helper
 		));
 	}
 
+	/**
+	 * Sends post approval notice
+	 */
 	public function send_approval_notify()
 	{
-		$json_response = new \phpbb\json_response;
-		$json_response->send(array(
+		$this->send_json(array(
 			'noapprove'     => true,
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 			'MESSAGE_TEXT'  => $this->user->lang['POST_STORED_MOD'] . (($this->user->data['user_id'] == ANONYMOUS) ? '' : ' ' . $this->user->lang['POST_APPROVAL_NOTIFY']),
@@ -310,12 +316,27 @@ class ajax_helper
 		));
 	}
 
+	/**
+	 * Sends the ID of last post in the topic
+	 *
+	 * @param int $post_id Post ID
+	 */
 	public function send_last_post_id($post_id)
 	{
-		$json_response = new \phpbb\json_response;
-		$json_response->send(array(
+		$this->send_json(array(
 			'post_update' => true,
 			'post_id'     => $post_id,
 		));
+	}
+
+	/**
+	 * Sends a JSON response
+	 *
+	 * @param array $data Array with JSON data
+	 */
+	public function send_json($data)
+	{
+		$json_response = new \phpbb\json_response;
+		$json_response->send($data);
 	}
 }
