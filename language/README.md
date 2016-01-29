@@ -3,6 +3,7 @@
 * English - original by William Jacoby (bonelifer), maintained by LavIgor
 * French - Galixte (http://www.galixte.com)
 * Russian - original by Tatiana5, maintained by LavIgor
+* Spanish - Raul Arroyo Monzo
 * Turkish - Edip Dincer
 
 ## Contributing
