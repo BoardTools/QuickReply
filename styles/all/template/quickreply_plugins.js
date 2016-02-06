@@ -8,11 +8,11 @@
 	if (quickreply.settings.unchangedSubject) {
 		if (quickreply.settings.hideSubjectBox) {
 			$(document).ready(function () {
-				$("#subject").closest("dl").remove();
+				quickreply.style.removeSubjectBox();
 			});
 		} else {
 			$(document).ready(function() {
-				$("#subject").attr('disabled', 'disabled').css('color', 'grey');
+				$(quickreply.editor.mainForm).find('input[name="subject"][type="text"]').attr('disabled', 'disabled').css('color', 'grey');
 			});
 		}
 	}
@@ -21,7 +21,7 @@
 	/* Ctrl+Enter Plugin */
 	/*********************/
 	if (quickreply.settings.ctrlEnter) {
-		$('#message-box textarea').keydown(function (event) {
+		$(quickreply.editor.textareaSelector).keydown(function (event) {
 			if (event.ctrlKey && (event.keyCode == 13 || event.keyCode == 10)) {
 				$(this).parents('form').find('input[name="post"]').click();
 			}
@@ -37,7 +37,7 @@
 			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function (str, p1, p2) {
 				return (p2) ? p1 : '';
 			}),
-			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.enableBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
+			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
 
 		// Link to the source post
 		var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
@@ -85,7 +85,8 @@
 		}
 
 		if (theSelection) {
-			if (quickreply.settings.enableBBCode) {
+			quickreply.style.showQuickReplyForm();
+			if (quickreply.settings.allowBBCode) {
 				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + theSelection + '[/quote]\r');
 			} else {
 				insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
@@ -123,7 +124,7 @@
 			// Which mouse button is pressed?
 			var key = evt.button || evt.which || null; // IE || FF || Unknown
 
-			var qr_post_id = $element.parent().attr('id').replace('post_content', '');
+			var qr_post_id = quickreply.style.getPostId($element);
 
 			setTimeout(function () { // Timeout prevents popup when clicking on selected text
 				var sel = '';
@@ -145,7 +146,7 @@
 					if (qrAlert) {
 						qr_alert_remove();
 					}
-					qrAlert = $('<div class="dropdown qr_dropdown qr_quickquote" style="top: ' + (pageY + 8) + 'px; ' + (pageX > 184 ? 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) : 'left: ' + (pageX - 20)) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform">' + quickreply.language.INSERT_TEXT + '</a></li></ul></div>').mousedown(qr_insert_quickquote).appendTo('body');
+					qrAlert = quickreply.style.quickQuoteDropdown(pageX, pageY).mousedown(qr_insert_quickquote);
 					setTimeout(function () {
 						$(document.body).one('mousedown', qr_alert_remove);
 					}, 10);
@@ -183,12 +184,12 @@
 	if (quickreply.settings.fullQuote) {
 		function qr_add_full_quote(e, element) {
 			e.preventDefault();
-			var qr_post_id = element.parents('.post').attr('id').replace('p', '');
+			var qr_post_id = quickreply.style.getPostId(element);
 			qr_insert_quote(qr_post_id);
 		}
 
 		function qr_full_quote(e, elements) {
-			elements.find('.post-buttons .quote-icon').not('.responsive-menu .quote-icon').click(function (e) {
+			quickreply.style.getQuoteButtons(elements).click(function (e) {
 				qr_add_full_quote(e, $(this));
 			});
 		}
@@ -209,11 +210,11 @@
 		$(window).on('load', function (e) {
 			var reply_posts = $('#qr_posts');
 			qr_full_quote(e, reply_posts);
-			reply_posts.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
+			quickreply.style.responsiveQuotesOnClick(reply_posts, qr_full_quote_responsive);
 		});
 		$('#qr_posts').on('qr_completed', function (e, elements) {
 			qr_full_quote(e, elements);
-			elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', qr_full_quote_responsive);
+			quickreply.style.responsiveQuotesOnClick(elements, qr_full_quote_responsive);
 		});
 	}
 
@@ -226,7 +227,8 @@
 				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
 				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
 				qr_color = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
-			if (!quickreply.settings.enableBBCode) {
+			quickreply.style.showQuickReplyForm();
+			if (!quickreply.settings.allowBBCode) {
 				insert_text(nickname + comma, false);
 			} else if (!quickreply.settings.quickNickRef) {
 				insert_text('[b]' + nickname + '[/b]' + comma, false);
@@ -245,11 +247,11 @@
 			// Which mouse button is pressed?
 			var key = evt.button || evt.which || null; // IE || FF || Unknown
 
-			//Get nick and id
+			// Get nick and id
 			var viewprofile_url = link.attr('href');
 			var qr_pm_link = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
 
-			var qrNickAlert = $('<div class="dropdown qr_dropdown" style="top: ' + (pageY + 8) + 'px; left: ' + (pageX > 184 ? pageX - 111 : pageX - 20) + 'px;"><div class="pointer"' + (pageX > 184 ? (' style="left: auto; right: 10px;"') : '') + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li><a href="#qr_postform" class="qr_quicknick" title="' + quickreply.language.QUICKNICK_TITLE + '">' + quickreply.language.QUICKNICK + '</a></li>' + ((quickreply.settings.quickNickPM && qr_pm_link.length) ? '<li><a href="' + qr_pm_link.attr('href') + '" class="qr_reply_in_pm" title="' + quickreply.language.REPLY_IN_PM + '">' + quickreply.language.REPLY_IN_PM + '</a></li>' : '') + '<li><a href="' + viewprofile_url + '" class="qr_profile" title="' + quickreply.language.PROFILE + '">' + quickreply.language.PROFILE + '</a></li></ul></div>').appendTo('body');
+			var qrNickAlert = quickreply.style.quickNickDropdown(pageX, pageY, viewprofile_url, qr_pm_link);
 
 			$('a.qr_quicknick', qrNickAlert).mousedown(function () {
 				quickreply.functions.quickNick(link);
@@ -297,7 +299,7 @@
 			$('#leavesearch').on('click', '#qr_quicknick_live_search', function () {
 				var comma = (quickreply.settings.enableComma) ? ', ' : '',
 					nickname = $('#user_live_search').val();
-
+				quickreply.style.showQuickReplyForm();
 				insert_text('[ref]' + nickname + '[/ref]' + comma, false);
 			});
 		}

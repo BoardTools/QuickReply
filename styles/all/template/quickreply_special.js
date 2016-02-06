@@ -9,8 +9,8 @@
 	 */
 	quickreply.special.functions.qr_hide_subject = function (elements) {
 		if (quickreply.special.hideSubject) {
-			elements.find('.post').each(function () {
-				var qr_post_subject = $(this).find('.postbody div h3:first').not('.first');
+			elements.find(quickreply.editor.postSelector).each(function () {
+				var qr_post_subject = $(this).find(quickreply.editor.postTitleSelector).not('.first');
 				if (qr_post_subject.length) {
 					qr_post_subject.css('display', 'none');
 					$(this).addClass('hidden_subject');

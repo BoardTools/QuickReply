@@ -1,0 +1,12 @@
+<!-- IF S_QR_NOT_CHANGE_SUBJECT -->
+<script type="text/javascript">
+// <![CDATA[
+<!-- IF QR_HIDE_SUBJECT_BOX -->
+	var subjectBox = document.getElementById('subject').parentElement.parentElement;
+	subjectBox.parentElement.removeChild(subjectBox);
+<!-- ELSE -->
+	document.getElementById('subject').readOnly = true;
+<!-- ENDIF -->
+// ]]>
+</script>
+<!-- ENDIF -->

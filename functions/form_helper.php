@@ -119,7 +119,6 @@ class form_helper
 	{
 		$bbcode_status = (
 			$this->config['allow_bbcode'] &&
-			$this->config['qr_bbcode'] &&
 			$this->auth->acl_get('f_bbcode', $forum_id)
 		);
 		$img_status = $flash_status = false;
@@ -139,6 +138,7 @@ class form_helper
 
 		$this->template->assign_vars(array(
 			'S_BBCODE_ALLOWED' => ($bbcode_status) ? 1 : 0,
+			'S_BBCODE_BUTTONS' => $bbcode_status && $this->config['qr_bbcode'],
 			'S_BBCODE_IMG'     => $img_status,
 			'S_BBCODE_FLASH'   => $flash_status,
 			'S_BBCODE_QUOTE'   => $quote_status,

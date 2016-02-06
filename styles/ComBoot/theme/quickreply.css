@@ -1,0 +1,60 @@
+/* Styling for some features of QuickReply Reloaded. */
+a span.imageset.icon_topic_latest {
+	display: inline-block;
+	font: normal normal normal 14px/1 FontAwesome;
+	text-rendering: auto;
+	font-size: 1px;
+	letter-spacing: -1px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-image: none;
+	width: 14px;
+	height: 14px;
+	padding: 0;
+}
+
+a span.imageset.icon_topic_latest:before {
+	display: inline-block;
+	content: '\f08e';
+	font-size: 14px;
+	letter-spacing: normal;
+	color: inherit;
+	padding-top: 2px;
+}
+
+#preview h3 {
+	margin: 0;
+}
+
+.qr_dropdown.popover{
+	display: block;
+	padding: 0;
+}
+
+.qr_dropdown.popover .dropdown-menu {
+	display: block;
+	position: relative;
+	padding: 0;
+	margin: 0;
+	border: none;
+	border-radius: inherit;
+	overflow: hidden;
+}
+
+.qr_quickquote {
+	cursor: pointer;
+}
+
+#register-and-translit {
+	margin-left: 0;
+	margin-top: 5px;
+}
+
+#register-and-translit abbr {
+	display: inline-block;
+	text-decoration: none;
+	border-bottom: 1px dashed #fff;
+	padding: 5px 0 0 0;
+	cursor: help;
+	float: left;
+}
