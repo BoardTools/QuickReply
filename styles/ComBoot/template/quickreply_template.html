@@ -4,7 +4,7 @@
 	<!-- EVENT viewtopic_body_postrow_post_before -->
 	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" class="anchor"<!-- IF S_UNREAD_VIEW --> data-url="{postrow.U_MINI_POST}"<!-- ENDIF -->></a><!-- ENDIF -->
 	<div id="p{postrow.POST_ID}">
-		<div class="panel <!-- IF postrow.S_UNREAD_POST -->panel-info<!-- ELSEIF postrow.S_POST_REPORTED or postrow.S_POST_DELETED -->panel-danger<!-- ELSEIF postrow.POSTER_WARNINGS -->panel-warnig<!-- ELSE -->panel-primary<!-- ENDIF --> post-body">
+		<div class="panel <!-- IF postrow.S_UNREAD_POST -->panel-info<!-- ELSEIF postrow.S_POST_REPORTED or postrow.S_POST_DELETED -->panel-danger<!-- ELSEIF postrow.POSTER_WARNINGS -->panel-warning<!-- ELSE -->panel-primary<!-- ENDIF --> post-body">
 			<div class="panel-heading clearfix">
 				<!-- EVENT viewtopic_body_post_subject_before -->
 				<h3 class="panel-title<!-- IF postrow.S_FIRST_ROW --> first<!-- ENDIF --> pull-left"><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>

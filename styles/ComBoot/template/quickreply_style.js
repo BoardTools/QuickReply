@@ -5,7 +5,6 @@
 
 	/**
 	 * Require special attention after style modifications:
-	 * .row .col-md-12 .btn-group - total posts container selector,
 	 * .post-body.panel-info - unread posts selector
 	 */
 
@@ -88,7 +87,7 @@
 	 */
 	quickreply.style.restoreFirstSubject = function(elements, tempContainer) {
 		if (quickreply.settings.hideSubject && !elements.find('.post-body').length) {
-			tempContainer.find('.post-body .panel-heading h3').first().addClass('first').css('display', '');
+			tempContainer.find(quickreply.editor.postTitleSelector).first().addClass('first').css('display', '').parents(quickreply.editor.postSelector).removeClass('hidden_subject');
 		}
 	};
 
@@ -322,6 +321,7 @@
 	};
 
 	// Special handling for events.
+	// Re-initialize to-top animation.
 	$("#qr_posts").on("qr_loaded", function() {
 		$('.to-top').click(function() {
 			$('#back-to-top').tooltip('hide');
@@ -330,6 +330,17 @@
 			}, 800);
 			return false;
 		});
+	});
+
+
+	// Hide quick reply form after posting a reply.
+	$("#qr_postform").on("ajax_submit_success", function() {
+		var $this = $(quickreply.editor.mainForm).find('.panel-heading span.clickable');
+		if (!$this.hasClass('panel-collapsed')) {
+			$this.parents('.panel-collapsible').find('.panel-body, .panel-footer').slideUp();
+			$this.addClass('panel-collapsed');
+			$this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+		}
 	});
 
 })(jQuery, window, document);

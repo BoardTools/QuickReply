@@ -58,3 +58,17 @@ a span.imageset.icon_topic_latest:before {
 	cursor: help;
 	float: left;
 }
+
+.hidden_subject .panel-body {
+	border-radius: 4px;
+}
+
+.hidden_subject .panel-body .post-info-left,
+.hidden_subject .panel-body.badger-right:after {
+	border-top-right-radius: 4px;
+}
+
+.hidden_subject .panel-body .post-info-right,
+.hidden_subject .panel-body.badger-left:after {
+	border-top-left-radius: 4px;
+}
