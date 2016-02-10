@@ -284,12 +284,12 @@
 		}
 
 		/* Ajax Submit */
-		$('#qr_posts').on('click', 'a.username, a.username-coloured', function(e) {
+		$('#qr_posts').on('click', quickreply.editor.profileLinkSelector, function(e) {
 			qr_quicknick(e, $(this));
 		});
 
 		function quicknick_handle_posts(e, elements) {
-			elements.find('a.username, a.username-coloured').each(function() {
+			elements.find(quickreply.editor.profileLinkSelector).each(function() {
 				$(this).attr('title', quickreply.language.QUICKNICK);
 			});
 		}
