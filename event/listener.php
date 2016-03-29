@@ -30,6 +30,9 @@ class listener implements EventSubscriberInterface
 
 	/** @var \phpbb\request\request */
 	protected $request;
+	
+	/** @var \phpbb\notification\manager */
+	protected $notification_manager;
 
 	/** @var \boardtools\quickreply\functions\listener_helper */
 	protected $helper;
