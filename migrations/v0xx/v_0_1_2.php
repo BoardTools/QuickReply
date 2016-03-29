@@ -107,7 +107,6 @@ class v_0_1_2 extends \phpbb\db\migration\migration
 			if ($bbcode_id <= BBCODE_LIMIT)
 			{
 				$bbcode_array['bbcode_id'] = (int) $bbcode_id;
-				//$bbcode_array['display_on_posting'] = 1;
 
 				$this->db->sql_query('INSERT INTO ' . $this->table_prefix . 'bbcodes ' . $this->db->sql_build_array('INSERT', $bbcode_array));
 			}

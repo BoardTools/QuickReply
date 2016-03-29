@@ -21,16 +21,6 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		return array('\boardtools\quickreply\migrations\v0xx\v_0_1_2');
 	}
 
-	public function update_schema()
-	{
-		return array();
-	}
-
-	public function revert_schema()
-	{
-		return array();
-	}
-
 	public function update_data()
 	{
 		return array(
@@ -129,7 +119,6 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 				if ($bbcode_id <= BBCODE_LIMIT)
 				{
 					$bbcode_array['bbcode_id'] = (int) $bbcode_id;
-					//$bbcode_array['display_on_posting'] = 1;
 
 					$this->db->sql_query('INSERT INTO ' . $this->table_prefix . 'bbcodes ' . $this->db->sql_build_array('INSERT', $bbcode_array));
 				}

@@ -11,7 +11,7 @@ namespace boardtools\quickreply\acp;
 
 class quickreply_info
 {
-	function module()
+	public function module()
 	{
 		return array(
 			'filename'	=> '\boardtools\quickreply\acp\quickreply_module',
