@@ -24,6 +24,21 @@ namespace boardtools\quickreply;
 */
 class ext extends \phpbb\extension\base
 {
+	private function steps($old_state, $notify_method, $func_name){
+		if($old_state == '')
+		{
+			// Enable/disable/purge notifications
+			$phpbb_notifications = $this->container->get('notification_manager');
+			$phpbb_notifications->$notify_method('boardtools.quickreply.notification.type.quicknick');
+			return 'notifications';
+		}
+		else
+		{
+			// Run parent step method
+			return parent::$func_name($old_state);
+		}
+	}
+
 	/**
 	* Overwrite enable_step to enable notifications
 	* before any included migrations are installed.
@@ -31,26 +46,9 @@ class ext extends \phpbb\extension\base
 	* @param mixed $old_state State returned by previous call of this method
 	* @return mixed Returns false after last step, otherwise temporary state
 	*/
-	function enable_step($old_state)
+	public function enable_step($old_state)
 	{
-		switch ($old_state)
-		{
-			case '': // Empty means nothing has run yet
-
-				// Enable notifications
-				$phpbb_notifications = $this->container->get('notification_manager');
-				$phpbb_notifications->enable_notifications('boardtools.quickreply.notification.type.quicknick');
-				return 'notifications';
-
-			break;
-
-			default:
-
-				// Run parent enable step method
-				return parent::enable_step($old_state);
-
-			break;
-		}
+		return $this->steps($old_state, 'enable_notifications', 'enable_step');
 	}
 
 	/**
@@ -60,26 +58,9 @@ class ext extends \phpbb\extension\base
 	* @param mixed $old_state State returned by previous call of this method
 	* @return mixed Returns false after last step, otherwise temporary state
 	*/
-	function disable_step($old_state)
+	public function disable_step($old_state)
 	{
-		switch ($old_state)
-		{
-			case '': // Empty means nothing has run yet
-
-				// Disable notifications
-				$phpbb_notifications = $this->container->get('notification_manager');
-				$phpbb_notifications->disable_notifications('boardtools.quickreply.notification.type.quicknick');
-				return 'notifications';
-
-			break;
-
-			default:
-
-				// Run parent disable step method
-				return parent::disable_step($old_state);
-
-			break;
-		}
+		return $this->steps($old_state, 'disable_notifications', 'disable_step');
 	}
 
 	/**
@@ -89,25 +70,8 @@ class ext extends \phpbb\extension\base
 	* @param mixed $old_state State returned by previous call of this method
 	* @return mixed Returns false after last step, otherwise temporary state
 	*/
-	function purge_step($old_state)
+	public function purge_step($old_state)
 	{
-		switch ($old_state)
-		{
-			case '': // Empty means nothing has run yet
-
-				// Purge notifications
-				$phpbb_notifications = $this->container->get('notification_manager');
-				$phpbb_notifications->purge_notifications('boardtools.quickreply.notification.type.quicknick');
-				return 'notifications';
-
-			break;
-
-			default:
-
-				// Run parent purge step method
-				return parent::purge_step($old_state);
-
-			break;
-		}
+		return $this->steps($old_state, 'purge_notifications', 'purge_step');
 	}
 }
