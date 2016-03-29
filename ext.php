@@ -26,7 +26,7 @@ class ext extends \phpbb\extension\base
 {
 	private function steps($old_state, $notify_method, $func_name)
 	{
-		if($old_state == '')
+		if ($old_state == '')
 		{
 			// Enable/disable/purge notifications
 			$phpbb_notifications = $this->container->get('notification_manager');
