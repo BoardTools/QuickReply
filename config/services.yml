@@ -7,6 +7,7 @@ services:
             - @template
             - @user
             - @request
+            - @notification_manager
             - @boardtools.quickreply.listener_helper
         tags:
             - { name: event.listener }
@@ -59,3 +60,21 @@ services:
             - @boardtools.quickreply.form_helper
             - %core.root_path%
             - %core.php_ext%
+
+    boardtools.quickreply.notification.type.quicknick:
+        class: boardtools\quickreply\notification\quicknick
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+        tags:
+            - { name: notification.type }
