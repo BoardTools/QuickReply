@@ -10,8 +10,8 @@
 namespace boardtools\quickreply\notification;
 
 /**
-* 
-* 
+*
+*
 */
 
 class quicknick extends \phpbb\notification\type\quote
@@ -25,7 +25,7 @@ class quicknick extends \phpbb\notification\type\quote
 	{
 		return 'boardtools.quickreply.notification.type.quicknick';
 	}
-	
+
 	/**
 	* regular expression to match to find usernames
 	*
