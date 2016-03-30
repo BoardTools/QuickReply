@@ -303,7 +303,6 @@ class listener implements EventSubscriberInterface
 	{
 		$this->helper->notifications_helper->add_qr_notifications($event);
 
-
 		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
 			$this->helper->ajax_helper->ajax_submit($event);
