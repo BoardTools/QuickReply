@@ -45,6 +45,13 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
+    boardtools.quickreply.notifications_helper:
+        class: boardtools\quickreply\functions\notifications_helper
+        arguments:
+            - @auth
+            - @user
+            - @notification_manager
+
     boardtools.quickreply.listener_helper:
         class: boardtools\quickreply\functions\listener_helper
         arguments:
@@ -54,10 +61,10 @@ services:
             - @user
             - @ext.manager
             - @request
-            - @notification_manager
             - @boardtools.quickreply.ajax_helper
             - @boardtools.quickreply.captcha_helper
             - @boardtools.quickreply.form_helper
+            - @boardtools.quickreply.notifications_helper
             - %core.root_path%
             - %core.php_ext%
 

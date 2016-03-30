@@ -29,9 +29,6 @@ class listener_helper
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\notification\manager */
-	protected $notification_manager;
-
 	/** @var \boardtools\quickreply\functions\ajax_helper */
 	public $ajax_helper;
 
@@ -40,6 +37,9 @@ class listener_helper
 
 	/** @var \boardtools\quickreply\functions\form_helper */
 	public $form_helper;
+
+	/** @var \boardtools\quickreply\functions\notifications_helper */
+	public $notifications_helper;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -56,14 +56,14 @@ class listener_helper
 	 * @param \phpbb\user                  $user
 	 * @param \phpbb\extension\manager     $phpbb_extension_manager
 	 * @param \phpbb\request\request       $request
-	 * @param \phpbb\notification\manager  $notification_manager
 	 * @param ajax_helper                  $ajax_helper
 	 * @param captcha_helper               $captcha_helper
 	 * @param form_helper                  $form_helper
+	 * @param notifications_helper         $notifications_helper
 	 * @param string                       $phpbb_root_path Root path
 	 * @param string                       $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, \phpbb\notification\manager $notification_manager, ajax_helper $ajax_helper, captcha_helper $captcha_helper, form_helper $form_helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, ajax_helper $ajax_helper, captcha_helper $captcha_helper, form_helper $form_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -71,10 +71,10 @@ class listener_helper
 		$this->user = $user;
 		$this->phpbb_extension_manager = $phpbb_extension_manager;
 		$this->request = $request;
-		$this->notification_manager = $notification_manager;
 		$this->ajax_helper = $ajax_helper;
 		$this->captcha_helper = $captcha_helper;
 		$this->form_helper = $form_helper;
+		$this->notifications_helper = $notifications_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -269,43 +269,5 @@ class listener_helper
 			// ABBC3
 			'S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
 		));
-	}
-
-	public function mark_qr_notifications_read($post_list)
-	{
-		$this->notification_manager->mark_notifications_read('boardtools.quickreply.notification.type.quicknick', $post_list, $this->user->data['user_id']);
-	}
-
-	public function add_qr_notifications($mode, $data, $subject, $username)
-	{
-		$notification_data = array_merge($data, array(
-			'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
-			'post_username'		=> $username,
-			'poster_id'			=> $data['poster_id'],
-			'post_text'			=> $data['message'],
-			'post_time'			=> time(),
-			'post_subject'		=> $subject,
-		));
-
-		if ($this->auth->acl_get('f_noapprove', $data['forum_id']))
-		{
-			switch ($mode)
-			{
-				case 'post':
-				case 'reply':
-				case 'quote':
-					$this->notification_manager->add_notifications(array(
-						'boardtools.quickreply.notification.type.quicknick',
-					), $notification_data);
-				break;
-
-				case 'edit_topic':
-				case 'edit_first_post':
-				case 'edit':
-				case 'edit_last_post':
-					$this->notification_manager->update_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
-				break;
-			}
-		}
 	}
 }

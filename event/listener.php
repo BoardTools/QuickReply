@@ -160,7 +160,7 @@ class listener implements EventSubscriberInterface
 		$topic_id = $topic_data['topic_id'];
 
 		// Mark post notifications read for this user in this topic
-		$this->helper->mark_qr_notifications_read($post_list);
+		$this->helper->notifications_helper->mark_qr_notifications_read($post_list);
 
 		$s_quick_reply = $this->helper->qr_is_enabled($forum_id, $topic_data);
 
@@ -301,12 +301,8 @@ class listener implements EventSubscriberInterface
 	 */
 	public function ajax_submit($event)
 	{
-		$mode = $event['mode'];
-		$data = $event['data'];
-		$subject = $event['subject'];
-		$username = $event['username'];
+		$this->helper->notifications_helper->add_qr_notifications($event);
 
-		$this->helper->add_qr_notifications($mode, $data, $subject, $username);
 
 		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
