@@ -31,9 +31,6 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\notification\manager */
-	protected $notification_manager;
-
 	/** @var \boardtools\quickreply\functions\listener_helper */
 	protected $helper;
 
@@ -45,17 +42,15 @@ class listener implements EventSubscriberInterface
 	 * @param \phpbb\template\template                         $template
 	 * @param \phpbb\user                                      $user
 	 * @param \phpbb\request\request                           $request
-	 * @param \phpbb\notification\manager                      $notification_manager
 	 * @param \boardtools\quickreply\functions\listener_helper $helper
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \phpbb\notification\manager $notification_manager, \boardtools\quickreply\functions\listener_helper $helper)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \boardtools\quickreply\functions\listener_helper $helper)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
-		$this->notification_manager = $notification_manager;
 		$this->helper = $helper;
 	}
 
@@ -165,7 +160,7 @@ class listener implements EventSubscriberInterface
 		$topic_id = $topic_data['topic_id'];
 
 		// Mark post notifications read for this user in this topic
-		$this->notification_manager->mark_notifications_read('boardtools.quickreply.notification.type.quicknick', $post_list, $this->user->data['user_id']);
+		$this->helper->mark_qr_notifications_read($post_list);
 
 		$s_quick_reply = $this->helper->qr_is_enabled($forum_id, $topic_data);
 
@@ -311,35 +306,7 @@ class listener implements EventSubscriberInterface
 		$subject = $event['subject'];
 		$username = $event['username'];
 
-		$notification_data = array_merge($data, array(
-			'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
-			'post_username'		=> $username,
-			'poster_id'			=> $data['poster_id'],
-			'post_text'			=> $data['message'],
-			'post_time'			=> time(),
-			'post_subject'		=> $subject,
-		));
-
-		if ($this->auth->acl_get('f_noapprove', $data['forum_id']))
-		{
-			switch ($mode)
-			{
-				case 'post':
-				case 'reply':
-				case 'quote':
-					$this->notification_manager->add_notifications(array(
-						'boardtools.quickreply.notification.type.quicknick',
-					), $notification_data);
-				break;
-
-				case 'edit_topic':
-				case 'edit_first_post':
-				case 'edit':
-				case 'edit_last_post':
-					$this->notification_manager->update_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
-				break;
-			}
-		}
+		$this->helper->add_qr_notifications($mode, $data, $subject, $username);
 
 		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{

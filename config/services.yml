@@ -7,7 +7,6 @@ services:
             - @template
             - @user
             - @request
-            - @notification_manager
             - @boardtools.quickreply.listener_helper
         tags:
             - { name: event.listener }
@@ -55,6 +54,7 @@ services:
             - @user
             - @ext.manager
             - @request
+            - @notification_manager
             - @boardtools.quickreply.ajax_helper
             - @boardtools.quickreply.captcha_helper
             - @boardtools.quickreply.form_helper
