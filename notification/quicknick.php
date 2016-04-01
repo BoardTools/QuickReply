@@ -9,11 +9,6 @@
 
 namespace boardtools\quickreply\notification;
 
-/**
-*
-*
-*/
-
 class quicknick extends \phpbb\notification\type\quote
 {
 	/**
@@ -58,7 +53,6 @@ class quicknick extends \phpbb\notification\type\quote
 	{
 		return true;
 	}
-
 
 	/**
 	* Find the users who want to receive notifications

@@ -22,10 +22,8 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'NOTIFICATION_QUICKNICK'				=> array(
-		1	=> '<strong>Обращение по никнейму</strong> от пользователя %1$s в сообщении:',
-		2	=> '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
-		3	=> '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
+		1	=> '<strong>Mentioned</strong> by %1$s in the message:',
 	),
 
-	'NOTIFICATION_TYPE_QUICKNICK'	=> 'К Вам обратились по никнейму в сообщении',
+	'NOTIFICATION_TYPE_QUICKNICK'	=> 'You have been mentioned in the message',
 ));

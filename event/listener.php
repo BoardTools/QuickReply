@@ -83,6 +83,11 @@ class listener implements EventSubscriberInterface
 		);
 	}
 
+	/**
+	 * Load language file for notifications.
+	 *
+	 * @param object $event The event object
+	 */
 	public function load_language_on_setup($event)
 	{
 		$lang_set_ext = $event['lang_set_ext'];

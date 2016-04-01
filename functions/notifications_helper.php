@@ -34,11 +34,22 @@ class notifications_helper
 		$this->notification_manager = $notification_manager;
 	}
 
+	/**
+	 * Marks QuickReply notifications read in the specified post
+	 * for current user
+	 *
+	 * @param array $post_list Array of post IDs
+	 */
 	public function mark_qr_notifications_read($post_list)
 	{
 		$this->notification_manager->mark_notifications_read('boardtools.quickreply.notification.type.quicknick', $post_list, $this->user->data['user_id']);
 	}
 
+	/**
+	 * Adds or updates QuickReply notifications
+	 *
+	 * @param object $event The event object
+	 */
 	public function add_qr_notifications($event)
 	{
 		$mode = $event['mode'];
@@ -62,9 +73,7 @@ class notifications_helper
 				case 'post':
 				case 'reply':
 				case 'quote':
-					$this->notification_manager->add_notifications(array(
-						'boardtools.quickreply.notification.type.quicknick',
-					), $notification_data);
+					$this->notification_manager->add_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
 				break;
 
 				case 'edit_topic':
