@@ -52,37 +52,40 @@ class notifications_helper
 	 */
 	public function add_qr_notifications($event)
 	{
-		$mode = $event['mode'];
-		$data = $event['data'];
-		$subject = $event['subject'];
-		$username = $event['username'];
-
-		$notification_data = array_merge($data, array(
-			'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
-			'post_username'		=> $username,
-			'poster_id'			=> $data['poster_id'],
-			'post_text'			=> $data['message'],
-			'post_time'			=> time(),
-			'post_subject'		=> $subject,
-		));
-
 		if ($this->auth->acl_get('f_noapprove', $data['forum_id']))
 		{
-			switch ($mode)
-			{
-				case 'post':
-				case 'reply':
-				case 'quote':
-					$this->notification_manager->add_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
-				break;
+			$mode = $event['mode'];
+			$data = $event['data'];
+			$subject = $event['subject'];
+			$username = $event['username'];
 
-				case 'edit_topic':
-				case 'edit_first_post':
-				case 'edit':
-				case 'edit_last_post':
-					$this->notification_manager->update_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
-				break;
+			$notification_data = array_merge($data, array(
+				'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
+				'post_username'		=> $username,
+				'poster_id'			=> $data['poster_id'],
+				'post_text'			=> $data['message'],
+				'post_time'			=> time(),
+				'post_subject'		=> $subject,
+			));
+
+			if ($this->case_to_add($mode))
+			{
+				$this->notification_manager->add_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
+			}
+			else if ($this->case_to_update($mode))
+			{
+				$this->notification_manager->update_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
 			}
 		}
+	}
+
+	private function case_to_add($mode)
+	{
+		return in_array($mode, array('post', 'reply', 'quote'));
+	}
+
+	private function case_to_update($mode)
+	{
+		return in_array($mode, array('edit_topic', 'edit_first_post', 'edit', 'edit_last_post'));
 	}
 }
