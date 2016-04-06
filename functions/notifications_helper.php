@@ -52,13 +52,13 @@ class notifications_helper
 	 */
 	public function add_qr_notifications($event)
 	{
+		$mode = $event['mode'];
+		$data = $event['data'];
+		$subject = $event['subject'];
+		$username = $event['username'];
+
 		if ($this->auth->acl_get('f_noapprove', $data['forum_id']))
 		{
-			$mode = $event['mode'];
-			$data = $event['data'];
-			$subject = $event['subject'];
-			$username = $event['username'];
-
 			$notification_data = array_merge($data, array(
 				'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
 				'post_username'		=> $username,
