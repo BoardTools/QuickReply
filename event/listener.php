@@ -288,11 +288,6 @@ class listener implements EventSubscriberInterface
 			));
 		};
 
-		// Ctrl+Enter submit
-		$page_data = array_merge($page_data, array(
-			'S_QR_CE_ENABLE' => $this->config['qr_ctrlenter'],
-		));
-
 		$event['page_data'] = $page_data;
 
 		// Ajax submit

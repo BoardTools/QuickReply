@@ -17,17 +17,6 @@
 		}
 	}
 
-	/*********************/
-	/* Ctrl+Enter Plugin */
-	/*********************/
-	if (quickreply.settings.ctrlEnter) {
-		$(quickreply.editor.textareaSelector).keydown(function(event) {
-			if (event.ctrlKey && (event.keyCode == 13 || event.keyCode == 10)) {
-				$(this).parents('form').find('input[name="post"]').click();
-			}
-		});
-	}
-
 	/**************************************/
 	/* Quick Quote and Full Quote Plugins */
 	/**************************************/
