@@ -16,8 +16,7 @@ class quickreply_module
 
 	public function main($id, $mode)
 	{
-		global $cache, $config, $db, $user, $auth, $template, $request;
-		global $phpbb_root_path, $phpEx, $phpbb_admin_path, $phpbb_container;
+		global $config, $user, $template, $request;
 
 		$this->page_title = 'ACP_QUICKREPLY';
 		$this->tpl_name = 'acp_quickreply';
@@ -63,13 +62,22 @@ class quickreply_module
 			),
 		);
 
+		/**
+		 * We need to disable this feature in phpBB 3.1.9 and higher
+		 * as it has been added to the core.
+		 */
+		if (version_compare($config['version'], '3.1.8', '>'))
+		{
+			unset($display_vars['qr_ctrlenter']);
+		}
+
 		if (isset($display_vars['lang']))
 		{
 			$user->add_lang($display_vars['lang']);
 		}
 
 		$this->new_config = $config;
-		$cfg_array = ($request->is_set('config')) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = ($request->is_set('config')) ? $request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
