@@ -16,7 +16,7 @@ class quickreply_module
 
 	public function main($id, $mode)
 	{
-		global $config, $user, $template, $request;
+		global $config, $user, $request;
 
 		$this->page_title = 'ACP_QUICKREPLY';
 		$this->tpl_name = 'acp_quickreply';
@@ -67,18 +67,8 @@ class quickreply_module
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 
-		$this->page_title = $display_vars['title'];
-
-		$template->assign_vars(array(
-			'L_TITLE'         => $user->lang[$display_vars['title']],
-			'L_TITLE_EXPLAIN' => $user->lang[$display_vars['title'] . '_EXPLAIN'],
-
-			'S_ERROR'   => (sizeof($error)) ? true : false,
-			'ERROR_MSG' => implode('<br />', $error),
-		));
-
 		// Output relevant page
-		$this->output_page($display_vars, $template, $user);
+		$this->output_page($display_vars, $error, $user);
 	}
 
 	/**
@@ -153,6 +143,18 @@ class quickreply_module
 	}
 
 	/**
+	 * Get text for title (if exists)
+	 *
+	 * @param array       $vars Array of vars
+	 * @param \phpbb\user $user User object
+	 * @return string
+	 */
+	protected function get_title($vars, $user)
+	{
+		return (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'];
+	}
+
+	/**
 	 * Get text for title explanation (if exists)
 	 *
 	 * @param array       $vars Array of vars
@@ -180,11 +182,23 @@ class quickreply_module
 	 * @param \phpbb\template\template $template     Template object
 	 * @param \phpbb\user              $user         User object
 	 */
-	protected function output_page($display_vars, $template, $user)
+	protected function output_page($display_vars, $error, $user)
 	{
+		global $template;
+		
+		$this->page_title = $display_vars['title'];
+
+		$template->assign_vars(array(
+			'L_TITLE'         => $user->lang[$display_vars['title']],
+			'L_TITLE_EXPLAIN' => $user->lang[$display_vars['title'] . '_EXPLAIN'],
+
+			'S_ERROR'   => (sizeof($error)) ? true : false,
+			'ERROR_MSG' => implode('<br />', $error),
+		));
+
 		foreach ($display_vars['vars'] as $config_key => $vars)
 		{
-			if (!is_array($vars) && strpos($config_key, 'legend') === false)
+			if ($this->invalid_vars($vars, $config_key))
 			{
 				continue;
 			}
@@ -210,7 +224,7 @@ class quickreply_module
 
 			$template->assign_block_vars('options', array(
 				'KEY'           => $config_key,
-				'TITLE'         => (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
+				'TITLE'         => $this->get_title($vars, $user),
 				'S_EXPLAIN'     => $vars['explain'],
 				'TITLE_EXPLAIN' => $this->get_title_explain($vars, $user),
 				'CONTENT'       => $content,
@@ -218,5 +232,10 @@ class quickreply_module
 
 			unset($display_vars['vars'][$config_key]);
 		}
+	}
+
+	protected function invalid_vars($vars, $config_key)
+	{
+		return (!is_array($vars) && strpos($config_key, 'legend') === false);
 	}
 }
