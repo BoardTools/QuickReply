@@ -179,7 +179,7 @@ class quickreply_module
 	 * Output the page
 	 *
 	 * @param array                    $display_vars Array of display_vars
-	 * @param \phpbb\template\template $template     Template object
+	 * @param array 				   $error        Array of errors
 	 * @param \phpbb\user              $user         User object
 	 */
 	protected function output_page($display_vars, $error, $user)
