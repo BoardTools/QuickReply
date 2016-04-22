@@ -246,22 +246,22 @@
 	 *
 	 * @param {jQuery} link jQuery element for the user profile link
 	 */
+	quickreply.functions.quickNick = function(link) {
+		var nickname = link.text(),
+			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
+			color = (link.hasClass('username-coloured')) ? link.css('color') : false,
+			qr_color = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
+		quickreply.style.showQuickReplyForm();
+		if (!quickreply.settings.allowBBCode) {
+			insert_text(nickname + comma, false);
+		} else if (!quickreply.settings.quickNickRef) {
+			insert_text('[b]' + nickname + '[/b]' + comma, false);
+		} else {
+			insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
+		}
+	};
+
 	if (quickreply.settings.quickNick) {
-		quickreply.functions.quickNick = function(link) {
-			var nickname = link.text(),
-				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
-				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
-				qr_color = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
-			quickreply.style.showQuickReplyForm();
-			if (!quickreply.settings.allowBBCode) {
-				insert_text(nickname + comma, false);
-			} else if (!quickreply.settings.quickNickRef) {
-				insert_text('[b]' + nickname + '[/b]' + comma, false);
-			} else {
-				insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
-			}
-		};
-		
 		function qr_quicknick(evt, link) {
 			// Get cursor coordinates
 			if (!evt) {
