@@ -185,7 +185,7 @@ class quickreply_module
 	protected function output_page($display_vars, $error, $user)
 	{
 		global $template;
-		
+
 		$this->page_title = $display_vars['title'];
 
 		$template->assign_vars(array(
