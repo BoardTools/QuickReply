@@ -26,9 +26,6 @@ class v_1_0_2 extends \phpbb\db\migration\migration
 		return array(
 			// Update existing configs
 			array('config.update', array('qr_version', '1.0.2')),
-
-			// Remove configs
-			array('config.remove', array('qr_ctrlenter')),
 		);
 	}
 }

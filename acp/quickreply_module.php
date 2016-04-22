@@ -28,6 +28,15 @@ class quickreply_module
 
 		$display_vars = $this->generate_display_vars();
 
+		/**
+		 * We need to disable this feature in phpBB 3.1.9 and higher
+		 * as it has been added to the core.
+		 */
+		if (version_compare($config['version'], '3.1.8', '>'))
+		{
+			unset($display_vars['qr_ctrlenter']);
+		}
+
 		if (isset($display_vars['lang']))
 		{
 			$user->add_lang($display_vars['lang']);
@@ -85,6 +94,7 @@ class quickreply_module
 				'legend1'              => '',
 				'qr_bbcode'            => array('lang' => 'ACP_QR_BBCODE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_smilies'           => array('lang' => 'ACP_QR_SMILIES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_ctrlenter'         => array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer' => array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_ajax_submit'       => array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_ajax_pagination'   => array('lang' => 'ACP_QR_AJAX_PAGINATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),

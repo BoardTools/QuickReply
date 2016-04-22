@@ -493,7 +493,8 @@
 					if (quickreply.settings.enableScroll) {
 						quickreply.functions.qr_soft_scroll($('#preview'));
 					}
-					$('#qr_postform').trigger('ajax_submit_preview');
+					var preview = $('#preview');
+					$('#qr_postform').trigger('ajax_submit_preview', [preview]);
 				} else if (res.noapprove) {
 					$('input[name="post"]').removeAttr('data-clicked');
 					$('#message-box textarea').val('').attr('style', 'height: 9em;');
@@ -528,6 +529,8 @@
 				}
 				// else qr_ajax_error();
 			}
+			/* Fix for phpBB 3.1.9 */
+			$(quickreply.editor.mainForm).find('input[data-clicked]').removeAttr('data-clicked');
 		});
 	}
 

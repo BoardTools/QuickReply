@@ -220,6 +220,7 @@ class listener_helper
 			'S_QR_QUICKQUOTE_ENABLE'  => $this->config['qr_quickquote'],
 			'S_QR_QUICKQUOTE_LINK'    => $this->config['qr_quickquote_link'],
 			'S_QR_FULL_QUOTE'         => $this->config['qr_full_quote'],
+			'S_QR_CE_ENABLE'          => $this->qr_ctrlenter_enabled(),
 			'QR_SOURCE_POST'          => $this->config['qr_source_post'],
 			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],
 
@@ -268,5 +269,30 @@ class listener_helper
 			// ABBC3
 			'S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
 		));
+	}
+
+		/**
+	 * Detects whether Ctrl+Enter feature is enabled in QuickReply extension.
+	 * We need to disable this feature in phpBB 3.1.9 and higher
+	 * as it has been added to the core.
+	 *
+	 * @deprecated 1.0.2 added only for backwards compatibility reasons
+	 * @return bool
+	 */
+	public function qr_ctrlenter_enabled()
+	{
+		$qr_ctrlenter = $this->config['qr_ctrlenter'];
+		if ($qr_ctrlenter)
+		{
+			if (version_compare($this->config['version'], '3.1.8', '>'))
+			{
+				$this->config->set('qr_ctrlenter', 0);
+			}
+			else
+			{
+				return $qr_ctrlenter;
+			}
+		}
+		return false;
 	}
 }
