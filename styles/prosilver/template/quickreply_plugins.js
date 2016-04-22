@@ -31,7 +31,7 @@
 	/***********************/
 	/* Fix for phpBB 3.1.9 */
 	/***********************/
-	$(quickreply.editor.mainForm).submit(function (event) {
+	$(quickreply.editor.mainForm).submit(function () {
 		if (!$(this).find('input[type="submit"][data-clicked]').length) {
 			$(this).find('input[name="post"]').attr('data-clicked', 'true');
 		}

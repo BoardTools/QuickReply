@@ -597,6 +597,8 @@
 				}
 				// else qr_ajax_error();
 			}
+			/* Fix for phpBB 3.1.9 */
+			$(quickreply.editor.mainForm).find('input[data-clicked]').removeAttr('data-clicked');
 		});
 	}
 
