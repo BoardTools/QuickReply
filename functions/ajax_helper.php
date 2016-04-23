@@ -292,25 +292,8 @@ class ajax_helper
 		$json_response->send($data);
 	}
 
-	public function no_refresh ($current_post, $post_list)
+	public function no_refresh($current_post, $post_list)
 	{
 		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);
-	}
-
-	public function modify_sql_if_no_refresh($event, $post_list, $current_post)
-	{
-		$sql_ary = $event['sql_ary'];
-		$qr_get_current = $this->request->is_set('qr_get_current');
-		$compare = ($qr_get_current) ? ' >= ' : ' > ';
-		$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
-		$event['sql_ary'] = $sql_ary;
-		$this->qr_insert = true;
-		$this->qr_first = ($current_post == min($post_list)) && $qr_get_current;
-
-		// Check whether no posts are found.
-		if ($compare == ' > ' && max($post_list) <= $current_post)
-		{
-			$this->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
-		}
 	}
 }

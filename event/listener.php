@@ -111,7 +111,19 @@ class listener implements EventSubscriberInterface
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 		if ($this->helper->ajax_helper->no_refresh($current_post, $post_list))
 		{
-			$this->helper->ajax_helper->modify_sql_if_no_refresh($event, $post_list, $current_post);
+			$sql_ary = $event['sql_ary'];
+			$qr_get_current = $this->request->is_set('qr_get_current');
+			$compare = ($qr_get_current) ? ' >= ' : ' > ';
+			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
+			$event['sql_ary'] = $sql_ary;
+			$this->helper->ajax_helper->qr_insert = true;
+			$this->helper->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
+
+			// Check whether no posts are found.
+			if ($compare == ' > ' && max($post_list) <= $current_post)
+			{
+				$this->helper->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
+			}
 		}
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
@@ -355,7 +367,7 @@ class listener implements EventSubscriberInterface
 		// Output the data vars to the template
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
 		$this->template->assign_vars($this->helper->qr_user_prefs_data($data));
-		
+
 		$event['data'] = $data;
 	}
 
