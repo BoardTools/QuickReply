@@ -77,7 +77,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 			else
 			{
 				// Create new BBCode
-				
+				$this->insert_bbcode($bbcode_array);
 			}
 		}
 	}
