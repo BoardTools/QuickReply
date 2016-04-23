@@ -111,19 +111,7 @@ class listener implements EventSubscriberInterface
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 		if ($this->helper->ajax_helper->no_refresh($current_post, $post_list))
 		{
-			$sql_ary = $event['sql_ary'];
-			$qr_get_current = $this->request->is_set('qr_get_current');
-			$compare = ($qr_get_current) ? ' >= ' : ' > ';
-			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
-			$event['sql_ary'] = $sql_ary;
-			$this->helper->ajax_helper->qr_insert = true;
-			$this->helper->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
-
-			// Check whether no posts are found.
-			if ($compare == ' > ' && max($post_list) <= $current_post)
-			{
-				$this->helper->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
-			}
+			$this->helper->ajax_helper->modify_sql_if_no_refresh($event, $post_list, $current_post);
 		}
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
@@ -209,22 +197,10 @@ class listener implements EventSubscriberInterface
 	{
 		$data = $event['data'];
 
-		if (
-			!$this->auth->acl_get('f_qr_change_subject', $data['forum_id']) &&
-			isset($data['topic_first_post_id']) &&
-			isset($data['post_id']) &&
-			($data['topic_first_post_id'] != $data['post_id'])
-		)
+		if ($this->helper->plugins_helper->cannot_change_subject($data['forum_id'], $event['mode'], $data['topic_first_post_id'], $data['post_id'], 1))
 		{
-			if ($this->config['qr_enable_re'] == 0)
-			{
-				$subject = $data['topic_title'];
-			}
-			else
-			{
-				$subject = 'Re: ' . $data['topic_title'];
-			}
-
+			$re = ($this->config['qr_enable_re'] == 0) ? '' : 'Re: ';
+			$subject = $re . $data['topic_title'];
 			$event['subject'] = $subject;
 		}
 	}
@@ -280,7 +256,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		// Whether the user can change post subject or not
-		if (!$this->auth->acl_get('f_qr_change_subject', $forum_id) && $event['mode'] != 'post' && $post_data['topic_first_post_id'] != $event['post_id'])
+		if ($this->helper->plugins_helper->cannot_change_subject($forum_id, $event['mode'], $post_data['topic_first_post_id'], $event['post_id'], 0))
 		{
 			$this->template->assign_vars(array(
 				'S_QR_NOT_CHANGE_SUBJECT' => true,
@@ -290,7 +266,7 @@ class listener implements EventSubscriberInterface
 
 		// Ctrl+Enter submit
 		$page_data = array_merge($page_data, array(
-			'S_QR_CE_ENABLE' => $this->helper->qr_ctrlenter_enabled(),
+			'S_QR_CE_ENABLE' => $this->helper->plugins_helper->qr_ctrlenter_enabled(),
 		));
 
 		$event['page_data'] = $page_data;
@@ -371,22 +347,16 @@ class listener implements EventSubscriberInterface
 	 */
 	public function ucp_prefs_get_data($event)
 	{
+		$data = $event['data'];
+
 		// Request the user option vars and add them to the data array
-		$event['data'] = array_merge($event['data'], array(
-			'ajax_pagination'  => $this->request->variable('ajax_pagination', (int) $this->user->data['ajax_pagination']),
-			'qr_enable_scroll' => $this->request->variable('qr_enable_scroll', (int) $this->user->data['qr_enable_scroll']),
-			'qr_soft_scroll'   => $this->request->variable('qr_soft_scroll', (int) $this->user->data['qr_soft_scroll']),
-		));
+		$data = array_merge($data, $this->helper->qr_get_user_prefs_data($this->user->data));
 
 		// Output the data vars to the template
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
-		$this->template->assign_vars(array(
-			'S_AJAX_PAGINATION'        => $this->config['qr_ajax_pagination'],
-			'S_ENABLE_AJAX_PAGINATION' => $event['data']['ajax_pagination'],
-			'S_QR_ENABLE_SCROLL'       => $event['data']['qr_enable_scroll'],
-			'S_QR_ALLOW_SOFT_SCROLL'   => !!$this->config['qr_scroll_time'],
-			'S_QR_SOFT_SCROLL'         => $event['data']['qr_soft_scroll'],
-		));
+		$this->template->assign_vars($this->helper->qr_user_prefs_data($data));
+		
+		$event['data'] = $data;
 	}
 
 	/**
@@ -412,11 +382,7 @@ class listener implements EventSubscriberInterface
 	{
 		$data = $event['data'];
 		$user_row = $event['user_row'];
-		$data = array_merge($data, array(
-			'ajax_pagination'  => $this->request->variable('ajax_pagination', (int) $user_row['ajax_pagination']),
-			'qr_enable_scroll' => $this->request->variable('qr_enable_scroll', (int) $user_row['qr_enable_scroll']),
-			'qr_soft_scroll'   => $this->request->variable('qr_soft_scroll', (int) $user_row['qr_soft_scroll']),
-		));
+		$data = array_merge($data, $this->helper->qr_get_user_prefs_data($user_row));
 		$event['data'] = $data;
 	}
 
@@ -430,13 +396,7 @@ class listener implements EventSubscriberInterface
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
 		$data = $event['data'];
 		$user_prefs_data = $event['user_prefs_data'];
-		$user_prefs_data = array_merge($user_prefs_data, array(
-			'S_AJAX_PAGINATION'        => $this->config['qr_ajax_pagination'],
-			'S_ENABLE_AJAX_PAGINATION' => $data['ajax_pagination'],
-			'S_QR_ENABLE_SCROLL'       => $data['qr_enable_scroll'],
-			'S_QR_ALLOW_SOFT_SCROLL'   => !!$this->config['qr_scroll_time'],
-			'S_QR_SOFT_SCROLL'         => $data['qr_soft_scroll'],
-		));
+		$user_prefs_data = array_merge($user_prefs_data, $this->helper->qr_user_prefs_data($data));
 		$event['user_prefs_data'] = $user_prefs_data;
 	}
 

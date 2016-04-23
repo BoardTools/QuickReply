@@ -23,9 +23,6 @@ class listener_helper
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbb\extension\manager */
-	protected $phpbb_extension_manager;
-
 	/** @var \phpbb\request\request */
 	protected $request;
 
@@ -37,6 +34,9 @@ class listener_helper
 
 	/** @var \boardtools\quickreply\functions\form_helper */
 	public $form_helper;
+
+	/** @var \boardtools\quickreply\functions\plugins_helper */
+	public $plugins_helper;
 
 	/** @var \boardtools\quickreply\functions\notifications_helper */
 	public $notifications_helper;
@@ -59,21 +59,22 @@ class listener_helper
 	 * @param ajax_helper                  $ajax_helper
 	 * @param captcha_helper               $captcha_helper
 	 * @param form_helper                  $form_helper
+	 * @param plugins_helper               $plugins_helper
 	 * @param notifications_helper         $notifications_helper
 	 * @param string                       $phpbb_root_path Root path
 	 * @param string                       $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager, \phpbb\request\request $request, ajax_helper $ajax_helper, captcha_helper $captcha_helper, form_helper $form_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, ajax_helper $ajax_helper, captcha_helper $captcha_helper, form_helper $form_helper, plugins_helper $plugins_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
-		$this->phpbb_extension_manager = $phpbb_extension_manager;
 		$this->request = $request;
 		$this->ajax_helper = $ajax_helper;
 		$this->captcha_helper = $captcha_helper;
 		$this->form_helper = $form_helper;
+		$this->plugins_helper = $plugins_helper;
 		$this->notifications_helper = $notifications_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -208,7 +209,7 @@ class listener_helper
 	 */
 	public function assign_template_variables_for_qr($forum_id)
 	{
-		$this->assign_template_variables_for_extensions();
+		$this->plugins_helper->assign_template_variables_for_extensions();
 		$this->template->assign_vars(array(
 			'S_QR_COLOUR_NICKNAME'    => $this->config['qr_color_nickname'],
 			'S_QR_NOT_CHANGE_SUBJECT' => !$this->auth->acl_get('f_qr_change_subject', $forum_id),
@@ -220,7 +221,7 @@ class listener_helper
 			'S_QR_QUICKQUOTE_ENABLE'  => $this->config['qr_quickquote'],
 			'S_QR_QUICKQUOTE_LINK'    => $this->config['qr_quickquote_link'],
 			'S_QR_FULL_QUOTE'         => $this->config['qr_full_quote'],
-			'S_QR_CE_ENABLE'          => $this->qr_ctrlenter_enabled(),
+			'S_QR_CE_ENABLE'          => $this->plugins_helper->qr_ctrlenter_enabled(),
 			'QR_SOURCE_POST'          => $this->config['qr_source_post'],
 			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],
 
@@ -249,50 +250,23 @@ class listener_helper
 		));
 	}
 
-	/**
-	 * Assign template variables for extensions if quick reply is enabled
-	 */
-	public function assign_template_variables_for_extensions()
+	public function qr_user_prefs_data($data)
 	{
-		if (
-			$this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') &&
-			$this->user->data['is_registered'] &&
-			$this->config['merge_interval']
-		)
-		{
-			// Always show the checkbox if PostsMerging extension is installed.
-			$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
-			$this->template->assign_var('POSTS_MERGING_OPTION', true);
-		}
-
-		$this->template->assign_vars(array(
-			// ABBC3
-			'S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
-		));
+		return array(
+			'S_AJAX_PAGINATION'        => $this->config['qr_ajax_pagination'],
+			'S_ENABLE_AJAX_PAGINATION' => $data['ajax_pagination'],
+			'S_QR_ENABLE_SCROLL'       => $data['qr_enable_scroll'],
+			'S_QR_ALLOW_SOFT_SCROLL'   => !!$this->config['qr_scroll_time'],
+			'S_QR_SOFT_SCROLL'         => $data['qr_soft_scroll'],
+		);
 	}
 
-		/**
-	 * Detects whether Ctrl+Enter feature is enabled in QuickReply extension.
-	 * We need to disable this feature in phpBB 3.1.9 and higher
-	 * as it has been added to the core.
-	 *
-	 * @deprecated 1.0.2 added only for backwards compatibility reasons
-	 * @return bool
-	 */
-	public function qr_ctrlenter_enabled()
+	public function qr_get_user_prefs_data($user_row)
 	{
-		$qr_ctrlenter = $this->config['qr_ctrlenter'];
-		if ($qr_ctrlenter)
-		{
-			if (version_compare($this->config['version'], '3.1.8', '>'))
-			{
-				$this->config->set('qr_ctrlenter', 0);
-			}
-			else
-			{
-				return $qr_ctrlenter;
-			}
-		}
-		return false;
+		return array(
+			'ajax_pagination'  => $this->request->variable('ajax_pagination', (int) $user_row['ajax_pagination']),
+			'qr_enable_scroll' => $this->request->variable('qr_enable_scroll', (int) $user_row['qr_enable_scroll']),
+			'qr_soft_scroll'   => $this->request->variable('qr_soft_scroll', (int) $user_row['qr_soft_scroll']),
+		);
 	}
 }
