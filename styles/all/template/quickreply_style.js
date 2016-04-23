@@ -44,7 +44,12 @@
 	 * Opens quick reply form if it is collapsed.
 	 */
 	quickreply.style.showQuickReplyForm = function() {
-		// Do nothing - not required.
+		/*****************************/
+		/* Quick Reply Toggle Plugin */
+		/*****************************/
+		if ($("#reprap").length) {
+			$('#reprap input[type=submit]').click();
+		}
 	};
 
 	/**

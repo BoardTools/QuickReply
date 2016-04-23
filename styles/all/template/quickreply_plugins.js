@@ -27,7 +27,7 @@
 			}
 		});
 	}
-	
+
 	/***********************/
 	/* Fix for phpBB 3.1.9 */
 	/***********************/
@@ -37,14 +37,13 @@
 		}
 	});
 
-	/**************************************/
-	/* Quick Quote and Full Quote Plugins */
-	/**************************************/
+	/********************/
+	/* Helper functions */
+	/********************/
 	/**
-	 * Inserts a quote from the specified post to quick reply textarea.
+	 * Gets the selected text.
 	 *
-	 * @param {string} qr_post_id      The ID of the post
-	 * @param {string} [selected_text] Selected text (optional)
+	 * @returns {string}
 	 */
 	function qr_getSelection() {
 		var sel = '';
@@ -57,9 +56,13 @@
 		}
 		return sel;
 	}
-	
+
+	/**
+	 * Gets cursor coordinates.
+	 *
+	 * @param {Event} evt jQuery Event object
+	 */
 	function qr_getCoordinates(evt) {
-		// Get cursor coordinates
 		if (evt.type == 'touchstart') {
 			evt.pageX = evt.originalEvent.touches[0].pageX;
 			evt.pageY = evt.originalEvent.touches[0].pageY;
@@ -67,7 +70,16 @@
 		qr_pageX = evt.pageX || evt.clientX + document.documentElement.scrollLeft; // FF || IE
 		qr_pageY = evt.pageY || evt.clientY + document.documentElement.scrollTop;
 	}
-	
+
+	/**************************************/
+	/* Quick Quote and Full Quote Plugins */
+	/**************************************/
+	/**
+	 * Inserts a quote from the specified post to quick reply textarea.
+	 *
+	 * @param {string} qr_post_id      The ID of the post
+	 * @param {string} [selected_text] Selected text (optional)
+	 */
 	quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
 		var qr_post_author = $('#qr_author_p' + qr_post_id),
 			nickname = qr_post_author.text(),
@@ -337,7 +349,7 @@
 			if (bbvideo.length > 0) {
 				bbvideo.bbvideo();
 			}
-		}
+		};
 
 		/* Ajax Submit */
 		$('#qr_posts').on('qr_completed', qr_abbc3_bbvideo);

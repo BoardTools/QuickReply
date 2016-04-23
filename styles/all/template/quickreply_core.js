@@ -214,7 +214,7 @@
 							});
 						}, alert_delay);
 						$loadingIndicator.fadeOut(phpbb.alertTime);
-						var qr_scroll_element = (typeof scroll_to_last !== "undefined") ? elements.children(quickreply.editor.postSelector).last() : ((qr_get_unread && $(quickreply.editor.unreadPostSelector).length) ? $(quickreply.editor.unreadPostSelector).first() : elements.children().first());
+						var qr_scroll_element = (typeof scroll_to_last !== "undefined") ? elements.find(quickreply.editor.postSelector).last() : ((qr_get_unread && $(quickreply.editor.unreadPostSelector).length) ? $(quickreply.editor.unreadPostSelector).first() : elements.children().first());
 						if (typeof res_function === "function") {
 							res_function(qr_scroll_element);
 						}
