@@ -132,7 +132,7 @@
 		if (theSelection) {
 			quickreply.style.showQuickReplyForm();
 			if (quickreply.settings.allowBBCode) {
-				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + theSelection + '[/quote]\r');
+				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + theSelection.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
 			} else {
 				insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
 				var lines = split_lines(theSelection);
