@@ -294,11 +294,7 @@ class listener implements EventSubscriberInterface
 	 */
 	public function ucp_prefs_set_data($event)
 	{
-		$event['sql_ary'] = array_merge($event['sql_ary'], array(
-			'ajax_pagination'  => $event['data']['ajax_pagination'],
-			'qr_enable_scroll' => $event['data']['qr_enable_scroll'],
-			'qr_soft_scroll'   => $event['data']['qr_soft_scroll'],
-		));
+		$event['sql_ary'] = array_merge($event['sql_ary'], $this->helper->qr_set_user_prefs_data($event['data']));
 	}
 
 	/**

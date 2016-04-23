@@ -253,4 +253,13 @@ class listener_helper
 			'qr_soft_scroll'   => $this->request->variable('qr_soft_scroll', (int) $user_row['qr_soft_scroll']),
 		);
 	}
+
+	public function qr_set_user_prefs_data($data)
+	{
+		return array(
+			'ajax_pagination'  => $data['ajax_pagination'],
+			'qr_enable_scroll' => $data['qr_enable_scroll'],
+			'qr_soft_scroll'   => $data['qr_soft_scroll'],
+		);
+	}
 }

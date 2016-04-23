@@ -28,11 +28,11 @@ class listener_ajax implements EventSubscriberInterface
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \boardtools\quickreply\functions\listener_helper */
-	protected $helper;
-
 	/** @var \boardtools\quickreply\functions\ajax_helper */
 	protected $ajax_helper;
+
+	/** @var \boardtools\quickreply\functions\listener_helper */
+	protected $helper;
 
 	/**
 	 * Constructor
