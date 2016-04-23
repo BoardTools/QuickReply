@@ -13,7 +13,7 @@ class quickreply_module
 {
 	/** @var \phpbb\config\config */
 	protected $config;
-	
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -22,7 +22,7 @@ class quickreply_module
 
 	/** @var \phpbb\request\request */
 	protected $request;
-	
+
 	/** @var string */
 	public $u_action;
 
@@ -109,7 +109,7 @@ class quickreply_module
 			),
 		);
 	}
-	
+
 	/**
 	 * When form is submitting
 	 *
