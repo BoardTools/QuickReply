@@ -54,7 +54,6 @@ class listener_helper
 	 * @param \phpbb\config\config         $config
 	 * @param \phpbb\template\template     $template
 	 * @param \phpbb\user                  $user
-	 * @param \phpbb\extension\manager     $phpbb_extension_manager
 	 * @param \phpbb\request\request       $request
 	 * @param ajax_helper                  $ajax_helper
 	 * @param captcha_helper               $captcha_helper
