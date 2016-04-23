@@ -64,14 +64,12 @@ class listener implements EventSubscriberInterface
 		// We set lower priority for some events for the case if another extension wants to use those events.
 		return array(
 			'core.user_setup'                           => 'load_language_on_setup',
-			'core.viewtopic_get_post_data'              => array('viewtopic_modify_sql', -2),
 			'core.viewtopic_modify_post_row'            => 'viewtopic_modify_post_row',
 			'core.viewtopic_modify_page_title'          => array('viewtopic_modify_data', -2),
 			'core.modify_submit_post_data'              => 'change_subject_when_sending',
-			'core.posting_modify_submission_errors'     => 'detect_new_posts',
 			'core.posting_modify_template_vars'         => 'delete_re',
-			'core.submit_post_end'                      => array('ajax_submit', -2),
-			'rxu.postsmerging.posts_merging_end'        => 'ajax_submit',
+			'core.submit_post_end'                      => array('on_submit', -2),
+			'rxu.postsmerging.posts_merging_end'        => 'on_submit',
 			'core.search_get_posts_data'                => 'hide_posts_subjects_in_searchresults_sql',
 			'core.search_modify_tpl_ary'                => 'hide_posts_subjects_in_searchresults_tpl',
 			'core.ucp_prefs_view_data'                  => 'ucp_prefs_get_data',
@@ -99,36 +97,6 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Reduce the set of elements to the one that we need to retrieve.
-	 *
-	 * @param object $event The event object
-	 */
-	public function viewtopic_modify_sql($event)
-	{
-		$this->helper->captcha_helper->check_captcha_refresh();
-
-		$post_list = $event['post_list'];
-		$current_post = $this->request->variable('qr_cur_post_id', 0);
-		if ($this->helper->ajax_helper->no_refresh($current_post, $post_list))
-		{
-			$sql_ary = $event['sql_ary'];
-			$qr_get_current = $this->request->is_set('qr_get_current');
-			$compare = ($qr_get_current) ? ' >= ' : ' > ';
-			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
-			$event['sql_ary'] = $sql_ary;
-			$this->helper->ajax_helper->qr_insert = true;
-			$this->helper->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
-
-			// Check whether no posts are found.
-			if ($compare == ' > ' && max($post_list) <= $current_post)
-			{
-				$this->helper->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
-			}
-		}
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
-	}
-
-	/**
 	 * Add decoded message text if full quotes are enabled.
 	 *
 	 * @param object $event The event object
@@ -153,12 +121,13 @@ class listener implements EventSubscriberInterface
 
 	/**
 	 * Show bbcodes and smilies in the quickreply
-	 * Template data for Ajax submit
 	 *
 	 * @param object $event The event object
 	 */
 	public function viewtopic_modify_data($event)
 	{
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
+
 		$forum_id = $event['forum_id'];
 		$topic_data = $event['topic_data'];
 		$post_list = $event['post_list'];
@@ -167,27 +136,14 @@ class listener implements EventSubscriberInterface
 		// Mark post notifications read for this user in this topic
 		$this->helper->notifications_helper->mark_qr_notifications_read($post_list);
 
-		$s_quick_reply = $this->helper->qr_is_enabled($forum_id, $topic_data);
-
-		if (!$this->user->data['is_registered'] && $s_quick_reply)
+		if ($this->helper->qr_is_enabled($forum_id, $topic_data))
 		{
-			$this->helper->enable_qr_for_guests($forum_id, $topic_data);
-		}
+			if (!$this->user->data['is_registered'])
+			{
+				$this->helper->enable_qr_for_guests($forum_id, $topic_data);
+			}
 
-		// Ajaxify viewtopic data
-		if ($this->helper->ajax_helper->qr_is_ajax())
-		{
-			$this->helper->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
-		}
-
-		if ($s_quick_reply)
-		{
 			$this->helper->form_helper->prepare_qr_form($forum_id, $topic_id);
-
-			$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
-				'qr'             => 1,
-				'qr_cur_post_id' => (int) max($post_list)
-			)));
 
 			$this->helper->assign_template_variables_for_qr($forum_id);
 
@@ -218,40 +174,8 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Do not post the message if there are some new ones
-	 *
-	 * @param object $event The event object
-	 */
-	public function detect_new_posts($event)
-	{
-		// Ajax submit
-		if ($this->helper->ajax_helper->qr_is_ajax_submit())
-		{
-			$this->helper->ajax_helper->check_errors($event['error']);
-
-			$post_data = $event['post_data'];
-			$lastclick = $this->request->variable('lastclick', time());
-
-			if (($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW))
-			{
-				$forum_id = (int) $post_data['forum_id'];
-				$topic_id = (int) $post_data['topic_id'];
-				$this->helper->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
-			}
-			else if ($post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
-			{
-				// Send new post number as a response.
-				$this->helper->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
-			}
-		}
-		// This is needed for BBCode QR_BBPOST.
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
-	}
-
-	/**
 	 * Delete Re:, lock post subject
 	 * Ctrl+Enter submit - template variables in the full editor
-	 * Ajax submit - error messages and preview
 	 *
 	 * @param object $event The event object
 	 */
@@ -282,24 +206,16 @@ class listener implements EventSubscriberInterface
 		));
 
 		$event['page_data'] = $page_data;
-
-		// Ajax submit
-		$this->helper->ajax_helper->check_ajax_preview($event);
 	}
 
 	/**
-	 * Check Ajax submit
+	 * Send notification
 	 *
 	 * @param object $event The event object
 	 */
-	public function ajax_submit($event)
+	public function on_submit($event)
 	{
 		$this->helper->notifications_helper->add_qr_notifications($event);
-
-		if ($this->helper->ajax_helper->qr_is_ajax_submit())
-		{
-			$this->helper->ajax_helper->ajax_submit($event);
-		}
 	}
 
 	/**

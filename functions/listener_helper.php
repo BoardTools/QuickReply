@@ -26,9 +26,6 @@ class listener_helper
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \boardtools\quickreply\functions\ajax_helper */
-	public $ajax_helper;
-
 	/** @var \boardtools\quickreply\functions\captcha_helper */
 	public $captcha_helper;
 
@@ -55,7 +52,6 @@ class listener_helper
 	 * @param \phpbb\template\template     $template
 	 * @param \phpbb\user                  $user
 	 * @param \phpbb\request\request       $request
-	 * @param ajax_helper                  $ajax_helper
 	 * @param captcha_helper               $captcha_helper
 	 * @param form_helper                  $form_helper
 	 * @param plugins_helper               $plugins_helper
@@ -63,14 +59,13 @@ class listener_helper
 	 * @param string                       $phpbb_root_path Root path
 	 * @param string                       $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, ajax_helper $ajax_helper, captcha_helper $captcha_helper, form_helper $form_helper, plugins_helper $plugins_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, captcha_helper $captcha_helper, form_helper $form_helper, plugins_helper $plugins_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
-		$this->ajax_helper = $ajax_helper;
 		$this->captcha_helper = $captcha_helper;
 		$this->form_helper = $form_helper;
 		$this->plugins_helper = $plugins_helper;
@@ -234,16 +229,6 @@ class listener_helper
 			// begin mod Translit
 			'S_QR_SHOW_BUTTON_TRANSLIT' => $this->config['qr_show_button_translit'],
 			// end mod Translit
-
-			// Ajax submit
-			'L_FULL_EDITOR'             => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
-			'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
-
-			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
-
-			'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
-			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
-			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll'],
 
 			'S_QR_ALLOWED_GUEST' => $this->config['qr_allow_for_guests'] && $this->user->data['user_id'] == ANONYMOUS,
 		));

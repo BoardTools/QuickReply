@@ -173,52 +173,43 @@ class ajax_helper
 	 *
 	 * @param object $event The event object
 	 */
-	public function check_ajax_preview($event)
+	public function ajax_preview($event)
 	{
-		if ($this->qr_is_ajax_submit())
+		$post_data = $event['post_data'];
+		$forum_id = (int) $post_data['forum_id'];
+		/** @var \parse_message $message_parser */
+		$message_parser = $event['message_parser'];
+
+		$message_parser->message = $this->request->variable('message', '', true);
+		$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
+
+		$preview_attachments = false;
+		// Attachment Preview
+		if (sizeof($message_parser->attachment_data))
 		{
-			$this->check_errors($event['error']);
+			$update_count = array();
+			$attachment_data = $message_parser->attachment_data;
 
-			// Preview
-			if ($event['preview'])
+			parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
+
+			$preview_attachments = '';
+			foreach ($attachment_data as $i => $attachment)
 			{
-				$post_data = $event['post_data'];
-				$forum_id = (int) $post_data['forum_id'];
-				/** @var \parse_message $message_parser */
-				$message_parser = $event['message_parser'];
-
-				$message_parser->message = $this->request->variable('message', '', true);
-				$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
-
-				$preview_attachments = false;
-				// Attachment Preview
-				if (sizeof($message_parser->attachment_data))
-				{
-					$update_count = array();
-					$attachment_data = $message_parser->attachment_data;
-
-					parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
-
-					$preview_attachments = '';
-					foreach ($attachment_data as $i => $attachment)
-					{
-						$preview_attachments .= '<dd>' . $attachment . '</dd>';
-					}
-					if (!empty($preview_attachments))
-					{
-						$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
-					}
-					unset($attachment_data);
-				}
-
-				$this->send_json(array(
-					'preview'        => true,
-					'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
-					'PREVIEW_TEXT'   => $preview_message,
-					'PREVIEW_ATTACH' => $preview_attachments,
-				));
+				$preview_attachments .= '<dd>' . $attachment . '</dd>';
 			}
+			if (!empty($preview_attachments))
+			{
+				$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
+			}
+			unset($attachment_data);
 		}
+
+		$this->send_json(array(
+			'preview'        => true,
+			'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
+			'PREVIEW_TEXT'   => $preview_message,
+			'PREVIEW_ATTACH' => $preview_attachments,
+		));
 	}
 
 	/**
