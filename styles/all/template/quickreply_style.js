@@ -47,7 +47,7 @@
 		/*****************************/
 		/* Quick Reply Toggle Plugin */
 		/*****************************/
-		if ($("#reprap").length) {
+		if ($("#reprap:not(.ouvert)").length) {
 			$('#reprap input[type=submit]').click();
 		}
 	};
