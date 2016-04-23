@@ -295,4 +295,13 @@ class listener_helper
 		}
 		return false;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function get_compare()
+	{
+		$qr_get_current = $this->request->is_set('qr_get_current');
+		return ($qr_get_current) ? ' >= ' : ' > ';
+	}
 }

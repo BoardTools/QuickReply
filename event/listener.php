@@ -109,11 +109,10 @@ class listener implements EventSubscriberInterface
 
 		$post_list = $event['post_list'];
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
-		if ($this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list))
+		if ($this->helper->ajax_helper->no_refresh($current_post, $post_list))
 		{
 			$sql_ary = $event['sql_ary'];
-			$qr_get_current = $this->request->is_set('qr_get_current');
-			$compare = ($qr_get_current) ? ' >= ' : ' > ';
+			$compare = $this->helper->get_compare();
 			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
 			$event['sql_ary'] = $sql_ary;
 			$this->helper->ajax_helper->qr_insert = true;

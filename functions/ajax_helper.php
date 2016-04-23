@@ -291,4 +291,9 @@ class ajax_helper
 		$json_response = new \phpbb\json_response;
 		$json_response->send($data);
 	}
+
+	public function no_refresh ($current_post, $post_list)
+	{
+		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);
+	}
 }
