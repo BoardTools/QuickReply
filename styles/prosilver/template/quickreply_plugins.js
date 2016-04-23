@@ -317,7 +317,7 @@
 	/*******************/
 	if (quickreply.plugins.abbc3) {
 		/* Ajax Submit */
-		$('#qr_posts').on('qr_loaded', function (e, elements) {
+		$('#qr_posts').on('qr_completed', function (e, elements) {
 			var bbvideo = elements.find('.bbvideo');
 			if (bbvideo.length > 0) {
 				bbvideo.bbvideo();
