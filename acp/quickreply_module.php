@@ -26,6 +26,12 @@ class quickreply_module
 	/** @var string */
 	public $u_action;
 
+	/** @var string */
+	public $page_title;
+
+	/** @var string */
+	public $tpl_name;
+
 	/** @var array */
 	public $new_config = array();
 
@@ -34,6 +40,7 @@ class quickreply_module
 		global $config, $template, $user, $request;
 
 		$this->config = $config;
+		$this->new_config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
@@ -113,7 +120,6 @@ class quickreply_module
 	{
 		$submit = $this->request->is_set_post('submit');
 
-		$this->new_config = $this->config;
 		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
