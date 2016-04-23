@@ -11,18 +11,34 @@ namespace boardtools\quickreply\acp;
 
 class quickreply_module
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+	
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+	
+	/** @var string */
 	public $u_action;
+
+	/** @var array */
 	public $new_config = array();
 
 	public function main($id, $mode)
 	{
-		global $config, $user, $request;
+		global $config, $template, $user, $request;
 
-		$this->page_title = 'ACP_QUICKREPLY';
+		$this->config = $config;
+		$this->template = $template;
+		$this->user = $user;
+		$this->request = $request;
+
 		$this->tpl_name = 'acp_quickreply';
-		$user->add_lang_ext('boardtools/quickreply', 'quickreply');
-
-		$submit = ($request->is_set_post('submit')) ? true : false;
 		$form_key = 'config_quickreply';
 		add_form_key($form_key);
 
@@ -32,43 +48,15 @@ class quickreply_module
 		 * We need to disable this feature in phpBB 3.1.9 and higher
 		 * as it has been added to the core.
 		 */
-		if (version_compare($config['version'], '3.1.8', '>'))
+		if (version_compare($this->config['version'], '3.1.8', '>'))
 		{
 			unset($display_vars['qr_ctrlenter']);
 		}
 
-		if (isset($display_vars['lang']))
-		{
-			$user->add_lang($display_vars['lang']);
-		}
-
-		$this->new_config = $config;
-		$cfg_array = ($request->is_set('config')) ? $request->variable('config', array('' => ''), true) : $this->new_config;
-		$error = array();
-
-		// We validate the complete config if wished
-		validate_config_vars($display_vars['vars'], $cfg_array, $error);
-
-		if ($submit && !check_form_key($form_key))
-		{
-			$error[] = $user->lang['FORM_INVALID'];
-		}
-
-		// Do not write values if there is an error
-		if (sizeof($error))
-		{
-			$submit = false;
-		}
-
-		$this->set_config($display_vars, $cfg_array, $submit, $config);
-
-		if ($submit)
-		{
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
-		}
+		$error = $this->submit_form($display_vars, $form_key);
 
 		// Output relevant page
-		$this->output_page($display_vars, $error, $user);
+		$this->output_page($display_vars, $error);
 	}
 
 	/**
@@ -114,6 +102,44 @@ class quickreply_module
 			),
 		);
 	}
+	
+	/**
+	 * When form is submitting
+	 *
+	 * @param array                $display_vars Array of display_vars
+	 * @param string               $form_key
+	 */
+	protected function submit_form($display_vars, $form_key)
+	{
+		$submit = $this->request->is_set_post('submit');
+
+		$this->new_config = $this->config;
+		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', array('' => ''), true) : $this->new_config;
+		$error = array();
+
+		// We validate the complete config if wished
+		validate_config_vars($display_vars['vars'], $cfg_array, $error);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			$error[] = $this->user->lang['FORM_INVALID'];
+		}
+
+		// Do not write values if there is an error
+		if (sizeof($error))
+		{
+			$submit = false;
+		}
+
+		$this->set_config($display_vars, $cfg_array, $submit);
+
+		if ($submit)
+		{
+			trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+		}
+
+		return $error;
+	}
 
 	/**
 	 * Set the new configuration array
@@ -121,9 +147,8 @@ class quickreply_module
 	 * @param array                $display_vars Array of display_vars
 	 * @param array                $cfg_array    Array with new values
 	 * @param bool                 $submit       Whether the form was submitted
-	 * @param \phpbb\config\config $config       Config object
 	 */
-	protected function set_config($display_vars, $cfg_array, $submit, $config)
+	protected function set_config($display_vars, $cfg_array, $submit)
 	{
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
@@ -137,8 +162,22 @@ class quickreply_module
 
 			if ($submit)
 			{
-				$config->set($config_name, $config_value);
+				$this->config->set($config_name, $config_value);
 			}
+		}
+	}
+
+	/**
+	 * Add language
+	 *
+	 * @param string                   $display_vars_lang
+	 */
+	protected function add_langs($display_vars_lang)
+	{
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
+		if (isset($display_vars_lang))
+		{
+			$this->user->add_lang($display_vars_lang);
 		}
 	}
 
@@ -146,33 +185,42 @@ class quickreply_module
 	 * Get text for title (if exists)
 	 *
 	 * @param array       $vars Array of vars
-	 * @param \phpbb\user $user User object
 	 * @return string
 	 */
-	protected function get_title($vars, $user)
+	protected function get_title($vars)
 	{
-		return (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'];
+		return (isset($this->user->lang[$vars['lang']])) ? $this->user->lang[$vars['lang']] : $vars['lang'];
 	}
 
 	/**
 	 * Get text for title explanation (if exists)
 	 *
 	 * @param array       $vars Array of vars
-	 * @param \phpbb\user $user User object
 	 * @return string
 	 */
-	protected function get_title_explain($vars, $user)
+	protected function get_title_explain($vars)
 	{
 		$l_explain = '';
 		if ($vars['explain'] && isset($vars['lang_explain']))
 		{
-			$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+			$l_explain = (isset($this->user->lang[$vars['lang_explain']])) ? $this->user->lang[$vars['lang_explain']] : $vars['lang_explain'];
 		}
 		else if ($vars['explain'])
 		{
-			$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+			$l_explain = (isset($this->user->lang[$vars['lang'] . '_EXPLAIN'])) ? $this->user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 		}
 		return $l_explain;
+	}
+
+	/**
+	 * Check vars for valid
+	 *
+	 * @param string 				   $config_key
+	 * @param array                    $vars
+	 */
+	protected function invalid_vars($config_key, $vars)
+	{
+		return (!is_array($vars) && strpos($config_key, 'legend') === false);
 	}
 
 	/**
@@ -180,17 +228,15 @@ class quickreply_module
 	 *
 	 * @param array                    $display_vars Array of display_vars
 	 * @param array 				   $error        Array of errors
-	 * @param \phpbb\user              $user         User object
 	 */
-	protected function output_page($display_vars, $error, $user)
+	protected function output_page($display_vars, $error)
 	{
-		global $template;
-
 		$this->page_title = $display_vars['title'];
+		$this->add_langs($display_vars['lang']);
 
-		$template->assign_vars(array(
-			'L_TITLE'         => $user->lang[$display_vars['title']],
-			'L_TITLE_EXPLAIN' => $user->lang[$display_vars['title'] . '_EXPLAIN'],
+		$this->template->assign_vars(array(
+			'L_TITLE'         => $this->user->lang[$display_vars['title']],
+			'L_TITLE_EXPLAIN' => $this->user->lang[$display_vars['title'] . '_EXPLAIN'],
 
 			'S_ERROR'   => (sizeof($error)) ? true : false,
 			'ERROR_MSG' => implode('<br />', $error),
@@ -198,16 +244,16 @@ class quickreply_module
 
 		foreach ($display_vars['vars'] as $config_key => $vars)
 		{
-			if ($this->invalid_vars($vars, $config_key))
+			if ($this->invalid_vars($config_key, $vars))
 			{
 				continue;
 			}
 
 			if (strpos($config_key, 'legend') !== false)
 			{
-				$template->assign_block_vars('options', array(
+				$this->template->assign_block_vars('options', array(
 					'S_LEGEND' => true,
-					'LEGEND'   => $user->lang($vars)
+					'LEGEND'   => $this->user->lang($vars)
 				));
 
 				continue;
@@ -222,20 +268,15 @@ class quickreply_module
 				continue;
 			}
 
-			$template->assign_block_vars('options', array(
+			$this->template->assign_block_vars('options', array(
 				'KEY'           => $config_key,
-				'TITLE'         => $this->get_title($vars, $user),
+				'TITLE'         => $this->get_title($vars),
 				'S_EXPLAIN'     => $vars['explain'],
-				'TITLE_EXPLAIN' => $this->get_title_explain($vars, $user),
+				'TITLE_EXPLAIN' => $this->get_title_explain($vars),
 				'CONTENT'       => $content,
 			));
 
 			unset($display_vars['vars'][$config_key]);
 		}
-	}
-
-	protected function invalid_vars($vars, $config_key)
-	{
-		return (!is_array($vars) && strpos($config_key, 'legend') === false);
 	}
 }
