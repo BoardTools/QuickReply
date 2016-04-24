@@ -178,7 +178,7 @@ class listener_ajax implements EventSubscriberInterface
 	public function ajax_preview($event)
 	{
 		// Ajax submit
-		if ($this->qr_is_ajax_submit())
+		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
 			$this->ajax_helper->check_errors($event['error']);
 			if ($event['preview'])
