@@ -83,7 +83,7 @@ class quickreply_module
 	 *
 	 * @return array
 	 */
-	protected function generate_display_vars()
+	private function generate_display_vars()
 	{
 		$this->display_vars = array(
 			'title' => 'ACP_QUICKREPLY',
@@ -125,7 +125,7 @@ class quickreply_module
 	/**
 	 * When form is submitting
 	 */
-	protected function submit_form()
+	private function submit_form()
 	{
 		$this->submit = $this->request->is_set_post('submit');
 
@@ -141,7 +141,6 @@ class quickreply_module
 		{
 			trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
-
 	}
 
 	/**
@@ -166,7 +165,7 @@ class quickreply_module
 	 *
 	 * @param array                $cfg_array    Array with new values
 	 */
-	protected function set_config($cfg_array)
+	private function set_config($cfg_array)
 	{
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($this->display_vars['vars'] as $config_name => $null)
@@ -191,7 +190,7 @@ class quickreply_module
 	 * @param string 				   $config_name
 	 * @param array                    $cfg_array
 	 */
-	protected function invalid_var($config_name, $cfg_array)
+	private function invalid_var($config_name, $cfg_array)
 	{
 		return (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false);
 	}
@@ -201,7 +200,7 @@ class quickreply_module
 	 *
 	 * @param string                   $display_vars_lang
 	 */
-	protected function add_langs($display_vars_lang)
+	private function add_langs($display_vars_lang)
 	{
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 		if (isset($display_vars_lang))
@@ -216,7 +215,7 @@ class quickreply_module
 	 * @param array       $vars Array of vars
 	 * @return string
 	 */
-	protected function get_title($vars, $key, $key2 = '')
+	private function get_title($vars, $key, $key2 = '')
 	{
 		if (isset($this->user->lang[$vars[$key] . $key2]))
 		{
@@ -234,7 +233,7 @@ class quickreply_module
 	 * @param array       $vars Array of vars
 	 * @return string
 	 */
-	protected function get_title_explain($vars)
+	private function get_title_explain($vars)
 	{
 		$l_explain = '';
 		if ($vars['explain'] && isset($vars['lang_explain']))
@@ -251,7 +250,7 @@ class quickreply_module
 	/**
 	 * Output title and errors
 	 */
-	protected function output_basic_vars()
+	private function output_basic_vars()
 	{
 		$this->template->assign_vars(array(
 			'L_TITLE'         => $this->user->lang[$this->display_vars['title']],
@@ -262,11 +261,22 @@ class quickreply_module
 		));
 	}
 
+	private function output_options($config_key, $vars, $content)
+	{
+		$this->template->assign_block_vars('options', array(
+			'KEY'           => $config_key,
+			'TITLE'         => $this->get_title($vars, 'lang'),
+			'S_EXPLAIN'     => $vars['explain'],
+			'TITLE_EXPLAIN' => $this->get_title_explain($vars),
+			'CONTENT'       => $content,
+		));
+	}
+
 	/**
 	 * Output options
 	 */
-	protected function output_vars($config_key, $vars)
-	{		
+	private function output_vars($config_key, $vars)
+	{
 		if (strpos($config_key, 'legend') !== false)
 		{
 			$this->template->assign_block_vars('options', array(
@@ -282,14 +292,7 @@ class quickreply_module
 
 			if (!empty($content))
 			{
-				$this->template->assign_block_vars('options', array(
-					'KEY'           => $config_key,
-					'TITLE'         => $this->get_title($vars, 'lang'),
-					'S_EXPLAIN'     => $vars['explain'],
-					'TITLE_EXPLAIN' => $this->get_title_explain($vars),
-					'CONTENT'       => $content,
-				));
-
+				$this->output_options($config_key, $vars, $content);
 				unset($this->display_vars['vars'][$config_key]);
 			}
 		}
@@ -298,7 +301,7 @@ class quickreply_module
 	/**
 	 * Output the page
 	 */
-	protected function output_page()
+	private function output_page()
 	{
 		$this->page_title = $this->display_vars['title'];
 		$this->add_langs($this->display_vars['lang']);
