@@ -65,10 +65,10 @@ class listener implements EventSubscriberInterface
 		return array(
 			'core.user_setup'                           => 'load_language_on_setup',
 			'core.viewtopic_modify_post_row'            => 'viewtopic_modify_post_row',
-			'core.viewtopic_modify_page_title'          => array('viewtopic_modify_data', -2),
+			'core.viewtopic_modify_page_title'          => 'viewtopic_modify_data',
 			'core.modify_submit_post_data'              => 'change_subject_when_sending',
 			'core.posting_modify_template_vars'         => 'delete_re',
-			'core.submit_post_end'                      => array('on_submit', -2),
+			'core.submit_post_end'                      => 'on_submit',
 			'rxu.postsmerging.posts_merging_end'        => 'on_submit',
 			'core.search_get_posts_data'                => 'hide_posts_subjects_in_searchresults_sql',
 			'core.search_modify_tpl_ary'                => 'hide_posts_subjects_in_searchresults_tpl',
