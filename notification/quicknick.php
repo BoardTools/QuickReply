@@ -80,20 +80,30 @@ class quicknick extends \phpbb\notification\type\quote
 		$usernames[2] = array_unique($usernames[2]);
 		$usernames = array_map('utf8_clean_string', $usernames[2]);
 
+		$users = $this->get_ids_of_usernames($usernames, $post['poster_id']);
+
+		return $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
+	}
+
+	/**
+	* @return array
+	*/
+	private function get_ids_of_usernames($usernames, $poster_id)
+	{
 		$users = array();
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('username_clean', $usernames) . '
-				AND user_id <> ' . (int) $post['poster_id'];
+				AND user_id <> ' . (int) $poster_id;
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$users[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
-
-		return $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
+		
+		return $users;
 	}
 
 	/**
