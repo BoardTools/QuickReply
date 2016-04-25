@@ -117,6 +117,11 @@ class ajax_helper
 			'qr_cur_post_id' => (int) $current_post_id
 		)));
 		// Output the page
+		$this->output_ajax_response($page_title, $forum_id);
+	}
+
+	public function output_ajax_response($page_title, $forum_id)
+	{
 		page_header($page_title, false, $forum_id);
 		page_footer(false, false, false);
 		$this->send_json(array(
@@ -199,18 +204,10 @@ class ajax_helper
 		$message_parser->message = $this->request->variable('message', '', true);
 		$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
 
-		$preview_attachments = false;
 		// Attachment Preview
-		if (sizeof($message_parser->attachment_data))
-		{
-			$update_count = array();
-			$attachment_data = $message_parser->attachment_data;
-
-			parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
-			$preview_attachments = $this->build_attach_box($attachment_data);
-
-			unset($attachment_data);
-		}
+		$attach_array = $this->preview_attachments($message_parser, $forum_id, $preview_message);
+		$preview_message = $attach_array[0];
+		$preview_attachments = $attach_array[1];
 
 		$this->send_json(array(
 			'preview'        => true,
@@ -221,23 +218,33 @@ class ajax_helper
 	}
 
 	/**
-	 * Build attach box for ajax_preview()
+	 * Attachments preview
 	 *
-	 * @param array $attachment_data
+	 * @param 
 	 */
-	public function build_attach_box($attachment_data)
+	public function preview_attachments($message_parser, $forum_id, $preview_message)
 	{
-		$preview_attachments = '';
-		foreach ($attachment_data as $i => $attachment)
+		$preview_attachments = false;
+		if (sizeof($message_parser->attachment_data))
 		{
-			$preview_attachments .= '<dd>' . $attachment . '</dd>';
-		}
-		if (!empty($preview_attachments))
-		{
-			$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
+			$update_count = array();
+			$attachment_data = $message_parser->attachment_data;
+
+			parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
+			$preview_attachments = '';
+			foreach ($attachment_data as $i => $attachment)
+			{
+				$preview_attachments .= '<dd>' . $attachment . '</dd>';
+			}
+			if (!empty($preview_attachments))
+			{
+				$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
+			}
+
+			unset($attachment_data);
 		}
 
-		return $preview_attachments;
+		return array($preview_message, $preview_attachments);
 	}
 
 	/**
