@@ -24,6 +24,18 @@ class quickreply_module
 	protected $request;
 
 	/** @var string */
+	protected $form_key;
+
+	/** @var bool */
+	protected $submit;
+
+	/** @var array */
+	protected $error;
+
+	/** @var array */
+	protected $display_vars;
+
+	/** @var string */
 	public $u_action;
 
 	/** @var string */
@@ -46,10 +58,10 @@ class quickreply_module
 		$this->request = $request;
 
 		$this->tpl_name = 'acp_quickreply';
-		$form_key = 'config_quickreply';
-		add_form_key($form_key);
+		$this->form_key = 'config_quickreply';
+		add_form_key($this->form_key);
 
-		$display_vars = $this->generate_display_vars();
+		$this->generate_display_vars();
 
 		/**
 		 * We need to disable this feature in phpBB 3.1.9 and higher
@@ -57,23 +69,23 @@ class quickreply_module
 		 */
 		if (version_compare($this->config['version'], '3.1.8', '>'))
 		{
-			unset($display_vars['qr_ctrlenter']);
+			unset($this->display_vars['vars']['qr_ctrlenter']);
 		}
 
-		$error = $this->submit_form($display_vars, $form_key);
+		$this->submit_form();
 
 		// Output relevant page
-		$this->output_page($display_vars, $error);
+		$this->output_page();
 	}
 
 	/**
-	 * Generates and returns the array of display_vars
+	 * Generates the array of display_vars
 	 *
 	 * @return array
 	 */
 	protected function generate_display_vars()
 	{
-		return array(
+		$this->display_vars = array(
 			'title' => 'ACP_QUICKREPLY',
 			'vars'  => array(
 				'legend1'              => '',
@@ -112,61 +124,63 @@ class quickreply_module
 
 	/**
 	 * When form is submitting
-	 *
-	 * @param array                $display_vars Array of display_vars
-	 * @param string               $form_key
 	 */
-	protected function submit_form($display_vars, $form_key)
+	protected function submit_form()
 	{
-		$submit = $this->request->is_set_post('submit');
+		$this->submit = $this->request->is_set_post('submit');
 
 		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', array('' => ''), true) : $this->new_config;
-		$error = array();
+		$this->error = array();
 
 		// We validate the complete config if wished
-		validate_config_vars($display_vars['vars'], $cfg_array, $error);
+		validate_config_vars($this->display_vars['vars'], $cfg_array, $this->error);
 
-		if ($submit && !check_form_key($form_key))
-		{
-			$error[] = $this->user->lang['FORM_INVALID'];
-		}
+		$this->check_form_valid($this->submit);
 
-		// Do not write values if there is an error
-		if (sizeof($error))
-		{
-			$submit = false;
-		}
+		$this->set_config($cfg_array);
 
-		$this->set_config($display_vars, $cfg_array, $submit);
-
-		if ($submit)
+		if ($this->submit)
 		{
 			trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 
-		return $error;
+	}
+
+	/**
+	 * Check submitting errors
+	 */
+	private function check_form_valid()
+	{
+		if ($this->submit && !check_form_key($this->form_key))
+		{
+			$this->error[] = $this->user->lang['FORM_INVALID'];
+		}
+
+		// Do not write values if there is an error
+		if (sizeof($this->error))
+		{
+			$this->submit = false;
+		}
 	}
 
 	/**
 	 * Set the new configuration array
 	 *
-	 * @param array                $display_vars Array of display_vars
 	 * @param array                $cfg_array    Array with new values
-	 * @param bool                 $submit       Whether the form was submitted
 	 */
-	protected function set_config($display_vars, $cfg_array, $submit)
+	protected function set_config($cfg_array)
 	{
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
-		foreach ($display_vars['vars'] as $config_name => $null)
+		foreach ($this->display_vars['vars'] as $config_name => $null)
 		{
-			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+			if (!isset($cfg_array[$config_name]) || $this->is_legend($config_name))
 			{
 				continue;
 			}
 
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
-			if ($submit)
+			if ($this->submit)
 			{
 				$this->config->set($config_name, $config_value);
 			}
@@ -209,13 +223,28 @@ class quickreply_module
 		$l_explain = '';
 		if ($vars['explain'] && isset($vars['lang_explain']))
 		{
-			$l_explain = (isset($this->user->lang[$vars['lang_explain']])) ? $this->user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+			$l_explain = $this->lang_explain_1($vars);
 		}
 		else if ($vars['explain'])
 		{
-			$l_explain = (isset($this->user->lang[$vars['lang'] . '_EXPLAIN'])) ? $this->user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+			$l_explain = $this->lang_explain_2($vars);
 		}
 		return $l_explain;
+	}
+
+	protected function lang_explain_1($vars)
+	{
+		return (isset($this->user->lang[$vars['lang_explain']])) ? $this->user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+	}
+
+	protected function lang_explain_2($vars)
+	{
+		return (isset($this->user->lang[$vars['lang'] . '_EXPLAIN'])) ? $this->user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+	}
+
+	protected function is_legend($key)
+	{
+		return (strpos($key, 'legend') !== false);
 	}
 
 	/**
@@ -226,42 +255,58 @@ class quickreply_module
 	 */
 	protected function invalid_vars($config_key, $vars)
 	{
-		return (!is_array($vars) && strpos($config_key, 'legend') === false);
+		return (!is_array($vars) && !$this->is_legend($config_key));
+	}
+
+	protected function output_basic_vars()
+	{
+		$this->template->assign_vars(array(
+			'L_TITLE'         => $this->user->lang[$this->display_vars['title']],
+			'L_TITLE_EXPLAIN' => $this->user->lang[$this->display_vars['title'] . '_EXPLAIN'],
+
+			'S_ERROR'   => (sizeof($this->error)) ? true : false,
+			'ERROR_MSG' => implode('<br />', $this->error),
+		));
+	}
+
+	protected function output_legend($vars)
+	{
+		$this->template->assign_block_vars('options', array(
+			'S_LEGEND' => true,
+			'LEGEND'   => $this->user->lang($vars)
+		));
+	}
+
+	protected function output_vars($config_key, $vars, $content)
+	{
+		$this->template->assign_block_vars('options', array(
+			'KEY'           => $config_key,
+			'TITLE'         => $this->get_title($vars),
+			'S_EXPLAIN'     => $vars['explain'],
+			'TITLE_EXPLAIN' => $this->get_title_explain($vars),
+			'CONTENT'       => $content,
+		));
 	}
 
 	/**
 	 * Output the page
-	 *
-	 * @param array                    $display_vars Array of display_vars
-	 * @param array 				   $error        Array of errors
 	 */
-	protected function output_page($display_vars, $error)
+	protected function output_page()
 	{
-		$this->page_title = $display_vars['title'];
-		$this->add_langs($display_vars['lang']);
+		$this->page_title = $this->display_vars['title'];
+		$this->add_langs($this->display_vars['lang']);
+		$this->output_basic_vars();
 
-		$this->template->assign_vars(array(
-			'L_TITLE'         => $this->user->lang[$display_vars['title']],
-			'L_TITLE_EXPLAIN' => $this->user->lang[$display_vars['title'] . '_EXPLAIN'],
-
-			'S_ERROR'   => (sizeof($error)) ? true : false,
-			'ERROR_MSG' => implode('<br />', $error),
-		));
-
-		foreach ($display_vars['vars'] as $config_key => $vars)
+		foreach ($this->display_vars['vars'] as $config_key => $vars)
 		{
 			if ($this->invalid_vars($config_key, $vars))
 			{
 				continue;
 			}
 
-			if (strpos($config_key, 'legend') !== false)
+			if ($this->is_legend($config_key))
 			{
-				$this->template->assign_block_vars('options', array(
-					'S_LEGEND' => true,
-					'LEGEND'   => $this->user->lang($vars)
-				));
-
+				$this->output_legend($vars);
 				continue;
 			}
 
@@ -274,15 +319,9 @@ class quickreply_module
 				continue;
 			}
 
-			$this->template->assign_block_vars('options', array(
-				'KEY'           => $config_key,
-				'TITLE'         => $this->get_title($vars),
-				'S_EXPLAIN'     => $vars['explain'],
-				'TITLE_EXPLAIN' => $this->get_title_explain($vars),
-				'CONTENT'       => $content,
-			));
+			$this->output_vars($config_key, $vars, $content);
 
-			unset($display_vars['vars'][$config_key]);
+			unset($this->display_vars['vars'][$config_key]);
 		}
 	}
 }

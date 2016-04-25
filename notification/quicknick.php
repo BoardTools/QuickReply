@@ -102,7 +102,7 @@ class quicknick extends \phpbb\notification\type\quote
 			$users[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
-		
+
 		return $users;
 	}
 
