@@ -20,6 +20,9 @@ class notifications_helper
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
+	/** @var string */
+	protected $type_notification;
+
 	/**
 	 * Constructor
 	 *
