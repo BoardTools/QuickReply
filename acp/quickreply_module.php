@@ -186,6 +186,17 @@ class quickreply_module
 	}
 
 	/**
+	 * Check var for valid
+	 *
+	 * @param string 				   $config_name
+	 * @param array                    $cfg_array
+	 */
+	protected function invalid_var($config_name, $cfg_array)
+	{
+		return (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false);
+	}
+
+	/**
 	 * Add language
 	 *
 	 * @param string                   $display_vars_lang
@@ -238,22 +249,6 @@ class quickreply_module
 	}
 
 	/**
-	 * Check vars for valid
-	 *
-	 * @param string 				   $config_key
-	 * @param array                    $vars
-	 */
-	protected function invalid_vars($config_key, $vars)
-	{
-		return (!is_array($vars) && strpos($config_key, 'legend') === false);
-	}
-
-	protected function invalid_var($config_name, $cfg_array)
-	{
-		return (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false);
-	}
-
-	/**
 	 * Output title and errors
 	 */
 	protected function output_basic_vars()
@@ -268,34 +263,35 @@ class quickreply_module
 	}
 
 	/**
-	 * Output legend
-	 */
-	protected function output_legend($vars)
-	{
-		$this->template->assign_block_vars('options', array(
-			'S_LEGEND' => true,
-			'LEGEND'   => $this->user->lang($vars)
-		));
-	}
-
-	/**
 	 * Output options
 	 */
 	protected function output_vars($config_key, $vars)
-	{
-		$type = explode(':', $vars['type']);
-
-		$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
-
-		if (!empty($content))
+	{		
+		if (strpos($config_key, 'legend') !== false)
 		{
 			$this->template->assign_block_vars('options', array(
-				'KEY'           => $config_key,
-				'TITLE'         => $this->get_title($vars, 'lang'),
-				'S_EXPLAIN'     => $vars['explain'],
-				'TITLE_EXPLAIN' => $this->get_title_explain($vars),
-				'CONTENT'       => $content,
+				'S_LEGEND' => true,
+				'LEGEND'   => $this->user->lang($vars)
 			));
+		}
+		else
+		{
+			$type = explode(':', $vars['type']);
+
+			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+
+			if (!empty($content))
+			{
+				$this->template->assign_block_vars('options', array(
+					'KEY'           => $config_key,
+					'TITLE'         => $this->get_title($vars, 'lang'),
+					'S_EXPLAIN'     => $vars['explain'],
+					'TITLE_EXPLAIN' => $this->get_title_explain($vars),
+					'CONTENT'       => $content,
+				));
+
+				unset($this->display_vars['vars'][$config_key]);
+			}
 		}
 	}
 
@@ -310,20 +306,12 @@ class quickreply_module
 
 		foreach ($this->display_vars['vars'] as $config_key => $vars)
 		{
-			if ($this->invalid_vars($config_key, $vars))
+			if (!is_array($vars) && strpos($config_key, 'legend') === false)
 			{
 				continue;
 			}
 
-			if (strpos($config_key, 'legend') !== false)
-			{
-				$this->output_legend($vars);
-			}
-			else
-			{
-				$this->output_vars($config_key, $vars);
-				unset($this->display_vars['vars'][$config_key]);
-			}
+			$this->output_vars($config_key, $vars);
 		}
 	}
 }
