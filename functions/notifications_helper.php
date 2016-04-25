@@ -65,15 +65,7 @@ class notifications_helper
 			$username = $event['username'];
 
 			$notification_data = $this->get_notification_data($data, $subject, $username);
-
-			if ($this->case_to_add($mode))
-			{
-				$this->notification_manager->add_notifications($this->type_notification, $notification_data);
-			}
-			else if ($this->case_to_update($mode))
-			{
-				$this->notification_manager->update_notifications($this->type_notification, $notification_data);
-			}
+			$this->set_notification_data($mode, $notification_data);
 		}
 	}
 
@@ -87,6 +79,18 @@ class notifications_helper
 				'post_time'			=> time(),
 				'post_subject'		=> $subject,
 			));
+	}
+
+	private function set_notification_data($mode, $notification_data)
+	{
+		if ($this->case_to_add($mode))
+		{
+			$this->notification_manager->add_notifications($this->type_notification, $notification_data);
+		}
+		else if ($this->case_to_update($mode))
+		{
+			$this->notification_manager->update_notifications($this->type_notification, $notification_data);
+		}
 	}
 
 	private function case_to_add($mode)
