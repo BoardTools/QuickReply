@@ -19,9 +19,6 @@ class notifications_helper
 
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
-	
-	/** @var string   notification type */
-	protected $type_notification = 'boardtools.quickreply.notification.type.quicknick'
 
 	/**
 	 * Constructor
@@ -35,6 +32,7 @@ class notifications_helper
 		$this->auth = $auth;
 		$this->user = $user;
 		$this->notification_manager = $notification_manager;
+		$this->type_notification = 'boardtools.quickreply.notification.type.quicknick';
 	}
 
 	/**
