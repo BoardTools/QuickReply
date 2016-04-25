@@ -134,7 +134,7 @@ class ajax_helper
 	public function ajax_submit($event)
 	{
 		$data = $event['data'];
-		if ((!$this->auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
+		if ($this->is_not_approved($data))
 		{
 			// No approve
 			$this->send_approval_notify();
@@ -149,6 +149,22 @@ class ajax_helper
 			'url'     => $result_url,
 			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
 		));
+	}
+
+	/**
+	 * Check approve
+	 *
+	 * @param array $data
+	 */
+	public function is_not_approved($data)
+	{
+		return (
+				!$this->auth->acl_get('f_noapprove', $data['forum_id'])
+					&& empty($data['force_approved_state'])
+				) || (
+				isset($data['force_approved_state'])
+					&& !$data['force_approved_state']
+				);
 	}
 
 	/**
@@ -191,16 +207,8 @@ class ajax_helper
 			$attachment_data = $message_parser->attachment_data;
 
 			parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
+			$preview_attachments = $this->build_attach_box($attachment_data);
 
-			$preview_attachments = '';
-			foreach ($attachment_data as $i => $attachment)
-			{
-				$preview_attachments .= '<dd>' . $attachment . '</dd>';
-			}
-			if (!empty($preview_attachments))
-			{
-				$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
-			}
 			unset($attachment_data);
 		}
 
@@ -210,6 +218,26 @@ class ajax_helper
 			'PREVIEW_TEXT'   => $preview_message,
 			'PREVIEW_ATTACH' => $preview_attachments,
 		));
+	}
+
+	/**
+	 * Build attach box for ajax_preview()
+	 *
+	 * @param array $attachment_data
+	 */
+	public function build_attach_box($attachment_data)
+	{
+		$preview_attachments = '';
+		foreach ($attachment_data as $i => $attachment)
+		{
+			$preview_attachments .= '<dd>' . $attachment . '</dd>';
+		}
+		if (!empty($preview_attachments))
+		{
+			$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
+		}
+
+		return $preview_attachments;
 	}
 
 	/**
