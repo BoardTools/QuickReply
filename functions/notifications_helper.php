@@ -19,6 +19,9 @@ class notifications_helper
 
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
+	
+	/** @var string   notification type */
+	protected $type_notification = 'boardtools.quickreply.notification.type.quicknick'
 
 	/**
 	 * Constructor
@@ -42,7 +45,7 @@ class notifications_helper
 	 */
 	public function mark_qr_notifications_read($post_list)
 	{
-		$this->notification_manager->mark_notifications_read('boardtools.quickreply.notification.type.quicknick', $post_list, $this->user->data['user_id']);
+		$this->notification_manager->mark_notifications_read($this->type_notification, $post_list, $this->user->data['user_id']);
 	}
 
 	/**
@@ -52,14 +55,30 @@ class notifications_helper
 	 */
 	public function add_qr_notifications($event)
 	{
-		$mode = $event['mode'];
 		$data = $event['data'];
-		$subject = $event['subject'];
-		$username = $event['username'];
 
 		if ($this->auth->acl_get('f_noapprove', $data['forum_id']))
 		{
-			$notification_data = array_merge($data, array(
+			$mode = $event['mode'];
+			$subject = $event['subject'];
+			$username = $event['username'];
+
+			$notification_data = $this->get_notification_data($data, $subject, $username);
+
+			if ($this->case_to_add($mode))
+			{
+				$this->notification_manager->add_notifications($this->type_notification, $notification_data);
+			}
+			else if ($this->case_to_update($mode))
+			{
+				$this->notification_manager->update_notifications($this->type_notification, $notification_data);
+			}
+		}
+	}
+
+	private function get_notification_data($data, $subject, $username)
+	{
+		return array_merge($data, array(
 				'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
 				'post_username'		=> $username,
 				'poster_id'			=> $data['poster_id'],
@@ -67,16 +86,6 @@ class notifications_helper
 				'post_time'			=> time(),
 				'post_subject'		=> $subject,
 			));
-
-			if ($this->case_to_add($mode))
-			{
-				$this->notification_manager->add_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
-			}
-			else if ($this->case_to_update($mode))
-			{
-				$this->notification_manager->update_notifications('boardtools.quickreply.notification.type.quicknick', $notification_data);
-			}
-		}
 	}
 
 	private function case_to_add($mode)
