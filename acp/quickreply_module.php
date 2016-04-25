@@ -134,9 +134,7 @@ class quickreply_module
 
 		// We validate the complete config if wished
 		validate_config_vars($this->display_vars['vars'], $cfg_array, $this->error);
-
-		$this->check_form_valid($this->submit);
-
+		$this->check_form_valid();
 		$this->set_config($cfg_array);
 
 		if ($this->submit)
@@ -173,7 +171,7 @@ class quickreply_module
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($this->display_vars['vars'] as $config_name => $null)
 		{
-			if (!isset($cfg_array[$config_name]) || $this->is_legend($config_name))
+			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}
@@ -207,9 +205,9 @@ class quickreply_module
 	 * @param array       $vars Array of vars
 	 * @return string
 	 */
-	protected function get_title($vars)
+	protected function get_title($vars, $key)
 	{
-		return (isset($this->user->lang[$vars['lang']])) ? $this->user->lang[$vars['lang']] : $vars['lang'];
+		return (isset($this->user->lang[$vars[$key]])) ? $this->user->lang[$vars[$key]] : $vars[$key];
 	}
 
 	/**
@@ -223,28 +221,13 @@ class quickreply_module
 		$l_explain = '';
 		if ($vars['explain'] && isset($vars['lang_explain']))
 		{
-			$l_explain = $this->lang_explain_1($vars);
+			$l_explain = $this->get_title($vars, 'lang_explain');
 		}
 		else if ($vars['explain'])
 		{
-			$l_explain = $this->lang_explain_2($vars);
+			$l_explain = (isset($this->user->lang[$vars['lang'] . '_EXPLAIN'])) ? $this->user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 		}
 		return $l_explain;
-	}
-
-	protected function lang_explain_1($vars)
-	{
-		return (isset($this->user->lang[$vars['lang_explain']])) ? $this->user->lang[$vars['lang_explain']] : $vars['lang_explain'];
-	}
-
-	protected function lang_explain_2($vars)
-	{
-		return (isset($this->user->lang[$vars['lang'] . '_EXPLAIN'])) ? $this->user->lang[$vars['lang'] . '_EXPLAIN'] : '';
-	}
-
-	protected function is_legend($key)
-	{
-		return (strpos($key, 'legend') !== false);
 	}
 
 	/**
@@ -255,9 +238,12 @@ class quickreply_module
 	 */
 	protected function invalid_vars($config_key, $vars)
 	{
-		return (!is_array($vars) && !$this->is_legend($config_key));
+		return (!is_array($vars) && strpos($config_key, 'legend') === false);
 	}
 
+	/**
+	 * Output title and errors
+	 */
 	protected function output_basic_vars()
 	{
 		$this->template->assign_vars(array(
@@ -269,6 +255,9 @@ class quickreply_module
 		));
 	}
 
+	/**
+	 * Output legend
+	 */
 	protected function output_legend($vars)
 	{
 		$this->template->assign_block_vars('options', array(
@@ -277,11 +266,14 @@ class quickreply_module
 		));
 	}
 
+	/**
+	 * Output options
+	 */
 	protected function output_vars($config_key, $vars, $content)
 	{
 		$this->template->assign_block_vars('options', array(
 			'KEY'           => $config_key,
-			'TITLE'         => $this->get_title($vars),
+			'TITLE'         => $this->get_title($vars, 'lang'),
 			'S_EXPLAIN'     => $vars['explain'],
 			'TITLE_EXPLAIN' => $this->get_title_explain($vars),
 			'CONTENT'       => $content,
@@ -304,7 +296,7 @@ class quickreply_module
 				continue;
 			}
 
-			if ($this->is_legend($config_key))
+			if (strpos($config_key, 'legend') !== false)
 			{
 				$this->output_legend($vars);
 				continue;
