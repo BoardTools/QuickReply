@@ -171,7 +171,7 @@ class quickreply_module
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($this->display_vars['vars'] as $config_name => $null)
 		{
-			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+			if ($this->invalid_var($config_name, $cfg_array))
 			{
 				continue;
 			}
@@ -248,6 +248,11 @@ class quickreply_module
 		return (!is_array($vars) && strpos($config_key, 'legend') === false);
 	}
 
+	protected function invalid_var($config_name, $cfg_array)
+	{
+		return (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false);
+	}
+
 	/**
 	 * Output title and errors
 	 */
@@ -276,15 +281,22 @@ class quickreply_module
 	/**
 	 * Output options
 	 */
-	protected function output_vars($config_key, $vars, $content)
+	protected function output_vars($config_key, $vars)
 	{
-		$this->template->assign_block_vars('options', array(
-			'KEY'           => $config_key,
-			'TITLE'         => $this->get_title($vars, 'lang'),
-			'S_EXPLAIN'     => $vars['explain'],
-			'TITLE_EXPLAIN' => $this->get_title_explain($vars),
-			'CONTENT'       => $content,
-		));
+		$type = explode(':', $vars['type']);
+
+		$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+
+		if (!empty($content))
+		{
+			$this->template->assign_block_vars('options', array(
+				'KEY'           => $config_key,
+				'TITLE'         => $this->get_title($vars, 'lang'),
+				'S_EXPLAIN'     => $vars['explain'],
+				'TITLE_EXPLAIN' => $this->get_title_explain($vars),
+				'CONTENT'       => $content,
+			));
+		}
 	}
 
 	/**
@@ -306,21 +318,12 @@ class quickreply_module
 			if (strpos($config_key, 'legend') !== false)
 			{
 				$this->output_legend($vars);
-				continue;
 			}
-
-			$type = explode(':', $vars['type']);
-
-			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
-
-			if (empty($content))
+			else
 			{
-				continue;
+				$this->output_vars($config_key, $vars);
+				unset($this->display_vars['vars'][$config_key]);
 			}
-
-			$this->output_vars($config_key, $vars, $content);
-
-			unset($this->display_vars['vars'][$config_key]);
 		}
 	}
 }
