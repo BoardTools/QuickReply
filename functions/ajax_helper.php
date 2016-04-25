@@ -220,7 +220,7 @@ class ajax_helper
 	/**
 	 * Attachments preview
 	 *
-	 * @param 
+	 * @param
 	 */
 	public function preview_attachments($message_parser, $forum_id, $preview_message)
 	{
@@ -231,20 +231,27 @@ class ajax_helper
 			$attachment_data = $message_parser->attachment_data;
 
 			parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
-			$preview_attachments = '';
-			foreach ($attachment_data as $i => $attachment)
-			{
-				$preview_attachments .= '<dd>' . $attachment . '</dd>';
-			}
-			if (!empty($preview_attachments))
-			{
-				$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
-			}
+			$preview_attachments = $this->build_attach_box($attachment_data);
 
 			unset($attachment_data);
 		}
 
 		return array($preview_message, $preview_attachments);
+	}
+
+	public function build_attach_box($attachment_data)
+	{
+		$preview_attachments = '';
+		foreach ($attachment_data as $i => $attachment)
+		{
+			$preview_attachments .= '<dd>' . $attachment . '</dd>';
+		}
+		if (!empty($preview_attachments))
+		{
+			$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
+		}
+
+		return $preview_attachments;
 	}
 
 	/**
