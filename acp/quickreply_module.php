@@ -205,9 +205,16 @@ class quickreply_module
 	 * @param array       $vars Array of vars
 	 * @return string
 	 */
-	protected function get_title($vars, $key)
+	protected function get_title($vars, $key, $key2 = '')
 	{
-		return (isset($this->user->lang[$vars[$key]])) ? $this->user->lang[$vars[$key]] : $vars[$key];
+		if (isset($this->user->lang[$vars[$key] . $key2]))
+		{
+			return $this->user->lang[$vars[$key] . $key2];
+		}
+		else
+		{
+			return ($key2 === '') ? $vars[$key] : '';
+		}
 	}
 
 	/**
@@ -225,7 +232,7 @@ class quickreply_module
 		}
 		else if ($vars['explain'])
 		{
-			$l_explain = (isset($this->user->lang[$vars['lang'] . '_EXPLAIN'])) ? $this->user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+			$l_explain = $this->get_title($vars, 'lang', '_EXPLAIN');
 		}
 		return $l_explain;
 	}
