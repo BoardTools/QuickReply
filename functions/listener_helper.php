@@ -259,35 +259,6 @@ class listener_helper
 		);
 	}
 
-	public function qr_user_prefs_data($data)
-	{
-		return array(
-			'S_AJAX_PAGINATION'        => $this->config['qr_ajax_pagination'],
-			'S_ENABLE_AJAX_PAGINATION' => $data['ajax_pagination'],
-			'S_QR_ENABLE_SCROLL'       => $data['qr_enable_scroll'],
-			'S_QR_ALLOW_SOFT_SCROLL'   => !!$this->config['qr_scroll_time'],
-			'S_QR_SOFT_SCROLL'         => $data['qr_soft_scroll'],
-		);
-	}
-
-	public function qr_get_user_prefs_data($user_row)
-	{
-		return array(
-			'ajax_pagination'  => $this->request->variable('ajax_pagination', (int) $user_row['ajax_pagination']),
-			'qr_enable_scroll' => $this->request->variable('qr_enable_scroll', (int) $user_row['qr_enable_scroll']),
-			'qr_soft_scroll'   => $this->request->variable('qr_soft_scroll', (int) $user_row['qr_soft_scroll']),
-		);
-	}
-
-	public function qr_set_user_prefs_data($data)
-	{
-		return array(
-			'ajax_pagination'  => $data['ajax_pagination'],
-			'qr_enable_scroll' => $data['qr_enable_scroll'],
-			'qr_soft_scroll'   => $data['qr_soft_scroll'],
-		);
-	}
-
 	public function review_is_enable($lastclick, $post_data)
 	{
 		return ($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW);
