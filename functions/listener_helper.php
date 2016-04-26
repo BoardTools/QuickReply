@@ -38,6 +38,9 @@ class listener_helper
 	/** @var \boardtools\quickreply\functions\notifications_helper */
 	public $notifications_helper;
 
+	/** @var array */
+	public $template_variables;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -72,6 +75,7 @@ class listener_helper
 		$this->notifications_helper = $notifications_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->template_variables = array();
 	}
 
 	/**
@@ -84,15 +88,25 @@ class listener_helper
 	public function qr_is_enabled($forum_id, $topic_data)
 	{
 		if (($this->user->data['is_registered'] || $this->config['qr_allow_for_guests']) &&
-			$this->config['allow_quick_reply'] &&
-			($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) &&
+			$this->qr_is_enabled_in_forum($topic_data) &&
 			$this->auth->acl_get('f_reply', $forum_id)
 		)
 		{
 			// Quick reply enabled forum
-			return (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $this->auth->acl_get('m_edit', $forum_id));
+			return $this->can_post($topic_data, $forum_id);
 		}
 		return false;
+	}
+	
+	public function qr_is_enabled_in_forum($topic_data)
+	{
+		return $this->config['allow_quick_reply'] && 
+				($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
+	}
+
+	public function can_post($topic_data, $forum_id)
+	{
+		return (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $this->auth->acl_get('m_edit', $forum_id));
 	}
 
 	/**
@@ -129,6 +143,11 @@ class listener_helper
 		{
 			return false;
 		}
+		return $this->check_acl_perms($acl_perms);
+	}
+
+	public function check_acl_perms($acl_perms)
+	{
 		if (!sizeof($acl_perms))
 		{
 			return true;
@@ -152,6 +171,26 @@ class listener_helper
 	public function enable_qr_for_guests($forum_id, $topic_data)
 	{
 		$topic_id = $topic_data['topic_id'];
+
+		$qr_hidden_fields = array(
+			'topic_cur_post_id' => (int) $topic_data['topic_last_post_id'],
+			'lastclick'         => (int) time(),
+			'topic_id'          => (int) $topic_id,
+			'forum_id'          => (int) $forum_id,
+		);
+
+		$this->set_form_parameters($forum_id, $topic_data, $qr_hidden_fields);
+
+		return array(
+			'S_QUICK_REPLY'    => true,
+			'U_QR_ACTION'      => append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
+			'QR_HIDDEN_FIELDS' => build_hidden_fields($qr_hidden_fields),
+			'USERNAME'         => $this->request->variable('username', '', true),
+		);
+	}
+
+	public function set_form_parameters($forum_id, $topic_data, $qr_hidden_fields)
+	{
 		add_form_key('posting');
 
 		$s_attach_sig = $this->check_option('allow_sig', 'attachsig', array(
@@ -166,13 +205,6 @@ class listener_helper
 		));
 		$s_notify = false;
 
-		$qr_hidden_fields = array(
-			'topic_cur_post_id' => (int) $topic_data['topic_last_post_id'],
-			'lastclick'         => (int) time(),
-			'topic_id'          => (int) $topic_data['topic_id'],
-			'forum_id'          => (int) $forum_id,
-		);
-
 		// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
 		$this->set_hidden_fields($qr_hidden_fields, array(
 			'disable_bbcode'    => !$s_bbcode,
@@ -181,13 +213,6 @@ class listener_helper
 			'attach_sig'        => $s_attach_sig,
 			'notify'            => $s_notify,
 			'lock_topic'        => $topic_data['topic_status'] == ITEM_LOCKED,
-		));
-
-		$this->template->assign_vars(array(
-			'S_QUICK_REPLY'    => true,
-			'U_QR_ACTION'      => append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
-			'QR_HIDDEN_FIELDS' => build_hidden_fields($qr_hidden_fields),
-			'USERNAME'         => $this->request->variable('username', '', true),
 		));
 
 		if ($this->config['enable_post_confirm'])
@@ -203,11 +228,11 @@ class listener_helper
 	 */
 	public function assign_template_variables_for_qr($forum_id)
 	{
-		$template_variables = $this->template_variables_for_qr();
-		$template_variables += $this->plugins_helper->template_variables_for_plugins($forum_id);
-		$template_variables += $this->plugins_helper->template_variables_for_extensions();
+		$this->template_variables = $this->template_variables_for_qr();
+		$this->template_variables += $this->plugins_helper->template_variables_for_plugins($forum_id);
+		$this->template_variables += $this->plugins_helper->template_variables_for_extensions();
 
-		$this->template->assign_vars($template_variables);
+		$this->template->assign_vars($this->template_variables);
 	}
 
 	public function template_variables_for_qr()

@@ -140,7 +140,7 @@ class listener implements EventSubscriberInterface
 		{
 			if (!$this->user->data['is_registered'])
 			{
-				$this->helper->enable_qr_for_guests($forum_id, $topic_data);
+				$this->helper->template_variables += $this->helper->enable_qr_for_guests($forum_id, $topic_data);
 			}
 
 			$this->helper->form_helper->prepare_qr_form($forum_id, $topic_id);
