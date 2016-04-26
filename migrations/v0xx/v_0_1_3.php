@@ -61,13 +61,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 				'second_pass_replace'	=> $data['second_pass_replace']
 			);
 
-			$sql = 'SELECT bbcode_id
-				FROM ' . $this->table_prefix . "bbcodes
-				WHERE LOWER(bbcode_tag) = '" . strtolower($bbcode_name) . "'
-				OR LOWER(bbcode_tag) = '" . strtolower($bbcode_array['bbcode_tag']) . "'";
-			$result = $this->db->sql_query($sql);
-			$row_exists = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
+			$row_exists = $this->exist_bbcode($bbcode_name, $bbcode_array);
 
 			if ($row_exists)
 			{
@@ -106,6 +100,19 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		);
 	}
 
+	private function exist_bbcode($bbcode_name, $bbcode_array)
+	{
+		$sql = 'SELECT bbcode_id
+				FROM ' . $this->table_prefix . "bbcodes
+				WHERE LOWER(bbcode_tag) = '" . strtolower($bbcode_name) . "'
+				OR LOWER(bbcode_tag) = '" . strtolower($bbcode_array['bbcode_tag']) . "'";
+		$result = $this->db->sql_query($sql);
+		$row_exists = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row_exists;
+	}
+
 	private function update_bbcode($bbcode_id, $bbcode_array)
 	{
 		$sql = 'UPDATE ' . $this->table_prefix . 'bbcodes
@@ -115,6 +122,18 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 	}
 
 	private function insert_bbcode($bbcode_array)
+	{
+		$bbcode_id = $this->get_next_bbcode_id();
+
+		if ($bbcode_id <= BBCODE_LIMIT)
+		{
+			$bbcode_array['bbcode_id'] = (int) $bbcode_id;
+
+			$this->db->sql_query('INSERT INTO ' . $this->table_prefix . 'bbcodes ' . $this->db->sql_build_array('INSERT', $bbcode_array));
+		}
+	}
+
+	private function get_next_bbcode_id()
 	{
 		$sql = 'SELECT MAX(bbcode_id) AS max_bbcode_id
 			FROM ' . $this->table_prefix . 'bbcodes';
@@ -137,11 +156,6 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 			$bbcode_id = NUM_CORE_BBCODES + 1;
 		}
 
-		if ($bbcode_id <= BBCODE_LIMIT)
-		{
-			$bbcode_array['bbcode_id'] = (int) $bbcode_id;
-
-			$this->db->sql_query('INSERT INTO ' . $this->table_prefix . 'bbcodes ' . $this->db->sql_build_array('INSERT', $bbcode_array));
-		}
+		return $bbcode_id;
 	}
 }
