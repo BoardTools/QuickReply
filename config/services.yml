@@ -18,6 +18,7 @@ services:
             - @template
             - @user
             - @request
+            - @boardtools.quickreply.ajax_helper
             - @boardtools.quickreply.listener_helper
         tags:
             - { name: event.listener }
@@ -83,7 +84,6 @@ services:
             - @boardtools.quickreply.captcha_helper
             - @boardtools.quickreply.form_helper
             - @boardtools.quickreply.plugins_helper
-            - @boardtools.quickreply.ajax_helper
             - @boardtools.quickreply.notifications_helper
             - %core.root_path%
             - %core.php_ext%

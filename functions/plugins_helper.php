@@ -58,15 +58,11 @@ class plugins_helper
 		{
 			// Always show the checkbox if PostsMerging extension is installed.
 			$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
-			$template_variables += array(
-				'POSTS_MERGING_OPTION' => true
-			);
+			$template_variables += array('POSTS_MERGING_OPTION' => true);
 		}
 
-		$template_variables += array(
-			// ABBC3
-			'S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
-		);
+		// ABBC3
+		$template_variables += array('S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'));
 
 		return $template_variables;
 	}

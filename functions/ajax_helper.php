@@ -132,31 +132,6 @@ class ajax_helper
 	}
 
 	/**
-	 * Ajax submit
-	 *
-	 * @param object $event The event object
-	 */
-	public function ajax_submit($event)
-	{
-		$data = $event['data'];
-		if ($this->is_not_approved($data))
-		{
-			// No approve
-			$this->send_approval_notify();
-		}
-
-		$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
-		$url_hash = strpos($event['url'], '#');
-		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
-
-		$this->send_json(array(
-			'success' => true,
-			'url'     => $result_url,
-			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
-		));
-	}
-
-	/**
 	 * Check approve
 	 *
 	 * @param array $data
@@ -187,34 +162,6 @@ class ajax_helper
 				'MESSAGE_TEXT'  => implode('<br />', $error),
 			));
 		}
-	}
-
-	/**
-	 * Checks whether this is an ajax request and handles ajax preview
-	 *
-	 * @param object $event The event object
-	 */
-	public function ajax_preview($event)
-	{
-		$post_data = $event['post_data'];
-		$forum_id = (int) $post_data['forum_id'];
-		/** @var \parse_message $message_parser */
-		$message_parser = $event['message_parser'];
-
-		$message_parser->message = $this->request->variable('message', '', true);
-		$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
-
-		// Attachment Preview
-		$attach_array = $this->preview_attachments($message_parser, $forum_id, $preview_message);
-		$preview_message = $attach_array[0];
-		$preview_attachments = $attach_array[1];
-
-		$this->send_json(array(
-			'preview'        => true,
-			'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
-			'PREVIEW_TEXT'   => $preview_message,
-			'PREVIEW_ATTACH' => $preview_attachments,
-		));
 	}
 
 	/**
@@ -330,22 +277,42 @@ class ajax_helper
 		$json_response->send($data);
 	}
 
+	public function template_variables_for_ajax()
+	{
+		return array(
+				'L_FULL_EDITOR'             => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
+				'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
+
+				'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
+
+				'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
+				'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
+				'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll']
+			);
+	}
+
 	public function no_refresh($current_post, $post_list)
 	{
 		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);
 	}
-	
-	public function template_variables_for_ajax()
+
+	public function review_is_enable($lastclick, $post_data)
 	{
-		return array(
-			'L_FULL_EDITOR'             => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
-			'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
+		return ($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW);
+	}
 
-			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
+	public function post_is_not_last($post_data)
+	{
+		return $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'];
+	}
 
-			'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
-			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
-			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll'],
-		);
+	public function sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list)
+	{
+		$compare = ($qr_get_current) ? ' >= ' : ' > ';
+		$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
+		$this->qr_insert = true;
+		$this->qr_first = ($current_post == min($post_list)) && $qr_get_current;
+
+		return $sql_ary;
 	}
 }

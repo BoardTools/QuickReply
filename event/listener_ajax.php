@@ -28,6 +28,9 @@ class listener_ajax implements EventSubscriberInterface
 	/** @var \phpbb\request\request */
 	protected $request;
 
+	/** @var \boardtools\quickreply\functions\ajax_helper */
+	protected $ajax_helper;
+
 	/** @var \boardtools\quickreply\functions\listener_helper */
 	protected $helper;
 
@@ -38,14 +41,16 @@ class listener_ajax implements EventSubscriberInterface
 	 * @param \phpbb\template\template                         $template
 	 * @param \phpbb\user                                      $user
 	 * @param \phpbb\request\request                           $request
+	 * @param \boardtools\quickreply\functions\ajax_helper     $ajax_helper
 	 * @param \boardtools\quickreply\functions\listener_helper $helper
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \boardtools\quickreply\functions\listener_helper $helper)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \boardtools\quickreply\functions\ajax_helper $ajax_helper, \boardtools\quickreply\functions\listener_helper $helper)
 	{
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
+		$this->ajax_helper = $ajax_helper;
 		$this->helper = $helper;
 	}
 
@@ -78,20 +83,17 @@ class listener_ajax implements EventSubscriberInterface
 
 		$post_list = $event['post_list'];
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
-		if ($this->helper->ajax_helper->no_refresh($current_post, $post_list))
+		if ($this->ajax_helper->no_refresh($current_post, $post_list))
 		{
-			$sql_ary = $event['sql_ary'];
 			$qr_get_current = $this->request->is_set('qr_get_current');
-			$compare = ($qr_get_current) ? ' >= ' : ' > ';
-			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
+			$sql_ary = $event['sql_ary'];
+			$sql_ary = $this->ajax_helper->sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list);
 			$event['sql_ary'] = $sql_ary;
-			$this->helper->ajax_helper->qr_insert = true;
-			$this->helper->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
 
 			// Check whether no posts are found.
-			if ($compare == ' > ' && max($post_list) <= $current_post)
+			if (!$qr_get_current && max($post_list) <= $current_post)
 			{
-				$this->helper->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
+				$this->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
 		}
 	}
@@ -108,9 +110,9 @@ class listener_ajax implements EventSubscriberInterface
 		$post_list = $event['post_list'];
 
 		// Ajaxify viewtopic data
-		if ($this->helper->ajax_helper->qr_is_ajax())
+		if ($this->ajax_helper->qr_is_ajax())
 		{
-			$this->helper->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
+			$this->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
 		}
 
 		if ($this->helper->qr_is_enabled($forum_id, $topic_data))
@@ -119,6 +121,8 @@ class listener_ajax implements EventSubscriberInterface
 				'qr'             => 1,
 				'qr_cur_post_id' => (int) max($post_list)
 			)));
+
+			$this->template->assign_vars($this->ajax_helper->template_variables_for_ajax());
 		}
 	}
 
@@ -130,23 +134,23 @@ class listener_ajax implements EventSubscriberInterface
 	public function detect_new_posts($event)
 	{
 		// Ajax submit
-		if ($this->helper->ajax_helper->qr_is_ajax_submit())
+		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->helper->ajax_helper->check_errors($event['error']);
+			$this->ajax_helper->check_errors($event['error']);
 
 			$post_data = $event['post_data'];
 			$lastclick = $this->request->variable('lastclick', time());
 
-			if (($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW))
+			if ($this->ajax_helper->review_is_enable($lastclick, $post_data))
 			{
 				$forum_id = (int) $post_data['forum_id'];
 				$topic_id = (int) $post_data['topic_id'];
-				$this->helper->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
+				$this->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
 			}
-			else if ($post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
+			else if ($this->ajax_helper->post_is_not_last($post_data))
 			{
 				// Send new post number as a response.
-				$this->helper->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
+				$this->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
 			}
 		}
 		// This is needed for BBCode QR_BBPOST.
@@ -161,12 +165,30 @@ class listener_ajax implements EventSubscriberInterface
 	public function ajax_preview($event)
 	{
 		// Ajax submit
-		if ($this->helper->ajax_helper->qr_is_ajax_submit())
+		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->helper->ajax_helper->check_errors($event['error']);
+			$this->ajax_helper->check_errors($event['error']);
 			if ($event['preview'])
 			{
-				$this->helper->ajax_helper->ajax_preview($event);
+				$post_data = $event['post_data'];
+				$forum_id = (int) $post_data['forum_id'];
+				/** @var \parse_message $message_parser */
+				$message_parser = $event['message_parser'];
+
+				$message_parser->message = $this->request->variable('message', '', true);
+				$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
+
+				// Attachment Preview
+				$attach_array = $this->ajax_helper->preview_attachments($message_parser, $forum_id, $preview_message);
+				$preview_message = $attach_array[0];
+				$preview_attachments = $attach_array[1];
+
+				$this->ajax_helper->send_json(array(
+					'preview'        => true,
+					'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
+					'PREVIEW_TEXT'   => $preview_message,
+					'PREVIEW_ATTACH' => $preview_attachments,
+				));
 			}
 		}
 	}
@@ -178,9 +200,24 @@ class listener_ajax implements EventSubscriberInterface
 	 */
 	public function ajax_submit($event)
 	{
-		if ($this->helper->ajax_helper->qr_is_ajax_submit())
+		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->helper->ajax_helper->ajax_submit($event);
+			$data = $event['data'];
+			if ($this->ajax_helper->is_not_approved($data))
+			{
+				// No approve
+				$this->ajax_helper->send_approval_notify();
+			}
+
+			$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
+			$url_hash = strpos($event['url'], '#');
+			$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
+
+			$this->ajax_helper->send_json(array(
+				'success' => true,
+				'url'     => $result_url,
+				'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
+			));
 		}
 	}
 }
