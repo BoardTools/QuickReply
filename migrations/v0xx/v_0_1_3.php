@@ -52,14 +52,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		{
 			// Build the BBCodes
 			$data = $bbcode_tool->build_regexp($bbcode_array['bbcode_match'], $bbcode_array['bbcode_tpl']);
-
-			$bbcode_array += array(
-				'bbcode_tag'			=> $data['bbcode_tag'],
-				'first_pass_match'		=> $data['first_pass_match'],
-				'first_pass_replace'	=> $data['first_pass_replace'],
-				'second_pass_match'		=> $data['second_pass_match'],
-				'second_pass_replace'	=> $data['second_pass_replace']
-			);
+			$bbcode_array += $this->build_bbcode_array($data);
 
 			$row_exists = $this->exist_bbcode($bbcode_name, $bbcode_array);
 
@@ -98,6 +91,17 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 				'display_on_posting'=> 0,
 			),
 		);
+	}
+
+	private function build_bbcode_array($data)
+	{
+		return array(
+				'bbcode_tag'			=> $data['bbcode_tag'],
+				'first_pass_match'		=> $data['first_pass_match'],
+				'first_pass_replace'	=> $data['first_pass_replace'],
+				'second_pass_match'		=> $data['second_pass_match'],
+				'second_pass_replace'	=> $data['second_pass_replace']
+			);
 	}
 
 	private function exist_bbcode($bbcode_name, $bbcode_array)
