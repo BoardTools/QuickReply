@@ -283,24 +283,4 @@ class ajax_helper
 	{
 		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);
 	}
-
-	public function review_is_enable($lastclick, $post_data)
-	{
-		return ($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW);
-	}
-
-	public function post_is_not_last($post_data)
-	{
-		return $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'];
-	}
-
-	public function sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list)
-	{
-		$compare = ($qr_get_current) ? ' >= ' : ' > ';
-		$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
-		$this->qr_insert = true;
-		$this->qr_first = ($current_post == min($post_list)) && $qr_get_current;
-
-		return $sql_ary;
-	}
 }

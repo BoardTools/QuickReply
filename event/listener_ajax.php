@@ -87,7 +87,7 @@ class listener_ajax implements EventSubscriberInterface
 		{
 			$qr_get_current = $this->request->is_set('qr_get_current');
 			$sql_ary = $event['sql_ary'];
-			$sql_ary = $this->ajax_helper->sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list);
+			$sql_ary = $this->helper->sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list);
 			$event['sql_ary'] = $sql_ary;
 
 			// Check whether no posts are found.
@@ -141,13 +141,13 @@ class listener_ajax implements EventSubscriberInterface
 			$post_data = $event['post_data'];
 			$lastclick = $this->request->variable('lastclick', time());
 
-			if ($this->ajax_helper->review_is_enable($lastclick, $post_data))
+			if ($this->helper->review_is_enable($lastclick, $post_data))
 			{
 				$forum_id = (int) $post_data['forum_id'];
 				$topic_id = (int) $post_data['topic_id'];
 				$this->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
 			}
-			else if ($this->ajax_helper->post_is_not_last($post_data))
+			else if ($this->helper->post_is_not_last($post_data))
 			{
 				// Send new post number as a response.
 				$this->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
