@@ -87,21 +87,22 @@ class listener_helper
 	 */
 	public function qr_is_enabled($forum_id, $topic_data)
 	{
-		if (($this->user->data['is_registered'] || $this->config['qr_allow_for_guests']) &&
-			$this->qr_is_enabled_in_forum($topic_data) &&
-			$this->auth->acl_get('f_reply', $forum_id)
-		)
+		if ($this->can_view_qr($forum_id) && $this->qr_is_enabled_in_forum($topic_data))
 		{
 			// Quick reply enabled forum
 			return $this->can_post($topic_data, $forum_id);
 		}
 		return false;
 	}
-	
+
 	public function qr_is_enabled_in_forum($topic_data)
 	{
-		return $this->config['allow_quick_reply'] && 
-				($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
+		return $this->config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
+	}
+
+	public function can_view_qr($forum_id)
+	{
+		return ($this->user->data['is_registered'] || $this->config['qr_allow_for_guests']) && $this->auth->acl_get('f_reply', $forum_id);
 	}
 
 	public function can_post($topic_data, $forum_id)

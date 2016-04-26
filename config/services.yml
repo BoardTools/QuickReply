@@ -22,6 +22,15 @@ services:
             - @boardtools.quickreply.listener_helper
         tags:
             - { name: event.listener }
+    
+    boardtools.quickreply.listener_cp:
+        class: boardtools\quickreply\event\listener_cp
+        arguments:
+            - @template
+            - @user
+            - @boardtools.quickreply.cp_helper
+        tags:
+            - { name: event.listener }
 
     boardtools.quickreply.captcha_helper:
         class: boardtools\quickreply\functions\captcha_helper
@@ -49,6 +58,12 @@ services:
         class: boardtools\quickreply\functions\ajax_preview_helper
         arguments:
             - @user
+            - @request
+
+    boardtools.quickreply.cp_helper:
+        class: boardtools\quickreply\functions\cp_helper
+        arguments:
+            - @config
             - @request
 
     boardtools.quickreply.form_helper:

@@ -72,12 +72,6 @@ class listener implements EventSubscriberInterface
 			'rxu.postsmerging.posts_merging_end'        => 'on_submit',
 			'core.search_get_posts_data'                => 'hide_posts_subjects_in_searchresults_sql',
 			'core.search_modify_tpl_ary'                => 'hide_posts_subjects_in_searchresults_tpl',
-			'core.ucp_prefs_view_data'                  => 'ucp_prefs_get_data',
-			'core.ucp_prefs_view_update_data'           => 'ucp_prefs_set_data',
-			'core.acp_users_prefs_modify_data'          => 'acp_prefs_get_data',
-			'core.acp_users_prefs_modify_template_data' => 'acp_prefs_template_data',
-			'core.acp_users_prefs_modify_sql'           => 'ucp_prefs_set_data', // For the ACP.
-			'core.permissions'                          => 'add_permission',
 		);
 	}
 
@@ -266,74 +260,5 @@ class listener implements EventSubscriberInterface
 				$event['tpl_ary'] = $tpl_ary;
 			}
 		}
-	}
-
-	/**
-	 * Get user's options and display them in UCP Prefs View page
-	 *
-	 * @param object $event The event object
-	 */
-	public function ucp_prefs_get_data($event)
-	{
-		$data = $event['data'];
-
-		// Request the user option vars and add them to the data array
-		$data = array_merge($data, $this->helper->qr_get_user_prefs_data($this->user->data));
-
-		// Output the data vars to the template
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
-		$this->template->assign_vars($this->helper->qr_user_prefs_data($data));
-
-		$event['data'] = $data;
-	}
-
-	/**
-	 * Add user options' state into the sql_array
-	 *
-	 * @param object $event The event object
-	 */
-	public function ucp_prefs_set_data($event)
-	{
-		$event['sql_ary'] = array_merge($event['sql_ary'], $this->helper->qr_set_user_prefs_data($event['data']));
-	}
-
-	/**
-	 * Get user's options and display them in ACP Prefs View page
-	 *
-	 * @param object $event The event object
-	 */
-	public function acp_prefs_get_data($event)
-	{
-		$data = $event['data'];
-		$user_row = $event['user_row'];
-		$data = array_merge($data, $this->helper->qr_get_user_prefs_data($user_row));
-		$event['data'] = $data;
-	}
-
-	/**
-	 * Assign template data in the ACP
-	 *
-	 * @param object $event The event object
-	 */
-	public function acp_prefs_template_data($event)
-	{
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply_ucp');
-		$data = $event['data'];
-		$user_prefs_data = $event['user_prefs_data'];
-		$user_prefs_data = array_merge($user_prefs_data, $this->helper->qr_user_prefs_data($data));
-		$event['user_prefs_data'] = $user_prefs_data;
-	}
-
-	/**
-	 * Add permissions
-	 *
-	 * @param object $event The event object
-	 */
-	public function add_permission($event)
-	{
-		$permissions = $event['permissions'];
-		$permissions['a_quickreply'] = array('lang' => 'ACL_A_QUICKREPLY', 'cat' => 'misc');
-		$permissions['f_qr_change_subject'] = array('lang' => 'ACL_F_QR_CHANGE_SUBJECT', 'cat' => 'post');
-		$event['permissions'] = $permissions;
 	}
 }
