@@ -24,7 +24,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('custom', array(array($this, 'install_bbcode_for_qr_2'))),
+			array('custom', array(array($this, 'install_bbcode_for_qr'))),
 
 			// Add configs
 			array('config.add', array('qr_attach', '1')),
@@ -37,14 +37,10 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		);
 	}
 
-	public function install_bbcode_for_qr_2()
+	public function install_bbcode_for_qr()
 	{
 		// Load the acp_bbcode class
-		if (!class_exists('acp_bbcodes'))
-		{
-			include($this->phpbb_root_path . 'includes/acp/acp_bbcodes.' . $this->php_ext);
-		}
-		$bbcode_tool = new \acp_bbcodes();
+		$bbcode_tool = $this->load_class();
 
 		$bbcode_data = $this->get_bbcode_data();
 
@@ -67,6 +63,15 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 				$this->insert_bbcode($bbcode_array);
 			}
 		}
+	}
+
+	private function load_class()
+	{
+		if (!class_exists('acp_bbcodes'))
+		{
+			include($this->phpbb_root_path . 'includes/acp/acp_bbcodes.' . $this->php_ext);
+		}
+		return new \acp_bbcodes();
 	}
 
 	private function get_bbcode_data()
