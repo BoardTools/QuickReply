@@ -47,8 +47,9 @@ class plugins_helper
 	/**
 	 * Assign template variables for extensions if quick reply is enabled
 	 */
-	public function assign_template_variables_for_extensions()
+	public function template_variables_for_extensions()
 	{
+		$template_variables = array();
 		if (
 			$this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') &&
 			$this->user->data['is_registered'] &&
@@ -57,13 +58,32 @@ class plugins_helper
 		{
 			// Always show the checkbox if PostsMerging extension is installed.
 			$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
-			$this->template->assign_var('POSTS_MERGING_OPTION', true);
+			$template_variables += array(
+				'POSTS_MERGING_OPTION' => true
+			);
 		}
 
-		$this->template->assign_vars(array(
+		$template_variables += array(
 			// ABBC3
 			'S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'),
-		));
+		);
+
+		return $template_variables;
+	}
+
+	public function template_variables_for_plugins($forum_id)
+	{
+		return array(
+			'S_QR_NOT_CHANGE_SUBJECT' => !$this->auth->acl_get('f_qr_change_subject', $forum_id),
+
+			// begin mod CapsLock Transfer
+			'S_QR_CAPS_ENABLE'          => $this->config['qr_capslock_transfer'],
+			// end mod CapsLock Transfer
+
+			// begin mod Translit
+			'S_QR_SHOW_BUTTON_TRANSLIT' => $this->config['qr_show_button_translit'],
+			// end mod Translit
+		);
 	}
 
 	public function cannot_change_subject($forum_id, $mode, $topic_first_post_id, $post_id, $not_mode)

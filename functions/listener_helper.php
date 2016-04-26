@@ -35,6 +35,9 @@ class listener_helper
 	/** @var \boardtools\quickreply\functions\plugins_helper */
 	public $plugins_helper;
 
+	/** @var \boardtools\quickreply\functions\ajax_helper */
+	public $ajax_helper;
+
 	/** @var \boardtools\quickreply\functions\notifications_helper */
 	public $notifications_helper;
 
@@ -55,11 +58,12 @@ class listener_helper
 	 * @param captcha_helper               $captcha_helper
 	 * @param form_helper                  $form_helper
 	 * @param plugins_helper               $plugins_helper
+	 * @param ajax_helper                  $ajax_helper
 	 * @param notifications_helper         $notifications_helper
 	 * @param string                       $phpbb_root_path Root path
 	 * @param string                       $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, captcha_helper $captcha_helper, form_helper $form_helper, plugins_helper $plugins_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, captcha_helper $captcha_helper, form_helper $form_helper, plugins_helper $plugins_helper, ajax_helper $ajax_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -69,6 +73,7 @@ class listener_helper
 		$this->captcha_helper = $captcha_helper;
 		$this->form_helper = $form_helper;
 		$this->plugins_helper = $plugins_helper;
+		$this->ajax_helper = $ajax_helper;
 		$this->notifications_helper = $notifications_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -203,10 +208,18 @@ class listener_helper
 	 */
 	public function assign_template_variables_for_qr($forum_id)
 	{
-		$this->plugins_helper->assign_template_variables_for_extensions();
-		$this->template->assign_vars(array(
+		$template_variables = $this->template_variables_for_qr();
+		$template_variables += $this->ajax_helper->template_variables_for_ajax();
+		$template_variables += $this->plugins_helper->template_variables_for_plugins($forum_id);
+		$template_variables += $this->plugins_helper->template_variables_for_extensions();
+
+		$this->template->assign_vars($template_variables);
+	}
+
+	public function template_variables_for_qr()
+	{
+		return array(
 			'S_QR_COLOUR_NICKNAME'    => $this->config['qr_color_nickname'],
-			'S_QR_NOT_CHANGE_SUBJECT' => !$this->auth->acl_get('f_qr_change_subject', $forum_id),
 			'QR_HIDE_SUBJECT_BOX'     => $this->config['qr_hide_subject_box'],
 			'S_QR_COMMA_ENABLE'       => $this->config['qr_comma'],
 			'S_QR_QUICKNICK_ENABLE'   => $this->config['qr_quicknick'],
@@ -222,16 +235,8 @@ class listener_helper
 			'MESSAGE'                   => $this->request->variable('message', '', true),
 			'READ_POST_IMG'             => $this->user->img('icon_post_target', 'POST'),
 
-			// begin mod CapsLock Transfer
-			'S_QR_CAPS_ENABLE'          => $this->config['qr_capslock_transfer'],
-			// end mod CapsLock Transfer
-
-			// begin mod Translit
-			'S_QR_SHOW_BUTTON_TRANSLIT' => $this->config['qr_show_button_translit'],
-			// end mod Translit
-
 			'S_QR_ALLOWED_GUEST' => $this->config['qr_allow_for_guests'] && $this->user->data['user_id'] == ANONYMOUS,
-		));
+		);
 	}
 
 	public function qr_user_prefs_data($data)

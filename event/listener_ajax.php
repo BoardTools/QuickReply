@@ -28,9 +28,6 @@ class listener_ajax implements EventSubscriberInterface
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \boardtools\quickreply\functions\ajax_helper */
-	protected $ajax_helper;
-
 	/** @var \boardtools\quickreply\functions\listener_helper */
 	protected $helper;
 
@@ -41,16 +38,14 @@ class listener_ajax implements EventSubscriberInterface
 	 * @param \phpbb\template\template                         $template
 	 * @param \phpbb\user                                      $user
 	 * @param \phpbb\request\request                           $request
-	 * @param \boardtools\quickreply\functions\ajax_helper     $ajax_helper
 	 * @param \boardtools\quickreply\functions\listener_helper $helper
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \boardtools\quickreply\functions\ajax_helper $ajax_helper, \boardtools\quickreply\functions\listener_helper $helper)
+	public function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, \boardtools\quickreply\functions\listener_helper $helper)
 	{
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
-		$this->ajax_helper = $ajax_helper;
 		$this->helper = $helper;
 	}
 
@@ -83,20 +78,20 @@ class listener_ajax implements EventSubscriberInterface
 
 		$post_list = $event['post_list'];
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
-		if ($this->ajax_helper->no_refresh($current_post, $post_list))
+		if ($this->helper->ajax_helper->no_refresh($current_post, $post_list))
 		{
 			$sql_ary = $event['sql_ary'];
 			$qr_get_current = $this->request->is_set('qr_get_current');
 			$compare = ($qr_get_current) ? ' >= ' : ' > ';
 			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
 			$event['sql_ary'] = $sql_ary;
-			$this->ajax_helper->qr_insert = true;
-			$this->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
+			$this->helper->ajax_helper->qr_insert = true;
+			$this->helper->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
 
 			// Check whether no posts are found.
 			if ($compare == ' > ' && max($post_list) <= $current_post)
 			{
-				$this->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
+				$this->helper->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
 		}
 	}
@@ -113,9 +108,9 @@ class listener_ajax implements EventSubscriberInterface
 		$post_list = $event['post_list'];
 
 		// Ajaxify viewtopic data
-		if ($this->ajax_helper->qr_is_ajax())
+		if ($this->helper->ajax_helper->qr_is_ajax())
 		{
-			$this->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
+			$this->helper->ajax_helper->ajax_response($event['page_title'], max($post_list), $forum_id);
 		}
 
 		if ($this->helper->qr_is_enabled($forum_id, $topic_data))
@@ -124,18 +119,6 @@ class listener_ajax implements EventSubscriberInterface
 				'qr'             => 1,
 				'qr_cur_post_id' => (int) max($post_list)
 			)));
-
-			$this->template->assign_vars(array(
-				// Ajax submit
-				'L_FULL_EDITOR'             => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
-				'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
-
-				'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
-
-				'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
-				'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
-				'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll'],
-			));
 		}
 	}
 
@@ -147,9 +130,9 @@ class listener_ajax implements EventSubscriberInterface
 	public function detect_new_posts($event)
 	{
 		// Ajax submit
-		if ($this->ajax_helper->qr_is_ajax_submit())
+		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->ajax_helper->check_errors($event['error']);
+			$this->helper->ajax_helper->check_errors($event['error']);
 
 			$post_data = $event['post_data'];
 			$lastclick = $this->request->variable('lastclick', time());
@@ -158,12 +141,12 @@ class listener_ajax implements EventSubscriberInterface
 			{
 				$forum_id = (int) $post_data['forum_id'];
 				$topic_id = (int) $post_data['topic_id'];
-				$this->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
+				$this->helper->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
 			}
 			else if ($post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 			{
 				// Send new post number as a response.
-				$this->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
+				$this->helper->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
 			}
 		}
 		// This is needed for BBCode QR_BBPOST.
@@ -178,12 +161,12 @@ class listener_ajax implements EventSubscriberInterface
 	public function ajax_preview($event)
 	{
 		// Ajax submit
-		if ($this->ajax_helper->qr_is_ajax_submit())
+		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->ajax_helper->check_errors($event['error']);
+			$this->helper->ajax_helper->check_errors($event['error']);
 			if ($event['preview'])
 			{
-				$this->ajax_helper->ajax_preview($event);
+				$this->helper->ajax_helper->ajax_preview($event);
 			}
 		}
 	}
@@ -195,9 +178,9 @@ class listener_ajax implements EventSubscriberInterface
 	 */
 	public function ajax_submit($event)
 	{
-		if ($this->ajax_helper->qr_is_ajax_submit())
+		if ($this->helper->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->ajax_helper->ajax_submit($event);
+			$this->helper->ajax_helper->ajax_submit($event);
 		}
 	}
 }

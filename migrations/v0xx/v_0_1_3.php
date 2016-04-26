@@ -111,7 +111,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 
 		return $row_exists;
 	}
-	
+
 	private function add_bbcode($row_exists, $bbcode_array)
 	{
 		if ($row_exists)

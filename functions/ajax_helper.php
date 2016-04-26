@@ -239,6 +239,11 @@ class ajax_helper
 		return array($preview_message, $preview_attachments);
 	}
 
+	/**
+	 * Build attach box for not-inline attachmets
+	 *
+	 * @param array $attachment_data
+	 */
 	public function build_attach_box($attachment_data)
 	{
 		$preview_attachments = '';
@@ -328,5 +333,19 @@ class ajax_helper
 	public function no_refresh($current_post, $post_list)
 	{
 		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);
+	}
+	
+	public function template_variables_for_ajax()
+	{
+		return array(
+			'L_FULL_EDITOR'             => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
+			'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
+
+			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
+
+			'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
+			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
+			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll'],
+		);
 	}
 }
