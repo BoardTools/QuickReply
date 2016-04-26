@@ -51,17 +51,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 			$bbcode_array += $this->build_bbcode_array($data);
 
 			$row_exists = $this->exist_bbcode($bbcode_name, $bbcode_array);
-
-			if ($row_exists)
-			{
-				// Update existing BBCode
-				$this->update_bbcode($row_exists['bbcode_id'], $bbcode_array);
-			}
-			else
-			{
-				// Create new BBCode
-				$this->insert_bbcode($bbcode_array);
-			}
+			$this->add_bbcode($row_exists, $bbcode_array);
 		}
 	}
 
@@ -120,6 +110,20 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		$this->db->sql_freeresult($result);
 
 		return $row_exists;
+	}
+	
+	private function add_bbcode($row_exists, $bbcode_array)
+	{
+		if ($row_exists)
+		{
+			// Update existing BBCode
+			$this->update_bbcode($row_exists['bbcode_id'], $bbcode_array);
+		}
+		else
+		{
+			// Create new BBCode
+			$this->insert_bbcode($bbcode_array);
+		}
 	}
 
 	private function update_bbcode($bbcode_id, $bbcode_array)
