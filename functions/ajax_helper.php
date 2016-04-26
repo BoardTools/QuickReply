@@ -283,14 +283,4 @@ class ajax_helper
 	{
 		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);
 	}
-
-	public function sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list)
-	{
-		$compare = ($qr_get_current) ? ' >= ' : ' > ';
-		$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
-		$this->qr_insert = true;
-		$this->qr_first = ($current_post == min($post_list)) && $qr_get_current;
-
-		return $sql_ary;
-	}
 }
