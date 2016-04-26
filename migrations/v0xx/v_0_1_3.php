@@ -141,6 +141,11 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		return $this->check_next_bbcode_id($row);
+	}
+
+	private function check_next_bbcode_id($row)
+	{
 		if ($row)
 		{
 			$bbcode_id = $row['max_bbcode_id'] + 1;
