@@ -271,14 +271,4 @@ class listener_helper
 	{
 		return $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'];
 	}
-
-	public function not_find_current_post($qr_get_current, $post_list, $current_post)
-	{
-		return (!$qr_get_current && max($post_list) <= $current_post);
-	}
-
-	public function post_is_first($qr_get_current, $post_list, $current_post)
-	{
-		return ($current_post == min($post_list)) && $qr_get_current;
-	}
 }

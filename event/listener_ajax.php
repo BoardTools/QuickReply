@@ -90,11 +90,11 @@ class listener_ajax implements EventSubscriberInterface
 			$compare = ($qr_get_current) ? ' >= ' : ' > ';
 			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
 			$this->ajax_helper->qr_insert = true;
-			$this->ajax_helper->qr_first = $this->helper->post_is_first($qr_get_current, $post_list, $current_post);
+			$this->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
 			$event['sql_ary'] = $sql_ary;
 
 			// Check whether no posts are found.
-			if ($this->helper->not_find_current_post($qr_get_current, $post_list, $current_post))
+			if (!$qr_get_current && max($post_list) <= $current_post)
 			{
 				$this->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
