@@ -20,7 +20,7 @@ class ajax_preview_helper
 	/** @var string */
 	protected $preview_message;
 
-	/** @var string */
+	/** @var string|bool */
 	protected $preview_attachments;
 
 	/**
@@ -33,8 +33,8 @@ class ajax_preview_helper
 	{
 		$this->user = $user;
 		$this->request = $request;
-		$this->preview_message = $preview_message;
-		$this->preview_attachments = $preview_attachments;
+		$this->preview_message = '';
+		$this->preview_attachments = false;
 	}
 
 	/**

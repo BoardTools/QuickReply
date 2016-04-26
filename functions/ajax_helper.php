@@ -136,7 +136,7 @@ class ajax_helper
 		));
 	}
 
- 	/**
+	/**
 	 * Ajax submit
 	 *
 	 * @param object $event The event object

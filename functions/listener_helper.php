@@ -271,14 +271,4 @@ class listener_helper
 	{
 		return $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'];
 	}
-
-	public function sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list)
-	{
-		$compare = ($qr_get_current) ? ' >= ' : ' > ';
-		$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
-		$this->qr_insert = true;
-		$this->qr_first = ($current_post == min($post_list)) && $qr_get_current;
-
-		return $sql_ary;
-	}
 }

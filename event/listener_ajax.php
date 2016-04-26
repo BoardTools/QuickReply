@@ -87,7 +87,7 @@ class listener_ajax implements EventSubscriberInterface
 		{
 			$qr_get_current = $this->request->is_set('qr_get_current');
 			$sql_ary = $event['sql_ary'];
-			$sql_ary = $this->helper->sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list);
+			$sql_ary = $this->ajax_helper->sql_select_current($sql_ary, $qr_get_current, $current_post, $post_list);
 			$event['sql_ary'] = $sql_ary;
 
 			// Check whether no posts are found.
