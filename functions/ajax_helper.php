@@ -38,6 +38,9 @@ class ajax_helper
 	/** @var string */
 	protected $php_ext;
 
+	/** @var ajax_preview_helper */
+	public $ajax_preview_helper;
+
 	/** @var bool */
 	public $qr_insert;
 
@@ -56,8 +59,9 @@ class ajax_helper
 	 * @param \phpbb\request\request            $request
 	 * @param string                            $phpbb_root_path Root path
 	 * @param string                            $php_ext
+	 * @param ajax_preview_helper               $ajax_preview_helper
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\request\request $request, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\request\request $request, $phpbb_root_path, $php_ext, ajax_preview_helper $ajax_preview_helper)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -68,6 +72,7 @@ class ajax_helper
 		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->ajax_preview_helper = $ajax_preview_helper;
 		$this->qr_insert = false;
 		$this->qr_first = false;
 	}
@@ -131,6 +136,31 @@ class ajax_helper
 		));
 	}
 
+ 	/**
+	 * Ajax submit
+	 *
+	 * @param object $event The event object
+	 */
+	public function ajax_submit($event)
+	{
+		$data = $event['data'];
+		if ($this->is_not_approved($data))
+		{
+			// No approve
+			$this->send_approval_notify();
+		}
+
+		$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
+		$url_hash = strpos($event['url'], '#');
+		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
+
+		$this->send_json(array(
+			'success' => true,
+			'url'     => $result_url,
+			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
+		));
+	}
+
 	/**
 	 * Check approve
 	 *
@@ -162,48 +192,6 @@ class ajax_helper
 				'MESSAGE_TEXT'  => implode('<br />', $error),
 			));
 		}
-	}
-
-	/**
-	 * Attachments preview
-	 *
-	 * @param
-	 */
-	public function preview_attachments($message_parser, $forum_id, $preview_message)
-	{
-		$preview_attachments = false;
-		if (sizeof($message_parser->attachment_data))
-		{
-			$update_count = array();
-			$attachment_data = $message_parser->attachment_data;
-
-			parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
-			$preview_attachments = $this->build_attach_box($attachment_data);
-
-			unset($attachment_data);
-		}
-
-		return array($preview_message, $preview_attachments);
-	}
-
-	/**
-	 * Build attach box for not-inline attachmets
-	 *
-	 * @param array $attachment_data
-	 */
-	public function build_attach_box($attachment_data)
-	{
-		$preview_attachments = '';
-		foreach ($attachment_data as $i => $attachment)
-		{
-			$preview_attachments .= '<dd>' . $attachment . '</dd>';
-		}
-		if (!empty($preview_attachments))
-		{
-			$preview_attachments = '<dl class="attachbox"><dt>' . $this->user->lang['ATTACHMENTS'] . '</dt>' . $preview_attachments . '</dl>';
-		}
-
-		return $preview_attachments;
 	}
 
 	/**

@@ -43,6 +43,13 @@ services:
             - @request
             - %core.root_path%
             - %core.php_ext%
+            - @boardtools.quickreply.ajax_preview_helper
+
+    boardtools.quickreply.ajax_preview_helper:
+        class: boardtools\quickreply\functions\ajax_preview_helper
+        arguments:
+            - @user
+            - @request
 
     boardtools.quickreply.form_helper:
         class: boardtools\quickreply\functions\form_helper

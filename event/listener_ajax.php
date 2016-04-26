@@ -167,29 +167,7 @@ class listener_ajax implements EventSubscriberInterface
 		// Ajax submit
 		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->ajax_helper->check_errors($event['error']);
-			if ($event['preview'])
-			{
-				$post_data = $event['post_data'];
-				$forum_id = (int) $post_data['forum_id'];
-				/** @var \parse_message $message_parser */
-				$message_parser = $event['message_parser'];
-
-				$message_parser->message = $this->request->variable('message', '', true);
-				$preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
-
-				// Attachment Preview
-				$attach_array = $this->ajax_helper->preview_attachments($message_parser, $forum_id, $preview_message);
-				$preview_message = $attach_array[0];
-				$preview_attachments = $attach_array[1];
-
-				$this->ajax_helper->send_json(array(
-					'preview'        => true,
-					'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
-					'PREVIEW_TEXT'   => $preview_message,
-					'PREVIEW_ATTACH' => $preview_attachments,
-				));
-			}
+			$this->ajax_helper->ajax_preview_helper->ajax_preview($event);
 		}
 	}
 
@@ -202,22 +180,7 @@ class listener_ajax implements EventSubscriberInterface
 	{
 		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
-			$data = $event['data'];
-			if ($this->ajax_helper->is_not_approved($data))
-			{
-				// No approve
-				$this->ajax_helper->send_approval_notify();
-			}
-
-			$qr_cur_post_id = $this->request->variable('qr_cur_post_id', 0);
-			$url_hash = strpos($event['url'], '#');
-			$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
-
-			$this->ajax_helper->send_json(array(
-				'success' => true,
-				'url'     => $result_url,
-				'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
-			));
+			$this->ajax_helper->ajax_submit($event);
 		}
 	}
 }
