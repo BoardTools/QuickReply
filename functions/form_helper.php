@@ -150,14 +150,19 @@ class form_helper
 			$this->form_template_variables += array('S_BBCODE_ALLOWED' => 1);
 		}
 
+		$this->add_statuses_to_template($bbcode_status, $img_status, $flash_status, $quote_status);
+
+		return $bbcode_status;
+	}
+
+	public function add_statuses_to_template($bbcode_status, $img_status, $flash_status, $quote_status)
+	{
 		$this->form_template_variables += array(
 			'S_BBCODE_BUTTONS' => $bbcode_status && $this->config['qr_bbcode'],
 			'S_BBCODE_IMG'     => $img_status,
 			'S_BBCODE_FLASH'   => $flash_status,
 			'S_BBCODE_QUOTE'   => $quote_status,
 		);
-
-		return $bbcode_status;
 	}
 
 	public function bbcode_status($forum_id)
@@ -182,7 +187,7 @@ class form_helper
 	 * @param int $forum_id Forum ID
 	 * @return bool Whether smilies are enabled for quick reply
 	 */
-	protected function handle_smilies($forum_id)
+	public function handle_smilies($forum_id)
 	{
 		$smilies_status = $this->smilies_status($forum_id);
 
@@ -219,6 +224,27 @@ class form_helper
 	 */
 	public function handle_attachments($forum_id, $topic_id, $show_attach_box)
 	{
+		$arr_attach = $this->qr_parse_attachments();
+		$attachment_data = $arr_attach[0];
+		$filename_data = $arr_attach[1];
+
+		posting_gen_inline_attachments($attachment_data);
+
+		$max_files = $this->get_max_files($forum_id);
+		$s_action = append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id");
+		$this->plupload->configure($this->cache, $this->template, $s_action, $forum_id, $max_files);
+
+		posting_gen_attachment_entry($attachment_data, $filename_data, $show_attach_box);
+
+		$this->form_template_variables += array(
+			// Upload attachments
+			'S_QR_SHOW_ATTACH_BOX' => $show_attach_box,
+			'S_ATTACH_DATA'        => ($attachment_data) ? json_encode($attachment_data) : '[]',
+		);
+	}
+
+	public function qr_parse_attachments()
+	{
 		if (!class_exists('parse_message'))
 		{
 			include($this->phpbb_root_path . 'includes/message_parser.' . $this->php_ext);
@@ -232,18 +258,11 @@ class form_helper
 		$attachment_data = $message_parser->attachment_data;
 		$filename_data = $message_parser->filename_data;
 
-		posting_gen_inline_attachments($attachment_data);
+		return array($attachment_data, $filename_data);
+	}
 
-		$max_files = ($this->auth->acl_get('a_') || $this->auth->acl_get('m_', $forum_id)) ? 0 : (int) $this->config['max_attachments'];
-		$s_action = append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id");
-		$this->plupload->configure($this->cache, $this->template, $s_action, $forum_id, $max_files);
-
-		posting_gen_attachment_entry($attachment_data, $filename_data, $show_attach_box);
-
-		$this->form_template_variables += array(
-			// Upload attachments
-			'S_QR_SHOW_ATTACH_BOX' => $show_attach_box,
-			'S_ATTACH_DATA'        => ($attachment_data) ? json_encode($attachment_data) : '[]',
-		);
+	public function get_max_files($forum_id)
+	{
+		return ($this->auth->acl_get('a_') || $this->auth->acl_get('m_', $forum_id)) ? 0 : (int) $this->config['max_attachments'];
 	}
 }
