@@ -91,7 +91,6 @@ services:
         arguments:
             - @auth
             - @config
-            - @template
             - @user
             - @ext.manager
 

@@ -17,9 +17,6 @@ class plugins_helper
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\template\template */
-	protected $template;
-
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -31,15 +28,13 @@ class plugins_helper
 	 *
 	 * @param \phpbb\auth\auth             $auth
 	 * @param \phpbb\config\config         $config
-	 * @param \phpbb\template\template     $template
 	 * @param \phpbb\user                  $user
 	 * @param \phpbb\extension\manager     $phpbb_extension_manager
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
-		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_extension_manager = $phpbb_extension_manager;
 	}
