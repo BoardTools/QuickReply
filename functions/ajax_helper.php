@@ -259,7 +259,7 @@ class ajax_helper
 	 *
 	 * @param array $data Array with JSON data
 	 */
-	public function send_json($data)
+	public static function send_json($data)
 	{
 		$json_response = new \phpbb\json_response;
 		$json_response->send($data);
