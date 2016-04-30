@@ -28,9 +28,9 @@ class listener_cp implements EventSubscriberInterface
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\template\template                         $template
-	 * @param \phpbb\user                                      $user
-	 * @param \boardtools\quickreply\functions\cp_helper       $cp_helper
+	 * @param \phpbb\template\template                   $template
+	 * @param \phpbb\user                                $user
+	 * @param \boardtools\quickreply\functions\cp_helper $cp_helper
 	 */
 	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \boardtools\quickreply\functions\cp_helper $cp_helper)
 	{

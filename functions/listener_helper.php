@@ -50,17 +50,17 @@ class listener_helper
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\auth\auth             $auth
-	 * @param \phpbb\config\config         $config
-	 * @param \phpbb\template\template     $template
-	 * @param \phpbb\user                  $user
-	 * @param \phpbb\request\request       $request
-	 * @param captcha_helper               $captcha_helper
-	 * @param form_helper                  $form_helper
-	 * @param plugins_helper               $plugins_helper
-	 * @param notifications_helper         $notifications_helper
-	 * @param string                       $phpbb_root_path Root path
-	 * @param string                       $php_ext
+	 * @param \phpbb\auth\auth         $auth
+	 * @param \phpbb\config\config     $config
+	 * @param \phpbb\template\template $template
+	 * @param \phpbb\user              $user
+	 * @param \phpbb\request\request   $request
+	 * @param captcha_helper           $captcha_helper
+	 * @param form_helper              $form_helper
+	 * @param plugins_helper           $plugins_helper
+	 * @param notifications_helper     $notifications_helper
+	 * @param string                   $phpbb_root_path Root path
+	 * @param string                   $php_ext
 	 */
 	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request $request, captcha_helper $captcha_helper, form_helper $form_helper, plugins_helper $plugins_helper, notifications_helper $notifications_helper, $phpbb_root_path, $php_ext)
 	{
@@ -182,7 +182,7 @@ class listener_helper
 
 		$this->set_form_parameters($forum_id, $topic_data, $qr_hidden_fields);
 
-		return array(
+		$this->template_variables += array(
 			'S_QUICK_REPLY'    => true,
 			'U_QR_ACTION'      => append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
 			'QR_HIDDEN_FIELDS' => build_hidden_fields($qr_hidden_fields),
@@ -240,21 +240,21 @@ class listener_helper
 	public function template_variables_for_qr()
 	{
 		return array(
-			'S_QR_COLOUR_NICKNAME'    => $this->config['qr_color_nickname'],
-			'QR_HIDE_SUBJECT_BOX'     => $this->config['qr_hide_subject_box'],
-			'S_QR_COMMA_ENABLE'       => $this->config['qr_comma'],
-			'S_QR_QUICKNICK_ENABLE'   => $this->config['qr_quicknick'],
-			'S_QR_QUICKNICK_REF'      => $this->config['qr_quicknick_ref'],
-			'S_QR_QUICKNICK_PM'       => $this->config['qr_quicknick_pm'],
-			'S_QR_QUICKQUOTE_ENABLE'  => $this->config['qr_quickquote'],
-			'S_QR_QUICKQUOTE_LINK'    => $this->config['qr_quickquote_link'],
-			'S_QR_FULL_QUOTE'         => $this->config['qr_full_quote'],
-			'S_QR_CE_ENABLE'          => $this->plugins_helper->qr_ctrlenter_enabled(),
-			'QR_SOURCE_POST'          => $this->config['qr_source_post'],
-			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],
+			'S_QR_COLOUR_NICKNAME'   => $this->config['qr_color_nickname'],
+			'QR_HIDE_SUBJECT_BOX'    => $this->config['qr_hide_subject_box'],
+			'S_QR_COMMA_ENABLE'      => $this->config['qr_comma'],
+			'S_QR_QUICKNICK_ENABLE'  => $this->config['qr_quicknick'],
+			'S_QR_QUICKNICK_REF'     => $this->config['qr_quicknick_ref'],
+			'S_QR_QUICKNICK_PM'      => $this->config['qr_quicknick_pm'],
+			'S_QR_QUICKQUOTE_ENABLE' => $this->config['qr_quickquote'],
+			'S_QR_QUICKQUOTE_LINK'   => $this->config['qr_quickquote_link'],
+			'S_QR_FULL_QUOTE'        => $this->config['qr_full_quote'],
+			'S_QR_CE_ENABLE'         => $this->plugins_helper->qr_ctrlenter_enabled(),
+			'QR_SOURCE_POST'         => $this->config['qr_source_post'],
+			'S_DISPLAY_USERNAME'     => !$this->user->data['is_registered'],
 
-			'MESSAGE'                   => $this->request->variable('message', '', true),
-			'READ_POST_IMG'             => $this->user->img('icon_post_target', 'POST'),
+			'MESSAGE'       => $this->request->variable('message', '', true),
+			'READ_POST_IMG' => $this->user->img('icon_post_target', 'POST'),
 
 			'S_QR_ALLOWED_GUEST' => $this->config['qr_allow_for_guests'] && $this->user->data['user_id'] == ANONYMOUS,
 		);

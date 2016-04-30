@@ -18,23 +18,21 @@ class ajax_preview_helper
 	protected $request;
 
 	/** @var string */
-	protected $preview_message;
+	protected $preview_message = '';
 
 	/** @var string|bool */
-	protected $preview_attachments;
+	protected $preview_attachments = false;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\request\request            $request
+	 * @param \phpbb\user            $user
+	 * @param \phpbb\request\request $request
 	 */
 	public function __construct(\phpbb\user $user, \phpbb\request\request $request)
 	{
 		$this->user = $user;
 		$this->request = $request;
-		$this->preview_message = '';
-		$this->preview_attachments = false;
 	}
 
 	/**
@@ -71,21 +69,20 @@ class ajax_preview_helper
 	 */
 	public function preview_attachments($message_parser, $forum_id)
 	{
-		$this->preview_attachments = false;
 		if (sizeof($message_parser->attachment_data))
 		{
 			$update_count = array();
 			$attachment_data = $message_parser->attachment_data;
 
 			parse_attachments($forum_id, $this->preview_message, $attachment_data, $update_count, true);
-			$this->preview_attachments = $this->build_attach_box($attachment_data);
+			$this->build_attach_box($attachment_data);
 
 			unset($attachment_data);
 		}
 	}
 
 	/**
-	 * Build attach box for not-inline attachmets
+	 * Build attach box for not-inline attachments
 	 *
 	 * @param array $attachment_data
 	 */

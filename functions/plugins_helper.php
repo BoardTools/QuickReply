@@ -26,10 +26,10 @@ class plugins_helper
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\auth\auth             $auth
-	 * @param \phpbb\config\config         $config
-	 * @param \phpbb\user                  $user
-	 * @param \phpbb\extension\manager     $phpbb_extension_manager
+	 * @param \phpbb\auth\auth         $auth
+	 * @param \phpbb\config\config     $config
+	 * @param \phpbb\user              $user
+	 * @param \phpbb\extension\manager $phpbb_extension_manager
 	 */
 	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\user $user, \phpbb\extension\manager $phpbb_extension_manager)
 	{
@@ -65,7 +65,7 @@ class plugins_helper
 	public function template_variables_for_plugins($forum_id)
 	{
 		return array(
-			'S_QR_NOT_CHANGE_SUBJECT' => !$this->auth->acl_get('f_qr_change_subject', $forum_id),
+			'S_QR_NOT_CHANGE_SUBJECT'   => !$this->auth->acl_get('f_qr_change_subject', $forum_id),
 
 			// begin mod CapsLock Transfer
 			'S_QR_CAPS_ENABLE'          => $this->config['qr_capslock_transfer'],
@@ -80,10 +80,10 @@ class plugins_helper
 	public function cannot_change_subject($forum_id, $mode, $topic_first_post_id, $post_id, $not_mode)
 	{
 		return (
-				!$this->auth->acl_get('f_qr_change_subject', $forum_id)
-				&& ($mode != 'post' || $not_mode)
-				&& ($topic_first_post_id != $post_id)
-				);
+			!$this->auth->acl_get('f_qr_change_subject', $forum_id)
+			&& ($mode != 'post' || $not_mode)
+			&& ($topic_first_post_id != $post_id)
+		);
 	}
 
 	/**

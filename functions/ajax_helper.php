@@ -129,7 +129,7 @@ class ajax_helper
 	{
 		page_header($page_title, false, $forum_id);
 		page_footer(false, false, false);
-		$this->send_json(array(
+		self::send_json(array(
 			'success' => true,
 			'result'  => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
 			'insert'  => $this->qr_insert
@@ -154,7 +154,7 @@ class ajax_helper
 		$url_hash = strpos($event['url'], '#');
 		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
 
-		$this->send_json(array(
+		self::send_json(array(
 			'success' => true,
 			'url'     => $result_url,
 			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
@@ -165,16 +165,17 @@ class ajax_helper
 	 * Check approve
 	 *
 	 * @param array $data
+	 * @return bool
 	 */
 	public function is_not_approved($data)
 	{
 		return (
-				!$this->auth->acl_get('f_noapprove', $data['forum_id'])
-					&& empty($data['force_approved_state'])
-				) || (
-				isset($data['force_approved_state'])
-					&& !$data['force_approved_state']
-				);
+			!$this->auth->acl_get('f_noapprove', $data['forum_id'])
+			&& empty($data['force_approved_state'])
+		) || (
+			isset($data['force_approved_state'])
+			&& !$data['force_approved_state']
+		);
 	}
 
 	/**
@@ -186,7 +187,7 @@ class ajax_helper
 	{
 		if (sizeof($error))
 		{
-			$this->send_json(array(
+			self::send_json(array(
 				'error'         => true,
 				'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 				'MESSAGE_TEXT'  => implode('<br />', $error),
@@ -217,7 +218,7 @@ class ajax_helper
 		$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next"); // #p$post_id_next
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 
-		$this->send_json(array(
+		self::send_json(array(
 			'error'         => true,
 			'merged'        => ($post_id_next === $current_post) ? 'merged' : 'not_merged',
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
@@ -231,7 +232,7 @@ class ajax_helper
 	 */
 	public function send_approval_notify()
 	{
-		$this->send_json(array(
+		self::send_json(array(
 			'noapprove'     => true,
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 			'MESSAGE_TEXT'  => $this->user->lang['POST_STORED_MOD'] . (($this->user->data['user_id'] == ANONYMOUS) ? '' : ' ' . $this->user->lang['POST_APPROVAL_NOTIFY']),
@@ -248,7 +249,7 @@ class ajax_helper
 	 */
 	public function send_last_post_id($post_id)
 	{
-		$this->send_json(array(
+		self::send_json(array(
 			'post_update' => true,
 			'post_id'     => $post_id,
 		));
@@ -268,15 +269,15 @@ class ajax_helper
 	public function template_variables_for_ajax()
 	{
 		return array(
-				'L_FULL_EDITOR'             => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
-				'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
+			'L_FULL_EDITOR'    => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
+			'S_QR_AJAX_SUBMIT' => $this->config['qr_ajax_submit'],
 
-				'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
+			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
 
-				'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
-				'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
-				'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll']
-			);
+			'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
+			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
+			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll']
+		);
 	}
 
 	public function no_refresh($current_post, $post_list)
