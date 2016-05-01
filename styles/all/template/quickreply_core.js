@@ -11,6 +11,11 @@
 	/* Initial adjustments */
 	if (quickreply.settings.attachBox) {
 		quickreply.style.setTextareaId();
+
+		/* Fix for external links. */
+		$('#file-list').on('click', 'a[href]', function() {
+			$(this).attr('target', '__blank');
+		});
 	}
 
 	if (quickreply.settings.ajaxSubmit) {
@@ -85,6 +90,66 @@
 				alert.hide();
 			});
 		}, 3000);
+	}
+
+	/**
+	 * Shows/hides the preview block.
+	 * By default the block will be hidden if no options are specified.
+	 *
+	 * @param {object} [options] Optional array of options.
+	 */
+	function qr_set_preview(options) {
+		var ops = {
+			display: 'none',
+			title: '',
+			content: '',
+			attachments: false,
+			removeAttachBox: true
+		}, $preview = $('#preview');
+		if (options) {
+			ops = $.extend(ops, options);
+		}
+		$preview.css('display', ops.display)
+			.find('h3').html(ops.title).end()
+			.find('.content').html(ops.content).end();
+		if (quickreply.settings.attachBox) {
+			if (ops.removeAttachBox) {
+				$preview.find('dl.attachbox').remove();
+			}
+			if (ops.attachments) {
+				$preview.find('.content').after(ops.attachments);
+			}
+		}
+	}
+
+	/**
+	 * Clears quick reply form (e.g. after submission).
+	 */
+	function qr_refresh_form() {
+		$('input[name="post"]').removeAttr('data-clicked');
+		$(quickreply.editor.textareaSelector).val('').attr('style', 'height: 9em;');
+
+		if ($('#preview').is(':visible')) {
+			qr_set_preview(); // Hide preview.
+		}
+
+		if ($('#colour_palette').is(':visible')) {
+			if (quickreply.plugins.abbc3) {
+				$('#abbc3_bbpalette').click();
+			} else {
+				$('#bbpalette').click();
+			}
+		}
+
+		if (quickreply.settings.attachBox) {
+			$('#file-list-container').css('display', 'none');
+			$('#file-list').empty();
+			phpbb.plupload.clearParams();
+		}
+
+		if (quickreply.settings.allowedGuest) {
+			quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
+		}
 	}
 
 	/* Work with browser's history. */
@@ -426,38 +491,7 @@
 				}
 				quickreply.functions.qr_ajax_reload(res.url.replace(/&amp;/ig, '&'), reply_set_data, function() {
 					$('#qr_postform').trigger('ajax_submit_success');
-
-					// Sending form
-					$('input[name="post"]').removeAttr('data-clicked');
-					$(quickreply.editor.textareaSelector).val('').attr('style', 'height: 9em;');
-
-					if ($('#preview').css('display') == 'block') {
-						$('#preview').css('display', 'none');
-						$('#preview h3').html('');
-						$('#preview .content').html('');
-						if (quickreply.settings.attachBox) {
-							$('#preview').find('dl.attachbox').remove();
-						}
-					}
-
-					if ($('#colour_palette').is(':visible')) {
-						if (quickreply.plugins.abbc3) {
-							$('#abbc3_bbpalette').click();
-						} else {
-							$('#bbpalette').click();
-						}
-					}
-
-					if (quickreply.settings.attachBox) {
-						$('#file-list-container').css('display', 'none');
-						$('#file-list').empty();
-						phpbb.plupload.clearParams();
-						$('#preview').find('dl.attachbox').remove();
-					}
-
-					if (quickreply.settings.allowedGuest) {
-						quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
-					}
+					qr_refresh_form();
 				}, true);
 			} else {
 				if (res.NEXT_URL) {
@@ -481,44 +515,19 @@
 						}
 					});
 				} else if (res.preview) {
-					$('#preview').css('display', 'block');
-					$('#preview h3').html(res.PREVIEW_TITLE);
-					$('#preview .content').html(res.PREVIEW_TEXT);
-					if (quickreply.settings.attachBox) {
-						$('#preview').find('dl.attachbox').remove();
-						if (res.PREVIEW_ATTACH) {
-							$('#preview .content').after(res.PREVIEW_ATTACH);
-						}
-					}
+					var $preview = $('#preview');
+					qr_set_preview({
+						display: 'block',
+						title: res.PREVIEW_TITLE,
+						content: res.PREVIEW_TEXT,
+						attachments: res.PREVIEW_ATTACH
+					});
 					if (quickreply.settings.enableScroll) {
-						quickreply.functions.qr_soft_scroll($('#preview'));
+						quickreply.functions.qr_soft_scroll($preview);
 					}
-					var preview = $('#preview');
-					$('#qr_postform').trigger('ajax_submit_preview', [preview]);
+					$('#qr_postform').trigger('ajax_submit_preview', [$preview]);
 				} else if (res.noapprove) {
-					$('input[name="post"]').removeAttr('data-clicked');
-					$('#message-box textarea').val('').attr('style', 'height: 9em;');
-
-					if ($('#preview').css('display') == 'block') {
-						$('#preview').css('display', 'none');
-						$('#preview h3').html('');
-						$('#preview .content').html('');
-						if (quickreply.settings.attachBox) {
-							$('#preview').find('dl.attachbox').remove();
-						}
-					}
-
-					if ($('#colour_palette').is(':visible')) {
-						if (quickreply.plugins.abbc3) {
-							$('#abbc3_bbpalette').click();
-						} else {
-							$('#bbpalette').click();
-						}
-					}
-
-					if (quickreply.settings.allowedGuest) {
-						quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
-					}
+					qr_refresh_form();
 				} else if (res.post_update) {
 					// Send the message again with the updated ID of the last post.
 					$(quickreply.editor.mainForm)
