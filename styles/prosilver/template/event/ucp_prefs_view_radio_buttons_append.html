@@ -23,3 +23,12 @@
 	</dd>
 </dl>
 <!-- ENDIF -->
+<!-- IF S_QUICKNICK_CHANGE_TYPE -->
+<dl>
+	<dt><label for="qr_quicknick_string1">{L_QR_CHANGE_QUICKNICK_STRING}{L_COLON}</label></dt>
+	<dd>
+		<label for="qr_quicknick_string1"><input type="radio" name="qr_quicknick_string" id="qr_quicknick_string1" value="1"<!-- IF S_QR_QUICKNICK_USERTYPE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label for="qr_quicknick_string0"><input type="radio" name="qr_quicknick_string" id="qr_quicknick_string0" value="0"<!-- IF not S_QR_QUICKNICK_USERTYPE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+	</dd>
+</dl>
+<!-- ENDIF -->

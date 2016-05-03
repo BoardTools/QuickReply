@@ -229,7 +229,7 @@ class listener_helper
 	 */
 	public function assign_template_variables_for_qr($forum_id)
 	{
-		$this->template_variables = $this->template_variables_for_qr();
+		$this->template_variables_for_qr();
 		$this->template_variables += $this->form_helper->form_template_variables;
 		$this->template_variables += $this->plugins_helper->template_variables_for_plugins($forum_id);
 		$this->template_variables += $this->plugins_helper->template_variables_for_extensions();
@@ -239,11 +239,13 @@ class listener_helper
 
 	public function template_variables_for_qr()
 	{
-		return array(
+		$this->template_variables += array(
 			'S_QR_COLOUR_NICKNAME'   => $this->config['qr_color_nickname'],
 			'QR_HIDE_SUBJECT_BOX'    => $this->config['qr_hide_subject_box'],
 			'S_QR_COMMA_ENABLE'      => $this->config['qr_comma'],
 			'S_QR_QUICKNICK_ENABLE'  => $this->config['qr_quicknick'],
+			'S_QR_QUICKNICK_STRING'  => $this->config['qr_quicknick_string'],
+			'S_QR_QUICKNICK_USERTYPE'=> $this->user->data['qr_quicknick_string'],
 			'S_QR_QUICKNICK_REF'     => $this->config['qr_quicknick_ref'],
 			'S_QR_QUICKNICK_PM'      => $this->config['qr_quicknick_pm'],
 			'S_QR_QUICKQUOTE_ENABLE' => $this->config['qr_quickquote'],

@@ -273,7 +273,7 @@
 		}
 	};
 
-	if (quickreply.settings.quickNick) {
+	if (quickreply.settings.quickNick && !quickreply.settings.quickNickUserType) {
 		function qr_quicknick(evt, link) {
 			// Get cursor coordinates
 			if (!evt) {
@@ -322,7 +322,17 @@
 			quicknick_handle_posts(e, $('#qr_posts'));
 		});
 		$('#qr_posts').on('qr_loaded', quicknick_handle_posts);
+	}
+	
+	if (quickreply.settings.quickNickString || (quickreply.settings.quickNick && quickreply.settings.quickNickUserType)) {
+		$('#qr_posts').on('click', '.qr_quicknick', function(e){
+			e.preventDefault();
+			var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
+			quickreply.functions.quickNick(link);
+		})
+	}
 
+	if (quickreply.settings.quickNick || quickreply.settings.quickNickString) {
 		/**********************/
 		/* Live Search Plugin */
 		/**********************/

@@ -21,7 +21,8 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'QR_ENABLE_AJAX_PAGINATION' => 'Do not refresh quick reply form when navigating the topic',
-	'QR_ENABLE_SCROLL'          => 'Enable auto scroll when navigating the topic',
-	'QR_ENABLE_SOFT_SCROLL'     => 'Enable soft scroll and animations when navigating the topic and after quick reply',
+	'QR_ENABLE_AJAX_PAGINATION'  => 'Do not refresh quick reply form when navigating the topic',
+	'QR_ENABLE_SCROLL'           => 'Enable auto scroll when navigating the topic',
+	'QR_ENABLE_SOFT_SCROLL'      => 'Enable soft scroll and animations when navigating the topic and after quick reply',
+	'QR_CHANGE_QUICKNICK_STRING' => 'Switch dropdown menu when you click on the nickname to link “Refer by username” under avatar',
 ));
