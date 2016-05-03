@@ -41,6 +41,13 @@ quickreply.settings = {
 	softScroll: <!-- IF S_QR_SOFT_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
 	sourcePost: <!-- IF QR_SOURCE_POST -->true<!-- ELSE -->false<!-- ENDIF -->,
 	unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
+	<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
+		,
+		forain_lang: {QR_FORAIN_LANG},
+		this_lang: {QR_THIS_LANG},
+		forain_lang_cap: {QR_FORAIN_LANG_CAP},
+		this_lang_cap: {QR_THIS_LANG_CAP}
+	<!-- ENDIF -->
 };
 
 // Useful variables for QuickReply.
