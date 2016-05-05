@@ -23,6 +23,9 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 	/** @var \phpbb\request\request */
 	protected $request;
 
+	/** @var */
+	protected $db;
+
 	/** @var string */
 	protected $form_key;
 
@@ -49,13 +52,14 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 
 	public function main($id, $mode)
 	{
-		global $config, $template, $user, $request;
+		global $config, $template, $user, $request, $db;
 
 		$this->config = $config;
 		$this->new_config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
+		$this->db = $db;
 
 		$this->tpl_name = 'acp_quickreply';
 		$this->form_key = 'config_quickreply';
@@ -72,6 +76,7 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 			unset($this->display_vars['vars']['qr_ctrlenter']);
 		}
 
+		$this->submit = $this->request->is_set_post('submit') || $this->request->is_set_post('qr_ajax_submit_enable');
 		$this->submit_form();
 
 		// Output relevant page
@@ -96,12 +101,53 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 				'qr_allow_for_guests'  => array('lang' => 'ACP_QR_ALLOW_FOR_GUESTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 
 				'legend2'              => '',
-				'qr_ajax_submit'       => array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_ajax_pagination'   => array('lang' => 'ACP_QR_AJAX_PAGINATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_scroll_time'       => array('lang' => 'ACP_QR_SCROLL_TIME', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true),
+				'qr_ajax_submit'       => array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'custom', 'method' => 'ajax_submit_button', 'explain' => true),
 
 				'legend3' => 'ACP_SUBMIT_CHANGES',
 			),
 		);
+	}
+
+	/**
+	* Global ajax posting enable/disable setting and button to enable in all forums
+	*/
+	public function ajax_submit_button($value, $key)
+	{
+		$radio_ary = array(1 => 'YES', 0 => 'NO');
+
+		return h_radio('config[qr_ajax_submit]', $radio_ary, $value) .
+			'<br /><br /><input class="button2" type="submit" id="' . $key . '_enable" name="' . $key . '_enable" value="' . $this->user->lang['ACP_QR_ALLOW_AJAX_SUBMIT'] . '" />';
+	}
+
+	/**
+	 * Set the new configuration array
+	 *
+	 * @param array                $cfg_array    Array with new values
+	 */
+	public function set_config($cfg_array)
+	{
+		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
+		foreach ($this->display_vars['vars'] as $config_name => $null)
+		{
+			if ($this->invalid_var($config_name, $cfg_array))
+			{
+				continue;
+			}
+
+			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
+
+			if ($this->submit)
+			{
+				$this->config->set($config_name, $config_value);
+
+				if ($config_name == 'qr_ajax_submit' && $this->request->is_set_post('qr_ajax_submit_enable'))
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . ' SET qr_ajax_submit = 1';
+					$this->db->sql_query($sql);
+				}
+			}
+		}
 	}
 }

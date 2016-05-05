@@ -63,6 +63,7 @@ class quickreply_qn_module extends \boardtools\quickreply\functions\acp_module_h
 
 		$this->generate_display_vars();
 
+		$this->submit = $this->request->is_set_post('submit');
 		$this->submit_form();
 
 		// Output relevant page

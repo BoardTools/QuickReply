@@ -30,6 +30,7 @@ $lang = array_merge($lang, array(
 	'ACP_PLUGINS_QUICKREPLY'          => 'Быстрый ответ',
 	'ACP_PLUGINS_QUICKREPLY_EXPLAIN'  => 'Дополнительные настройки',
 	//
+	'ACP_QR_ALLOW_AJAX_SUBMIT'        => 'Отправить и включить Ajax отправку сообщений во всех форумах',
 	'ACP_QR_AJAX_PAGINATION'          => 'Разрешить просмотр тем без перезагрузки страницы',
 	'ACP_QR_AJAX_PAGINATION_EXPLAIN'  => 'Разрешить пользователям использовать настройку «Не очищать форму быстрого ответа при просмотре темы».',
 	'ACP_QR_AJAX_SUBMIT'              => 'Включить Ajax отправку сообщений',

@@ -52,8 +52,6 @@ class acp_module_helper
 	 */
 	public function submit_form()
 	{
-		$this->submit = $this->request->is_set_post('submit');
-
 		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', array('' => ''), true) : $this->new_config;
 		$this->error = array();
 
