@@ -24,7 +24,7 @@ $lang = array_merge($lang, array(
 	'ACP_QUICKREPLY'                  => 'Быстрый ответ',
 	'ACP_QUICKREPLY_EXPLAIN'          => 'Настройки быстрого ответа',
 	//
-	'ACPQUICKREPLY_QN_'               => 'Быстрый ответ',
+	'ACP_QUICKREPLY_QN'               => 'Быстрый ответ',
 	'ACP_QUICKREPLY_QN_EXPLAIN'       => 'Настройки цитаты и обращения по нику',
 	//
 	'ACP_QUICKREPLY_PLUGINS'          => 'Быстрый ответ',
