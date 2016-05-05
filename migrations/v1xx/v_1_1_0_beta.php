@@ -51,13 +51,13 @@ class v_1_1_0_beta extends \phpbb\db\migration\migration
 			array('module.add', array('acp', 'ACP_QUICKREPLY', array(
 					'module_basename'	=> '\boardtools\quickreply\acp\quickreply_qn_module',
 					'module_langname'	=> 'ACP_QUICKREPLY_QN_EXPLAIN',
-					'module_mode'		=> 'config_qn_quickreply',
+					'module_mode'		=> 'config_quickreply_qn',
 					'module_auth'		=> 'ext_boardtools/quickreply && acl_a_quickreply',
 			))),
 			array('module.add', array('acp', 'ACP_QUICKREPLY', array(
 					'module_basename'	=> '\boardtools\quickreply\acp\quickreply_plugins_module',
 					'module_langname'	=> 'ACP_QUICKREPLY_PLUGINS_EXPLAIN',
-					'module_mode'		=> 'config_plugins_quickreply',
+					'module_mode'		=> 'config_quickreply_plugins',
 					'module_auth'		=> 'ext_boardtools/quickreply && acl_a_quickreply',
 			))),
 		);
