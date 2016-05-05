@@ -123,7 +123,7 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 
 	public function enable_ajax_submit($config_name)
 	{
-		if ($config_name == 'qr_ajax_submit_enable' && $this->request->is_set_post('qr_ajax_submit_enable'))
+		if ($config_name == 'qr_ajax_submit' && $this->request->is_set_post('qr_ajax_submit_enable'))
 		{
 			$sql = 'UPDATE ' . FORUMS_TABLE . ' SET qr_ajax_submit = 1';
 			$this->db->sql_query($sql);
