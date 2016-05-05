@@ -61,4 +61,19 @@ class cp_helper
 			'qr_quicknick_string' => $data['qr_quicknick_string'],
 		);
 	}
+
+	public function qr_forums_data($forum_data)
+	{
+		return array(
+			'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
+			'S_ENABLE_QR_AJAX_SUBMIT'	=> $forum_data['qr_ajax_submit'],
+		);
+	}
+
+	public function qr_get_forums_data()
+	{
+		return array(
+			'qr_ajax_submit'     => $this->request->variable('qr_ajax_submit', false),
+		);
+	}
 }

@@ -24,6 +24,12 @@ $lang = array_merge($lang, array(
 	'ACP_QUICKREPLY'                  => 'Quick Reply',
 	'ACP_QUICKREPLY_EXPLAIN'          => 'Quick Reply Settings',
 	//
+	'ACP_QN_QUICKREPLY'               => 'Quick Reply',
+	'ACP_QN_QUICKREPLY_EXPLAIN'       => 'QuickQuote and Refer by username Settings',
+	//
+	'ACP_PLUGINS_QUICKREPLY'          => 'Quick Reply',
+	'ACP_PLUGINS_QUICKREPLY_EXPLAIN'  => 'Additional Settings',
+	//
 	'ACP_QR_AJAX_PAGINATION'          => 'Allow navigating topics without reloading the page',
 	'ACP_QR_AJAX_PAGINATION_EXPLAIN'  => 'Allow users to enable the setting “Do not refresh quick reply form when navigating the topic”.',
 	'ACP_QR_AJAX_SUBMIT'              => 'Enable Ajax posting',

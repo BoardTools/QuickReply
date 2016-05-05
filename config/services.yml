@@ -126,3 +126,11 @@ services:
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
+
+    boardtools.quickreply.acp_module_helper:
+        class: boardtools\quickreply\functions\acp_module_helper
+        arguments:
+            - @config
+            - @template
+            - @user
+            - @request

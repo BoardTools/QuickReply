@@ -120,12 +120,15 @@ class listener_ajax implements EventSubscriberInterface
 
 		if ($this->helper->qr_is_enabled($forum_id, $topic_data))
 		{
-			$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
-				'qr'             => 1,
-				'qr_cur_post_id' => (int) max($post_list)
-			)));
+			if($topic_data['qr_ajax_submit'])
+			{
+				$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
+					'qr'             => 1,
+					'qr_cur_post_id' => (int) max($post_list)
+				)));
+			}
 
-			$this->template->assign_vars($this->ajax_helper->template_variables_for_ajax());
+			$this->template->assign_vars($this->ajax_helper->template_variables_for_ajax($topic_data));
 		}
 	}
 

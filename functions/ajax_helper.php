@@ -266,11 +266,11 @@ class ajax_helper
 		$json_response->send($data);
 	}
 
-	public function template_variables_for_ajax()
+	public function template_variables_for_ajax($topic_data)
 	{
 		return array(
-			'L_FULL_EDITOR'    => ($this->config['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
-			'S_QR_AJAX_SUBMIT' => $this->config['qr_ajax_submit'],
+			'L_FULL_EDITOR'    => ($this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
+			'S_QR_AJAX_SUBMIT' => $this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit'],
 
 			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
 
