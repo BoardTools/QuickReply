@@ -57,8 +57,8 @@ class quickreply_plugins_module extends \boardtools\quickreply\functions\acp_mod
 		$this->user = $user;
 		$this->request = $request;
 
-		$this->tpl_name = 'acp_plugins_quickreply';
-		$this->form_key = 'config_plugins_quickreply';
+		$this->tpl_name = 'acp_quickreply_plugins';
+		$this->form_key = 'config_quickreply_plugins';
 		add_form_key($this->form_key);
 
 		$this->generate_display_vars();
@@ -78,7 +78,7 @@ class quickreply_plugins_module extends \boardtools\quickreply\functions\acp_mod
 	private function generate_display_vars()
 	{
 		$this->display_vars = array(
-			'title' => 'ACP_PLUGINS_QUICKREPLY',
+			'title' => 'ACP_QUICKREPLY_PLUGINS',
 			'vars'  => array(
 				'legend1'                    => '',
 				'qr_capslock_transfer'       => array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),

@@ -15,10 +15,10 @@ class quickreply_qn_info
 	{
 		return array(
 			'filename'	=> '\boardtools\quickreply\acp\quickreply_qn_module',
-			'title'		=> 'ACP_QN_QUICKREPLY',
+			'title'		=> 'ACP_QUICKREPLY_QN',
 			'version'	=> '0.0.1',
 			'modes'		=> array(
-				'config_qn_quickreply'		=> array('title' => 'ACP_QN_QUICKREPLY_EXPLAIN', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QUICKREPLY_EXPLAIN')),
+				'config_quickreply_qn'		=> array('title' => 'ACP_QUICKREPLY_QN_EXPLAIN', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QUICKREPLY_EXPLAIN')),
 			),
 		);
 	}

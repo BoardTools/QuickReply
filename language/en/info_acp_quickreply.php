@@ -24,11 +24,11 @@ $lang = array_merge($lang, array(
 	'ACP_QUICKREPLY'                  => 'Quick Reply',
 	'ACP_QUICKREPLY_EXPLAIN'          => 'Quick Reply Settings',
 	//
-	'ACP_QN_QUICKREPLY'               => 'Quick Reply',
-	'ACP_QN_QUICKREPLY_EXPLAIN'       => 'QuickQuote and Refer by username Settings',
+	'ACP_QUICKREPLY_QN'               => 'Quick Reply',
+	'ACP_QUICKREPLY_QN_EXPLAIN'       => 'QuickQuote and Refer by username Settings',
 	//
-	'ACP_PLUGINS_QUICKREPLY'          => 'Quick Reply',
-	'ACP_PLUGINS_QUICKREPLY_EXPLAIN'  => 'Additional Settings',
+	'ACP_QUICKREPLY_PLUGINS'          => 'Quick Reply',
+	'ACP_QUICKREPLY_PLUGINS_EXPLAIN'  => 'Additional Settings',
 	//
 	'ACP_QR_ALLOW_AJAX_SUBMIT'        => 'Submit and enable Ajax posting in all forums',
 	'ACP_QR_AJAX_PAGINATION'          => 'Allow navigating topics without reloading the page',

@@ -15,10 +15,10 @@ class quickreply_plugins_info
 	{
 		return array(
 			'filename'	=> '\boardtools\quickreply\acp\quickreply_plugins_module',
-			'title'		=> 'ACP_PLUGINS_QUICKREPLY',
+			'title'		=> 'ACP_QUICKREPLY_PLUGINS',
 			'version'	=> '0.0.1',
 			'modes'		=> array(
-				'config_plugins_quickreply'		=> array('title' => 'ACP_PLUGINS_QUICKREPLY_EXPLAIN', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QUICKREPLY_EXPLAIN')),
+				'config_quickreply_plugins'		=> array('title' => 'ACP_QUICKREPLY_PLUGINS_EXPLAIN', 'auth' => 'ext_boardtools/quickreply && acl_a_quickreply', 'cat' => array('ACP_QUICKREPLY_EXPLAIN')),
 			),
 		);
 	}

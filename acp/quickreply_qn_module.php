@@ -57,8 +57,8 @@ class quickreply_qn_module extends \boardtools\quickreply\functions\acp_module_h
 		$this->user = $user;
 		$this->request = $request;
 
-		$this->tpl_name = 'acp_qn_quickreply';
-		$this->form_key = 'config_qn_quickreply';
+		$this->tpl_name = 'acp_quickreply_qn';
+		$this->form_key = 'config_quickreply_qn';
 		add_form_key($this->form_key);
 
 		$this->generate_display_vars();
@@ -78,7 +78,7 @@ class quickreply_qn_module extends \boardtools\quickreply\functions\acp_module_h
 	private function generate_display_vars()
 	{
 		$this->display_vars = array(
-			'title' => 'ACP_QN_QUICKREPLY',
+			'title' => 'ACP_QUICKREPLY_QN',
 			'vars'  => array(
 				'legend1'              => '',
 				'qr_quickquote'        => array('lang' => 'ACP_QR_QUICKQUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
