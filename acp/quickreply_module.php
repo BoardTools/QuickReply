@@ -121,6 +121,15 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 			'<br /><br /><input class="button2" type="submit" id="' . $key . '_enable" name="' . $key . '_enable" value="' . $this->user->lang['ACP_QR_ALLOW_AJAX_SUBMIT'] . '" />';
 	}
 
+	public function enable_ajax_submit($config_name)
+	{
+		if ($config_name == 'qr_ajax_submit_enable' && $this->request->is_set_post('qr_ajax_submit_enable'))
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . ' SET qr_ajax_submit = 1';
+			$this->db->sql_query($sql);
+		}
+	}
+
 	/**
 	 * Set the new configuration array
 	 *
@@ -141,12 +150,7 @@ class quickreply_module extends \boardtools\quickreply\functions\acp_module_help
 			if ($this->submit)
 			{
 				$this->config->set($config_name, $config_value);
-
-				if ($config_name == 'qr_ajax_submit' && $this->request->is_set_post('qr_ajax_submit_enable'))
-				{
-					$sql = 'UPDATE ' . FORUMS_TABLE . ' SET qr_ajax_submit = 1';
-					$this->db->sql_query($sql);
-				}
+				$this->enable_ajax_submit($config_name);
 			}
 		}
 	}
