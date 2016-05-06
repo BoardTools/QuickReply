@@ -193,10 +193,10 @@
 	};
 
 	/**
-	 * Removes the subject box from the form.
+	 * Hides the subject box from the form.
 	 */
-	quickreply.style.removeSubjectBox = function() {
-		$(quickreply.editor.mainForm).find('input[name="subject"]').closest(".form-group").remove();
+	quickreply.style.hideSubjectBox = function() {
+		$(quickreply.editor.mainForm).find('input[name="subject"]').closest(".form-group").hide();
 	};
 
 	/**

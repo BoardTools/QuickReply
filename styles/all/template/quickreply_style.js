@@ -185,10 +185,10 @@
 	};
 
 	/**
-	 * Removes the subject box from the form.
+	 * Hides the subject box from the form.
 	 */
-	quickreply.style.removeSubjectBox = function() {
-		$("#subject").closest("dl").remove();
+	quickreply.style.hideSubjectBox = function() {
+		$("#subject").closest("dl").hide();
 	};
 
 	/**

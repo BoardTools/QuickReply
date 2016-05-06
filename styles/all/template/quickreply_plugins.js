@@ -8,7 +8,7 @@
 	if (quickreply.settings.unchangedSubject) {
 		if (quickreply.settings.hideSubjectBox) {
 			$(document).ready(function() {
-				quickreply.style.removeSubjectBox();
+				quickreply.style.hideSubjectBox();
 			});
 		} else {
 			$(document).ready(function() {
