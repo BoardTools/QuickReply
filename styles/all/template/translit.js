@@ -25,13 +25,13 @@ function translit() {
 		buf = txtarea.value;
 	}
 
-	for (i = 0; i < quickreply.settings.forain_lang_cap.length; i++) {
-		eval('regexp = /'+quickreply.settings.forain_lang_cap[i]+'/g');
+	for (i = 0; i < quickreply.settings.foreign_lang_cap.length; i++) {
+		eval('regexp = /'+quickreply.settings.foreign_lang_cap[i]+'/g');
 		buf = buf.replace(regexp, quickreply.settings.this_lang_cap[i]);
 	}
 
-	for (i = 0; i < quickreply.settings.forain_lang.length; i++) {
-		eval('regexp = /'+quickreply.settings.forain_lang[i]+'/g');
+	for (i = 0; i < quickreply.settings.foreign_lang.length; i++) {
+		eval('regexp = /'+quickreply.settings.foreign_lang[i]+'/g');
 		buf = buf.replace(regexp, quickreply.settings.this_lang[i]);
 	}
 

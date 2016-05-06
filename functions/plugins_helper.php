@@ -73,9 +73,9 @@ class plugins_helper
 
 			// begin mod Translit
 			'S_QR_SHOW_BUTTON_TRANSLIT' => $this->config['qr_show_button_translit'],
-			'QR_FORAIN_LANG'            => json_encode($this->user->lang['QR_FORAIN_LANG']),
+			'QR_FOREIGN_LANG'            => json_encode($this->user->lang['QR_FOREIGN_LANG']),
 			'QR_THIS_LANG'              => json_encode($this->user->lang['QR_THIS_LANG']),
-			'QR_FORAIN_LANG_CAP'        => json_encode($this->user->lang['QR_FORAIN_LANG_CAP']),
+			'QR_FOREIGN_LANG_CAP'        => json_encode($this->user->lang['QR_FOREIGN_LANG_CAP']),
 			'QR_THIS_LANG_CAP'          => json_encode($this->user->lang['QR_THIS_LANG_CAP']),
 			// end mod Translit
 		);
