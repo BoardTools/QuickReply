@@ -9,11 +9,11 @@
 
 namespace boardtools\quickreply\migrations\v1xx;
 
-class v_1_1_0_beta extends \phpbb\db\migration\migration
+class v_1_1_0_alpha extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return isset($this->config['qr_version']) && version_compare($this->config['qr_version'], '1.1.0-beta', '>=');
+		return isset($this->config['qr_version']) && version_compare($this->config['qr_version'], '1.1.0-alpha', '>=');
 	}
 
 	public static function depends_on()
@@ -45,7 +45,7 @@ class v_1_1_0_beta extends \phpbb\db\migration\migration
 	{
 		return array(
 			// Update existing configs
-			array('config.update', array('qr_version', '1.1.0-beta')),
+			array('config.update', array('qr_version', '1.1.0-alpha')),
 
 			// Add ACP modules
 			array('module.add', array('acp', 'ACP_QUICKREPLY', array(
