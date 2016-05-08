@@ -21,9 +21,9 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'ACP_QUICKREPLY'          => 'الرد السريع',
-	'ACP_QUICKREPLY_EXPLAIN'  => 'الإعدادات',
+	'ACP_QUICKREPLY'          => 'Quick Reply',
+	'ACP_QUICKREPLY_EXPLAIN'  => 'Quick Reply Ustawienia',
 	//
-	'ACL_A_QUICKREPLY'        => 'يستطيع تعديل إعدادات الرد السريع',
-	'ACL_F_QR_CHANGE_SUBJECT' => 'يستطيع تعديل عنوان المُشاركة',
+	'ACL_A_QUICKREPLY'        => 'Może zmienić ustawienia szybkiej odpowiedzi',
+	'ACL_F_QR_CHANGE_SUBJECT' => 'Może modyfikować temat posta',
 ));

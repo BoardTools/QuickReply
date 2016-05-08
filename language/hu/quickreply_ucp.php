@@ -21,9 +21,7 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'ACP_QUICKREPLY'          => 'الرد السريع',
-	'ACP_QUICKREPLY_EXPLAIN'  => 'الإعدادات',
-	//
-	'ACL_A_QUICKREPLY'        => 'يستطيع تعديل إعدادات الرد السريع',
-	'ACL_F_QR_CHANGE_SUBJECT' => 'يستطيع تعديل عنوان المُشاركة',
+	'QR_ENABLE_AJAX_PAGINATION' => 'Ne frissítse a Gyors válasz űrlapot a témában való navigálás során',
+	'QR_ENABLE_SCROLL'          => 'Automatikus görgetés a témában való navigálás során',
+	'QR_ENABLE_SOFT_SCROLL'     => 'Finom görgetés és animálás a témában való navigáláskor és gyors válasz után',
 ));
