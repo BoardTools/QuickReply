@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2015 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -218,7 +218,7 @@ class listener implements EventSubscriberInterface
 			}
 
 			// HTML, BBCode, Smilies, Images, Url, Flash and Quote status
-			$bbcode_status = ($this->config['allow_bbcode'] && $this->config['qr_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
+			$bbcode_status = ($this->config['allow_bbcode'] && $this->auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 			$smilies_status = ($this->config['allow_smilies'] && $this->config['qr_smilies'] && $this->auth->acl_get('f_smilies', $forum_id)) ? true : false;
 			$img_status = ($bbcode_status && $this->auth->acl_get('f_img', $forum_id)) ? true : false;
 			$url_status = ($this->config['allow_post_links']) ? true : false;
@@ -239,6 +239,7 @@ class listener implements EventSubscriberInterface
 
 			$this->template->assign_vars(array(
 				'S_BBCODE_ALLOWED'  => ($bbcode_status) ? 1 : 0,
+				'S_BBCODE_BUTTONS'  => $bbcode_status && $this->config['qr_bbcode'],
 				'S_SMILIES_ALLOWED' => $smilies_status,
 				'S_BBCODE_IMG'      => $img_status,
 				'S_LINKS_ALLOWED'   => $url_status,
