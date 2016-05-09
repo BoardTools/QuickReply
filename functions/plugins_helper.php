@@ -40,7 +40,7 @@ class plugins_helper
 	}
 
 	/**
-	 * Assign template variables for extensions if quick reply is enabled
+	 * Assign template variables for extensions if quick reply is enabled.
 	 */
 	public function template_variables_for_extensions()
 	{
@@ -73,19 +73,40 @@ class plugins_helper
 
 			// begin mod Translit
 			'S_QR_SHOW_BUTTON_TRANSLIT' => $this->config['qr_show_button_translit'],
-			'QR_FOREIGN_LANG'            => json_encode($this->user->lang['QR_FOREIGN_LANG']),
+			'QR_FOREIGN_LANG'           => json_encode($this->user->lang['QR_FOREIGN_LANG']),
 			'QR_THIS_LANG'              => json_encode($this->user->lang['QR_THIS_LANG']),
-			'QR_FOREIGN_LANG_CAP'        => json_encode($this->user->lang['QR_FOREIGN_LANG_CAP']),
+			'QR_FOREIGN_LANG_CAP'       => json_encode($this->user->lang['QR_FOREIGN_LANG_CAP']),
 			'QR_THIS_LANG_CAP'          => json_encode($this->user->lang['QR_THIS_LANG_CAP']),
 			// end mod Translit
 		);
 	}
 
-	public function cannot_change_subject($forum_id, $mode, $topic_first_post_id, $post_id, $not_mode)
+	/**
+	 * Checks whether $data array contains post_id and topic_first_post_id keys.
+	 * These keys can be absent in custom calls of submit_post() function.
+	 *
+	 * @param array $data The array for checking
+	 * @return bool
+	 */
+	public function post_id_in_array($data)
+	{
+		return isset($data['topic_first_post_id']) && isset($data['post_id']);
+	}
+
+	/**
+	 * Returns whether the user cannot change post subject.
+	 *
+	 * @param int    $forum_id            Forum ID
+	 * @param string $mode                Mode
+	 * @param int    $topic_first_post_id ID of the first post in the topic
+	 * @param int    $post_id             ID of the current post
+	 * @return bool
+	 */
+	public function cannot_change_subject($forum_id, $mode, $topic_first_post_id, $post_id)
 	{
 		return (
 			!$this->auth->acl_get('f_qr_change_subject', $forum_id)
-			&& ($mode != 'post' || $not_mode)
+			&& $mode != 'post'
 			&& ($topic_first_post_id != $post_id)
 		);
 	}

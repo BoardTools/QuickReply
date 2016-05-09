@@ -9,7 +9,9 @@
 
 namespace boardtools\quickreply\acp;
 
-class quickreply_qn_module extends \boardtools\quickreply\functions\acp_module_helper
+use boardtools\quickreply\functions\acp_module_helper;
+
+class quickreply_qn_module extends acp_module_helper
 {
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -85,7 +87,9 @@ class quickreply_qn_module extends \boardtools\quickreply\functions\acp_module_h
 				'qr_source_post'       => array('lang' => 'ACP_QR_SOURCE_POST', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_quickquote_link'   => array('lang' => 'ACP_QR_QUICKQUOTE_LINK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_full_quote'        => array('lang' => 'ACP_QR_FULL_QUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-
+				'qr_quickquote_button' => array('lang' => 'ACP_QR_QUICKQUOTE_BUTTON', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_last_quote'        => array('lang' => 'ACP_QR_LAST_QUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				//
 				'legend2'              => '',
 				'qr_quicknick'         => array('lang' => 'ACP_QR_QUICKNICK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_quicknick_string'  => array('lang' => 'ACP_QR_QUICKNICK_STRING', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
@@ -93,8 +97,8 @@ class quickreply_qn_module extends \boardtools\quickreply\functions\acp_module_h
 				'qr_comma'             => array('lang' => 'ACP_QR_COMMA', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_color_nickname'    => array('lang' => 'ACP_QR_COLOUR_NICKNAME', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_quicknick_pm'      => array('lang' => 'ACP_QR_QUICKNICK_PM', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
-
-				'legend3' => 'ACP_SUBMIT_CHANGES',
+				//
+				'legend3'              => 'ACP_SUBMIT_CHANGES',
 			),
 		);
 	}

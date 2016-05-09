@@ -55,7 +55,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Assign functions defined in this class to event listeners in the core
+	 * Assign functions defined in this class to event listeners in the core.
 	 *
 	 * @return array
 	 */
@@ -114,7 +114,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Show bbcodes and smilies in the quickreply
+	 * Show bbcodes and smilies in the quickreply.
 	 *
 	 * @param object $event The event object
 	 */
@@ -159,7 +159,7 @@ class listener implements EventSubscriberInterface
 	{
 		$data = $event['data'];
 
-		if ($this->helper->plugins_helper->cannot_change_subject($data['forum_id'], $event['mode'], $data['topic_first_post_id'], $data['post_id'], 1))
+		if ($this->helper->plugins_helper->post_id_in_array($data) && $this->helper->plugins_helper->cannot_change_subject($data['forum_id'], $event['mode'], $data['topic_first_post_id'], $data['post_id']))
 		{
 			$re = ($this->config['qr_enable_re'] == 0) ? '' : 'Re: ';
 			$subject = $re . $data['topic_title'];
@@ -168,8 +168,8 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Delete Re:, lock post subject
-	 * Ctrl+Enter submit - template variables in the full editor
+	 * Delete Re:, lock post subject.
+	 * Ctrl+Enter submit - template variables in the full editor.
 	 *
 	 * @param object $event The event object
 	 */
@@ -186,7 +186,7 @@ class listener implements EventSubscriberInterface
 		}
 
 		// Whether the user can change post subject or not
-		if ($this->helper->plugins_helper->cannot_change_subject($forum_id, $event['mode'], $post_data['topic_first_post_id'], $event['post_id'], 0))
+		if ($this->helper->plugins_helper->cannot_change_subject($forum_id, $event['mode'], $post_data['topic_first_post_id'], $event['post_id']))
 		{
 			$this->template->assign_vars(array(
 				'S_QR_NOT_CHANGE_SUBJECT' => true,
@@ -203,7 +203,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Send notification
+	 * Send notifications.
 	 *
 	 * @param object $event The event object
 	 */
@@ -213,7 +213,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Hide posts subjects in search results
+	 * Hide posts subjects in search results.
 	 *
 	 * @param object $event The event object
 	 */
@@ -239,7 +239,7 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Hide posts subjects in search results
+	 * Hide posts subjects in search results.
 	 *
 	 * @param object $event The event object
 	 */

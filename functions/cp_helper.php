@@ -20,8 +20,8 @@ class cp_helper
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\config\config         $config
-	 * @param \phpbb\request\request       $request
+	 * @param \phpbb\config\config   $config
+	 * @param \phpbb\request\request $request
 	 */
 	public function __construct(\phpbb\config\config $config, \phpbb\request\request $request)
 	{
@@ -32,13 +32,13 @@ class cp_helper
 	public function qr_user_prefs_data($data)
 	{
 		return array(
-			'S_AJAX_PAGINATION'         => $this->config['qr_ajax_pagination'],
-			'S_ENABLE_AJAX_PAGINATION'  => $data['ajax_pagination'],
-			'S_QR_ENABLE_SCROLL'        => $data['qr_enable_scroll'],
-			'S_QR_ALLOW_SOFT_SCROLL'    => !!$this->config['qr_scroll_time'],
-			'S_QR_SOFT_SCROLL'          => $data['qr_soft_scroll'],
-			'S_QUICKNICK_CHANGE_TYPE'   => $this->config['qr_quicknick'] && !$this->config['qr_quicknick_string'],
-			'S_QR_QUICKNICK_USERTYPE' 	=> $data['qr_quicknick_string'],
+			'S_AJAX_PAGINATION'        => $this->config['qr_ajax_pagination'],
+			'S_ENABLE_AJAX_PAGINATION' => $data['ajax_pagination'],
+			'S_QR_ENABLE_SCROLL'       => $data['qr_enable_scroll'],
+			'S_QR_ALLOW_SOFT_SCROLL'   => !!$this->config['qr_scroll_time'],
+			'S_QR_SOFT_SCROLL'         => $data['qr_soft_scroll'],
+			'S_QUICKNICK_CHANGE_TYPE'  => $this->config['qr_quicknick'] && !$this->config['qr_quicknick_string'],
+			'S_QR_QUICKNICK_USERTYPE'  => $data['qr_quicknick_string'],
 		);
 	}
 
@@ -65,15 +65,17 @@ class cp_helper
 	public function qr_forums_data($forum_data)
 	{
 		return array(
-			'S_QR_AJAX_SUBMIT'          => $this->config['qr_ajax_submit'],
-			'S_ENABLE_QR_AJAX_SUBMIT'	=> $forum_data['qr_ajax_submit'],
+			'S_QR_AJAX_SUBMIT'        => $this->config['qr_ajax_submit'],
+			'S_ENABLE_QR_AJAX_SUBMIT' => $forum_data['qr_ajax_submit'],
+			'S_QR_FORM_TYPE'          => $forum_data['qr_form_type'],
 		);
 	}
 
 	public function qr_get_forums_data()
 	{
 		return array(
-			'qr_ajax_submit'     => $this->request->variable('qr_ajax_submit', false),
+			'qr_ajax_submit' => $this->request->variable('qr_ajax_submit', false),
+			'qr_form_type'   => $this->request->variable('qr_form_type', 0),
 		);
 	}
 }

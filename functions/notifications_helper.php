@@ -26,9 +26,9 @@ class notifications_helper
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\auth\auth             $auth
-	 * @param \phpbb\user                  $user
-	 * @param \phpbb\notification\manager  $notification_manager
+	 * @param \phpbb\auth\auth            $auth
+	 * @param \phpbb\user                 $user
+	 * @param \phpbb\notification\manager $notification_manager
 	 */
 	public function __construct(\phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\notification\manager $notification_manager)
 	{
@@ -39,8 +39,8 @@ class notifications_helper
 	}
 
 	/**
-	 * Marks QuickReply notifications read in the specified post
-	 * for current user
+	 * Marks QuickReply notifications read in the specified posts
+	 * for current user.
 	 *
 	 * @param array $post_list Array of post IDs
 	 */
@@ -50,7 +50,7 @@ class notifications_helper
 	}
 
 	/**
-	 * Adds or updates QuickReply notifications
+	 * Adds or updates QuickReply notifications.
 	 *
 	 * @param object $event The event object
 	 */
@@ -72,13 +72,13 @@ class notifications_helper
 	private function get_notification_data($data, $subject, $username)
 	{
 		return array_merge($data, array(
-				'topic_title'		=> (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
-				'post_username'		=> $username,
-				'poster_id'			=> $data['poster_id'],
-				'post_text'			=> $data['message'],
-				'post_time'			=> time(),
-				'post_subject'		=> $subject,
-			));
+			'topic_title'   => (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
+			'post_username' => $username,
+			'poster_id'     => $data['poster_id'],
+			'post_text'     => $data['message'],
+			'post_time'     => time(),
+			'post_subject'  => $subject,
+		));
 	}
 
 	private function set_notification_data($mode, $notification_data)

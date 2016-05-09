@@ -9,7 +9,9 @@
 
 namespace boardtools\quickreply\acp;
 
-class quickreply_module extends \boardtools\quickreply\functions\acp_module_helper
+use boardtools\quickreply\functions\acp_module_helper;
+
+class quickreply_module extends acp_module_helper
 {
 	/** @var \phpbb\config\config */
 	protected $config;

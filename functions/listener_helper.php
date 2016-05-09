@@ -26,16 +26,16 @@ class listener_helper
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \boardtools\quickreply\functions\captcha_helper */
+	/** @var captcha_helper */
 	public $captcha_helper;
 
-	/** @var \boardtools\quickreply\functions\form_helper */
+	/** @var form_helper */
 	public $form_helper;
 
-	/** @var \boardtools\quickreply\functions\plugins_helper */
+	/** @var plugins_helper */
 	public $plugins_helper;
 
-	/** @var \boardtools\quickreply\functions\notifications_helper */
+	/** @var notifications_helper */
 	public $notifications_helper;
 
 	/** @var array */

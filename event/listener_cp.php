@@ -151,6 +151,7 @@ class listener_cp implements EventSubscriberInterface
 		$permissions = $event['permissions'];
 		$permissions['a_quickreply'] = array('lang' => 'ACL_A_QUICKREPLY', 'cat' => 'misc');
 		$permissions['f_qr_change_subject'] = array('lang' => 'ACL_F_QR_CHANGE_SUBJECT', 'cat' => 'post');
+		$permissions['f_qr_full_quote'] = array('lang' => 'ACL_F_QR_FULL_QUOTE', 'cat' => 'post');
 		$event['permissions'] = $permissions;
 	}
 }
