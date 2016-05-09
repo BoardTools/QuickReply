@@ -11,3 +11,24 @@
 	padding-top: 10px;
 	padding-bottom: 5px;
 }
+
+.qr_fixed_form {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 10000;
+	background-color: #FFF;
+	max-height: 50%;
+}
+
+.qr_fixed_form textarea {
+	height: 30% !important;
+}
+
+.qr_fixed_form #attach-panel,
+.qr_fixed_form #format-buttons,
+.qr_fixed_form #register-and-translit,
+.qr_fixed_form #smiley-box {
+	display: none;
+}

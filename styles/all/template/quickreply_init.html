@@ -27,8 +27,11 @@ quickreply.settings = {
 	enableBBCode: <!-- IF S_BBCODE_BUTTONS -->true<!-- ELSE -->false<!-- ENDIF -->,
 	enableComma: <!-- IF S_QR_COMMA_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	enableScroll: <!-- IF S_QR_ENABLE_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
+	formType: {S_QR_FORM_TYPE},
 	fullQuote: <!-- IF S_QR_FULL_QUOTE -->true<!-- ELSE -->false<!-- ENDIF -->,
+	fullQuoteAllowed: <!-- IF S_QR_FULL_QUOTE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
 	hideSubjectBox: <!-- IF QR_HIDE_SUBJECT_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
+	lastQuote: <!-- IF S_QR_LAST_QUOTE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	pluploadEnabled: <!-- IF S_PLUPLOAD and S_QR_SHOW_ATTACH_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickNick: <!-- IF S_QR_QUICKNICK_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickNickString: <!-- IF S_QR_QUICKNICK_STRING -->true<!-- ELSE -->false<!-- ENDIF -->,
@@ -36,17 +39,18 @@ quickreply.settings = {
 	quickNickRef: <!-- IF S_QR_QUICKNICK_REF -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickNickPM: <!-- IF S_QR_QUICKNICK_PM -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickQuote: <!-- IF S_QR_QUICKQUOTE_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
+	quickQuoteButton: <!-- IF S_QR_QUICKQUOTE_BUTTON -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickQuoteLink: <!-- IF S_QR_QUICKQUOTE_LINK -->true<!-- ELSE -->false<!-- ENDIF -->,
 	scrollInterval: {S_QR_SCROLL_INTERVAL},
 	softScroll: <!-- IF S_QR_SOFT_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
 	sourcePost: <!-- IF QR_SOURCE_POST -->true<!-- ELSE -->false<!-- ENDIF -->,
 	unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
 	<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
-		,
-		foreign_lang: {QR_FOREIGN_LANG},
-		this_lang: {QR_THIS_LANG},
-		foreign_lang_cap: {QR_FOREIGN_LANG_CAP},
-		this_lang_cap: {QR_THIS_LANG_CAP}
+	,
+	foreign_lang: {QR_FOREIGN_LANG},
+	this_lang: {QR_THIS_LANG},
+	foreign_lang_cap: {QR_FOREIGN_LANG_CAP},
+	this_lang_cap: {QR_THIS_LANG_CAP}
 	<!-- ENDIF -->
 };
 

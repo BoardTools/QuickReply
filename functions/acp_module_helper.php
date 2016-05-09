@@ -9,7 +9,7 @@
 
 namespace boardtools\quickreply\functions;
 
-class acp_module_helper
+abstract class acp_module_helper
 {
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -86,7 +86,7 @@ class acp_module_helper
 	/**
 	 * Set the new configuration array
 	 *
-	 * @param array                $cfg_array    Array with new values
+	 * @param array $cfg_array Array with new values
 	 */
 	public function set_config($cfg_array)
 	{
@@ -110,8 +110,9 @@ class acp_module_helper
 	/**
 	 * Check var for valid
 	 *
-	 * @param string 				   $config_name
-	 * @param array                    $cfg_array
+	 * @param string $config_name
+	 * @param array  $cfg_array
+	 * @return bool
 	 */
 	public function invalid_var($config_name, $cfg_array)
 	{
@@ -121,9 +122,9 @@ class acp_module_helper
 	/**
 	 * Add language
 	 *
-	 * @param string                   $display_vars_lang
+	 * @param string $display_vars_lang
 	 */
-	public function add_langs($display_vars_lang)
+	public function add_langs(&$display_vars_lang)
 	{
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 		if (isset($display_vars_lang))
@@ -135,7 +136,7 @@ class acp_module_helper
 	/**
 	 * Get text for title (if exists)
 	 *
-	 * @param array       $vars Array of vars
+	 * @param array $vars Array of vars
 	 * @return string
 	 */
 	public function get_title($vars, $key, $key2 = '')
@@ -153,7 +154,7 @@ class acp_module_helper
 	/**
 	 * Get text for title explanation (if exists)
 	 *
-	 * @param array       $vars Array of vars
+	 * @param array $vars Array of vars
 	 * @return string
 	 */
 	public function get_title_explain($vars)

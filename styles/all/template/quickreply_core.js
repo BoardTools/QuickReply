@@ -3,12 +3,13 @@
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
 
-	/* plupload adjustment */
+	/***********************/
+	/* Initial adjustments */
+	/***********************/
 	if (quickreply.settings.pluploadEnabled) {
 		phpbb.plupload.config.form_hook = quickreply.editor.mainForm;
 	}
 
-	/* Initial adjustments */
 	if (quickreply.settings.attachBox) {
 		quickreply.style.setTextareaId();
 
@@ -21,6 +22,12 @@
 	if (quickreply.settings.ajaxSubmit) {
 		$(quickreply.editor.mainForm).attr('data-ajax', 'qr_ajax_submit');
 		quickreply.style.initPreview();
+	}
+
+	if (quickreply.settings.formType > 0) {
+		quickreply.style.showQuickReplyForm();
+		$(quickreply.editor.mainForm).finish().addClass('qr_fixed_form');
+		$('body').css('margin-bottom', $(quickreply.editor.mainForm).height());
 	}
 
 	var qr_slide_interval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0;

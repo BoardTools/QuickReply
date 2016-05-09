@@ -268,12 +268,14 @@ class ajax_helper
 
 	public function template_variables_for_ajax($topic_data)
 	{
+		$ajax_submit = $this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit'];
 		return array(
-			'L_FULL_EDITOR'    => ($this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit']) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
-			'S_QR_AJAX_SUBMIT' => $this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit'],
-
+			'L_FULL_EDITOR'        => ($ajax_submit) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
+			'S_QR_AJAX_SUBMIT'     => $ajax_submit,
+			'S_QR_FORM_TYPE'       => $topic_data['qr_form_type'],
+			//
 			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
-
+			//
 			'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
 			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
 			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll']
