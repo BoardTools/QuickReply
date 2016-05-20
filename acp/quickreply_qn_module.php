@@ -84,10 +84,10 @@ class quickreply_qn_module extends acp_module_helper
 			'vars'  => array(
 				'legend1'              => '',
 				'qr_quickquote'        => array('lang' => 'ACP_QR_QUICKQUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_quickquote_button' => array('lang' => 'ACP_QR_QUICKQUOTE_BUTTON', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_source_post'       => array('lang' => 'ACP_QR_SOURCE_POST', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_quickquote_link'   => array('lang' => 'ACP_QR_QUICKQUOTE_LINK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_full_quote'        => array('lang' => 'ACP_QR_FULL_QUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_quickquote_button' => array('lang' => 'ACP_QR_QUICKQUOTE_BUTTON', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_last_quote'        => array('lang' => 'ACP_QR_LAST_QUOTE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				//
 				'legend2'              => '',

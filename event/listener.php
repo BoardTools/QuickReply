@@ -98,10 +98,10 @@ class listener implements EventSubscriberInterface
 	public function viewtopic_modify_post_row($event)
 	{
 		$topic_data = $event['topic_data'];
+		$post_row = $event['post_row'];
+		$row = $event['row'];
 		if ($this->config['qr_full_quote'] && $this->auth->acl_get('f_reply', $topic_data['forum_id']))
 		{
-			$row = $event['row'];
-			$post_row = $event['post_row'];
 			$decoded_message = censor_text($row['post_text']);
 			decode_message($decoded_message, $row['bbcode_uid']);
 
@@ -109,8 +109,23 @@ class listener implements EventSubscriberInterface
 			$post_row = array_merge($post_row, array(
 				'DECODED_MESSAGE' => $decoded_message,
 			));
-			$event['post_row'] = $post_row;
 		}
+
+		if (!$this->config['qr_quickquote_button'] && 
+			(
+				!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) || 
+				(
+					!$this->config['qr_last_quote'] && 
+					$topic_data['topic_last_post_id'] === $row['post_id']
+				)
+			)
+		)
+		{
+			$post_row = array_merge($post_row, array(
+				'U_QUOTE'			=> false
+			));
+		}
+		$event['post_row'] = $post_row;
 	}
 
 	/**

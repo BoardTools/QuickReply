@@ -41,7 +41,8 @@
 	/* Helper functions */
 	/********************/
 	/**
-	 * Gets the selected text.
+	 * Get text selection - not only the post content :(
+	 * IE9 must use the document.selection method but has the *.getSelection so we just force no IE
 	 *
 	 * @returns {string}
 	 */
@@ -55,6 +56,41 @@
 			sel = document.selection.createRange().text;
 		}
 		return sel;
+	}
+
+	/**
+	 * Get full post
+	 *
+	 * @returns {string}
+	 */
+	function qr_getFullPost(qr_post_id, theSelection) {
+		var message_name = 'decoded_p' + qr_post_id;
+		var divarea = false;
+
+		if (document.all) {
+			divarea = document.all[message_name];
+		} else {
+			divarea = document.getElementById(message_name);
+		}
+			
+		if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null) {
+			if (divarea.innerHTML) {
+				theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
+				theSelection = theSelection.replace(/<br\/>/ig, '\n');
+				theSelection = theSelection.replace(/&lt\;/ig, '<');
+				theSelection = theSelection.replace(/&gt\;/ig, '>');
+				theSelection = theSelection.replace(/&amp\;/ig, '&');
+				theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
+			} else if (document.all) {
+				theSelection = divarea.innerText;
+			} else if (divarea.textContent) {
+				theSelection = divarea.textContent;
+			} else if (divarea.firstChild.nodeValue) {
+				theSelection = divarea.firstChild.nodeValue;
+			}
+		}
+
+		return theSelection;
 	}
 
 	/**
@@ -78,70 +114,38 @@
 	 * Inserts a quote from the specified post to quick reply textarea.
 	 *
 	 * @param {string} qr_post_id      The ID of the post
-	 * @param {string} [selected_text] Selected text (optional)
+	 * @param {string} selected_text Selected text
 	 */
-	quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
-		var qr_post_author = $('#qr_author_p' + qr_post_id),
-			nickname = qr_post_author.text(),
-			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
-				return (p2) ? p1 : '';
-			}),
-			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
+	if (quickreply.settings.quickQuote || quickreply.settings.quickQuoteButton || quickreply.settings.fullQuote) {
+		quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
+			var qr_post_author = $('#qr_author_p' + qr_post_id),
+				nickname = qr_post_author.text(),
+				user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
+					return (p2) ? p1 : '';
+				}),
+				qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
 
-		// Link to the source post
-		var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
+			// Link to the source post
+			var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
 
-		var message_name = 'decoded_p' + qr_post_id;
-		var theSelection = '';
-		var divarea = false;
-		var clientPC = navigator.userAgent.toLowerCase(); // Get client info
-		var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
-		var i;
+			//var clientPC = navigator.userAgent.toLowerCase(); // Get client info
+			//var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1)); // Зачем? Нигде не используется
+			var i;
 
-		if (document.all) {
-			divarea = document.all[message_name];
-		} else {
-			divarea = document.getElementById(message_name);
-		}
-
-		// Get text selection - not only the post content :(
-		// IE9 must use the document.selection method but has the *.getSelection so we just force no IE
-		if (selected_text) {
-			theSelection = selected_text;
-		} else {
-			theSelection = qr_getSelection();
-		}
-
-		if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null) {
-			if (divarea.innerHTML) {
-				theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
-				theSelection = theSelection.replace(/<br\/>/ig, '\n');
-				theSelection = theSelection.replace(/&lt\;/ig, '<');
-				theSelection = theSelection.replace(/&gt\;/ig, '>');
-				theSelection = theSelection.replace(/&amp\;/ig, '&');
-				theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
-			} else if (document.all) {
-				theSelection = divarea.innerText;
-			} else if (divarea.textContent) {
-				theSelection = divarea.textContent;
-			} else if (divarea.firstChild.nodeValue) {
-				theSelection = divarea.firstChild.nodeValue;
-			}
-		}
-
-		if (theSelection) {
-			quickreply.style.showQuickReplyForm();
-			if (quickreply.settings.allowBBCode) {
-				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + theSelection.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
-			} else {
-				insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
-				var lines = split_lines(theSelection);
-				for (i = 0; i < lines.length; i++) {
-					insert_text('> ' + lines[i] + '\n');
+			if (selected_text) {
+				quickreply.style.showQuickReplyForm();
+				if (quickreply.settings.allowBBCode) {
+					insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + selected_text.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
+				} else {
+					insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
+					var lines = split_lines(selected_text);
+					for (i = 0; i < lines.length; i++) {
+						insert_text('> ' + lines[i] + '\n');
+					}
 				}
 			}
-		}
-	};
+		};
+	}
 
 	/**********************/
 	/* Quick Quote Plugin */
@@ -213,14 +217,42 @@
 	/*********************/
 	/* Full Quote Plugin */
 	/*********************/
-	if (quickreply.settings.fullQuote) {
+	if (quickreply.settings.fullQuote || quickreply.settings.quickQuoteButton) {
 		function qr_add_full_quote(e, element) {
 			e.preventDefault();
 			var qr_post_id = quickreply.style.getPostId(element);
-			quickreply.functions.insertQuote(qr_post_id);
+			var sel = '';
+			
+			if (quickreply.settings.quickQuoteButton) {
+				sel = qr_getSelection();
+			}
+
+			if (quickreply.settings.fullQuote && !element.hasClass('qr-quickquote')) {
+				sel = qr_getFullPost(qr_post_id, sel);
+			}
+
+			if (sel != '') {
+				quickreply.functions.insertQuote(qr_post_id, sel);
+			} else {
+				// @TODO alert "no selection"
+			}
 		}
 
 		function qr_full_quote(e, elements) {
+			if (quickreply.settings.quickQuoteButton) {
+				if (!quickreply.settings.fullQuote || !quickreply.settings.fullQuoteAllowed) {
+					// Style all quote buttons
+					var quote_buttons = quickreply.style.getAllQuoteButtons(elements);
+					quickreply.style.setQuickQuoteButton(quote_buttons);
+				} else if (!quickreply.settings.lastQuote) {
+					// Style only last quote button
+					var quote_buttons = quickreply.style.getAllQuoteButtons($('#qr_posts'));
+					var last_quote_button = quickreply.style.getLastQuoteButton(elements);
+					quickreply.style.removeQuickQuoteButton(quote_buttons);
+					quickreply.style.setQuickQuoteButton(last_quote_button);
+				}
+			}
+
 			quickreply.style.getQuoteButtons(elements).click(function(e) {
 				qr_add_full_quote(e, $(this));
 			});

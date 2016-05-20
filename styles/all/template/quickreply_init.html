@@ -45,13 +45,13 @@ quickreply.settings = {
 	softScroll: <!-- IF S_QR_SOFT_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
 	sourcePost: <!-- IF QR_SOURCE_POST -->true<!-- ELSE -->false<!-- ENDIF -->,
 	unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
-	<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
+<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
 	,
 	foreign_lang: {QR_FOREIGN_LANG},
 	this_lang: {QR_THIS_LANG},
 	foreign_lang_cap: {QR_FOREIGN_LANG_CAP},
 	this_lang_cap: {QR_THIS_LANG_CAP}
-	<!-- ENDIF -->
+<!-- ENDIF -->
 };
 
 // Useful variables for QuickReply.
@@ -86,11 +86,15 @@ quickreply.functions = {
 quickreply.language = {
 	AJAX_ERROR: '{LA_AJAX_ERROR_TEXT}',
 	AJAX_ERROR_TITLE: '{LA_AJAX_ERROR_TITLE}',
+	BUTTON_QUOTE: '{LA_BUTTON_QUOTE}',
 	INSERT_TEXT: '{LA_QR_INSERT_TEXT}',
 	PROFILE: '{LA_QR_PROFILE}',
 	QUICKNICK: '{LA_QR_QUICKNICK}',
 	QUICKNICK_TITLE: '{LA_QR_QUICKNICK_TITLE}',
+	QUICKQUOTE_TEXT: '{LA_QR_QUICKQUOTE}',
+	QUICKQUOTE_TITLE: '{LA_QR_QUICKQUOTE_TITLE}',
 	REPLY_IN_PM: '{LA_QR_REPLY_IN_PM}',
+	REPLY_WITH_QUOTE: '{LA_REPLY_WITH_QUOTE}',
 	WROTE: '{LA_WROTE}'
 };
 <!-- ENDIF -->

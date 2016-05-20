@@ -184,6 +184,14 @@
 		return elements.find('.post-buttons .quote-icon').not('.responsive-menu .quote-icon');
 	};
 
+	quickreply.style.getAllQuoteButtons = function(elements) {
+		return elements.find('.post-buttons .quote-icon');
+	};
+
+	quickreply.style.getLastQuoteButton = function(elements) {
+		return elements.find('.post-container:last-child .post-buttons .quote-icon');
+	};
+
 	/**
 	 * Hides the subject box from the form.
 	 */
@@ -200,6 +208,21 @@
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
 		elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', fn);
 	};
+
+	quickreply.style.setQuickQuoteButton = function(elements) {
+		var title = elements.attr('title');
+		var responsive_text = elements.children('span').text();
+		
+		elements.addClass('qr-quickquote');
+		elements.attr('title', quickreply.language.QUICKQUOTE_TITLE);
+		elements.children('span').text(quickreply.language.QUICKQUOTE_TEXT);
+	}
+
+	quickreply.style.removeQuickQuoteButton = function(elements) {
+		elements.removeClass('qr-quickquote');
+		elements.attr('title', quickreply.language.REPLY_WITH_QUOTE);
+		elements.children('span').text(quickreply.language.BUTTON_QUOTE);
+	}
 
 	/**
 	 * Generates an HTML string for a link from an object with parameters.
