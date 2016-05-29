@@ -25,9 +25,63 @@
 	}
 
 	if (quickreply.settings.formType > 0) {
+		quickreply.functions.setBodyMarginBottom = function() {
+			$('body').animate({
+				'marginBottom': $(quickreply.editor.mainForm).height()
+			});
+		};
+
 		quickreply.style.showQuickReplyForm();
 		$(quickreply.editor.mainForm).finish().addClass('qr_fixed_form');
-		$('body').css('margin-bottom', $(quickreply.editor.mainForm).height());
+		// Quick Reply Toggle Plugin
+		$("#reprap").remove();
+
+		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box').addClass('additional-element').hide();
+		quickreply.functions.setBodyMarginBottom();
+
+		// Add events.
+		$('.qr_bbcode_button').click(function() {
+			$('#format-buttons').slideToggle(function() {
+				quickreply.functions.setBodyMarginBottom();
+			});
+		});
+		$('.qr_attach_button').click(function() {
+			$('#attach-panel').slideToggle(function() {
+				quickreply.functions.setBodyMarginBottom();
+			});
+		});
+		$('.qr_more_actions_button').click(function() {
+			$('.qr_fixed_form .additional-element').slideToggle(function() {
+				quickreply.functions.setBodyMarginBottom();
+			});
+		});
+
+		$(quickreply.editor.textareaSelector).focus(function() {
+			$(quickreply.editor.mainForm).find('.submit-buttons').slideDown(function() {
+				quickreply.functions.setBodyMarginBottom();
+			});
+		}).blur(function() {
+			if (!$(this).val()) {
+				$(quickreply.editor.mainForm).find('.submit-buttons').slideUp(function() {
+					quickreply.functions.setBodyMarginBottom();
+				});
+			}
+		});
+
+		$('.qr_smiley_button, #smiley-box a').click(function(e) {
+			var $smileyBox = $('#smiley-box');
+			if ($smileyBox.is(':visible')) {
+				$('#smiley-box').animate({
+					'left': '-1000px'
+				}, function() {
+					$(this).hide();
+				});
+			} else {
+				$('#smiley-box').show().animate({
+					'left': '45px'
+				});
+			}
+		});
 	}
 
 	var qr_slide_interval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0;
