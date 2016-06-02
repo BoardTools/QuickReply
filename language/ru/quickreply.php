@@ -21,14 +21,19 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
+	'QR_BBCODE'                        => 'BBCode',
 	'QR_BBPOST'                        => 'Источник цитаты',
+	'QR_FULLSCREEN'                    => 'Полноэкранный редактор',
+	'QR_FULLSCREEN_EXIT'               => 'Выйти из полноэкранного режима',
 	'QR_INSERT_TEXT'                   => 'Вставить цитату в окно ответа',
 	'QR_QUICKQUOTE'                    => 'Быстрая цитата',
 	'QR_QUICKQUOTE_TITLE'              => 'Ответить с быстрой цитатой',
+	'QR_MORE'                          => 'Другие действия',
 	'QR_PROFILE'                       => 'Перейти в профиль',
 	'QR_QUICKNICK'                     => 'Обратиться по никнейму',
 	'QR_QUICKNICK_TITLE'               => 'Вставить имя пользователя в окно быстрого ответа',
 	'QR_REPLY_IN_PM'                   => 'Ответить в ЛС',
+	'QR_TYPE_REPLY'                    => 'Введите свой ответ здесь...',
 	//begin mod Translit
 	'QR_TRANSLIT_TEXT'                 => 'Транслит:',
 	'QR_TRANSLIT_TEXT_TO_RU'           => 'на русский',

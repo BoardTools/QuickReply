@@ -186,20 +186,23 @@
 <!-- ENDIF -->
 <!-- EVENT ext_quickreply_transform_text_buttons_after -->
 <div id="qr_action_box">
-	<i class="qr_fullscreen_button fa fa-fw fa-arrows-alt" title="{L_FULLSCREEN}"></i>
+	<i class="qr_fullscreen_button fa fa-fw fa-arrows-alt" title="{L_QR_FULLSCREEN}"></i>
 	<!-- IF S_QR_SHOW_ATTACH_BOX -->
 	<i class="qr_attach_button fa fa-fw fa-paperclip" title="{L_ATTACHMENTS}"></i>
+	<!-- ENDIF -->
+	<!-- IF S_SMILIES_ALLOWED and .smiley -->
+	<i class="qr_smiley_button fa fa-fw fa-smile-o" title="{L_SMILIES}"></i>
 	<!-- ENDIF -->
 </div>
 <div id="qr_text_action_box">
 	<!-- IF S_BBCODE_BUTTONS -->
-	<i class="qr_bbcode_button fa fa-fw fa-bold" title="{L_BBCODE}"></i>
+	<i class="qr_bbcode_button fa fa-fw fa-bold" title="{L_QR_BBCODE}"></i>
 	<!-- ENDIF -->
 	<!-- IF S_SMILIES_ALLOWED and .smiley -->
 	<i class="qr_smiley_button fa fa-fw fa-smile-o" title="{L_SMILIES}"></i>
 	<!-- ENDIF -->
 	<!-- IF S_QR_CAPS_ENABLE or S_QR_SHOW_BUTTON_TRANSLIT-->
-	<i class="qr_more_actions_button fa fa-fw fa-arrow-down" title="{L_MORE}"></i>
+	<i class="qr_more_actions_button fa fa-fw fa-chevron-down" title="{L_QR_MORE}"></i>
 	<!-- ENDIF -->
 </div>
 	<div id="smiley-box">

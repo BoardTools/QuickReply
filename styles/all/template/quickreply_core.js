@@ -24,45 +24,88 @@
 		quickreply.style.initPreview();
 	}
 
-	if (quickreply.settings.formType > 0) {
-		quickreply.functions.setBodyMarginBottom = function() {
-			$('body').animate({
-				'marginBottom': $(quickreply.editor.mainForm).height()
+	/**
+	 * Sets margin-bottom for body element equal to quick reply form height.
+	 */
+	quickreply.functions.setBodyMarginBottom = function() {
+		$('body').animate({
+			'marginBottom': $(quickreply.editor.mainForm).height()
+		});
+	};
+
+	/**
+	 * Exits fullscreen mode of quick reply form.
+	 */
+	quickreply.functions.qr_exit_fullscreen = function() {
+		$(document).off('keydown.quickreply.fullscreen');
+		$(quickreply.editor.mainForm).find('.submit-buttons input[type="submit"]').off('click.quickreply.fullscreen');
+		$('body').css('overflow-y', '');
+		$(quickreply.editor.mainForm).find('#attach-panel, #format-buttons, .quickreply-title, .additional-element').slideUp();
+		if (!$(quickreply.editor.textareaSelector).val()) {
+			$(quickreply.editor.mainForm).find('.submit-buttons').slideUp(function() {
+				quickreply.functions.setBodyMarginBottom();
 			});
-		};
+		}
+		$('.qr_fixed_form').animate({
+			'maxHeight': '50%',
+			'height': 'auto'
+		}).removeClass('qr_fullscreen_form');
+		$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times').attr('title', quickreply.language.FULLSCREEN);
+		$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
+
+		var $smileyBox = $('#smiley-box');
+		if ($smileyBox.is(':visible')) {
+			$smileyBox.hide().css('left', '-1000px');
+		}
+	};
+
+	/**
+	 * Whether quick reply form is in fullscreen mode.
+	 *
+	 * @returns {boolean}
+	 */
+	quickreply.functions.qr_is_fullscreen = function() {
+		return $(quickreply.editor.mainForm).hasClass('qr_fullscreen_form');
+	};
+
+	if (quickreply.settings.formType > 0) {
+		$(quickreply.editor.textareaSelector).attr('placeholder', quickreply.language.TYPE_REPLY);
 
 		quickreply.style.showQuickReplyForm();
-		$(quickreply.editor.mainForm).finish().addClass('qr_fixed_form');
-		// Quick Reply Toggle Plugin
+
+		// Switch off Quick Reply Toggle Plugin
 		$("#reprap").remove();
+
+		$(quickreply.editor.mainForm).finish().addClass('qr_fixed_form');
+		$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box').addClass('additional-element').hide();
 		quickreply.functions.setBodyMarginBottom();
 
 		// Add events.
 		$('.qr_bbcode_button').click(function() {
-			$('#format-buttons').slideToggle(function() {
+			$('#format-buttons').finish().slideToggle(function() {
 				quickreply.functions.setBodyMarginBottom();
 			});
 		});
 		$('.qr_attach_button').click(function() {
-			$('#attach-panel').slideToggle(function() {
+			$('#attach-panel').finish().slideToggle(function() {
 				quickreply.functions.setBodyMarginBottom();
 			});
 		});
 		$('.qr_more_actions_button').click(function() {
-			$('.qr_fixed_form .additional-element').slideToggle(function() {
+			$('.qr_fixed_form .additional-element').finish().slideToggle(function() {
 				quickreply.functions.setBodyMarginBottom();
 			});
 		});
 
 		$(quickreply.editor.textareaSelector).focus(function() {
-			$(quickreply.editor.mainForm).find('.submit-buttons').slideDown(function() {
+			$(quickreply.editor.mainForm).not('.qr_fullscreen_form').find('.submit-buttons').slideDown(function() {
 				quickreply.functions.setBodyMarginBottom();
 			});
 		}).blur(function() {
 			if (!$(this).val()) {
-				$(quickreply.editor.mainForm).find('.submit-buttons').slideUp(function() {
+				$(quickreply.editor.mainForm).not('.qr_fullscreen_form').find('.submit-buttons').slideUp(function() {
 					quickreply.functions.setBodyMarginBottom();
 				});
 			}
@@ -70,15 +113,57 @@
 
 		$('.qr_smiley_button, #smiley-box a').click(function(e) {
 			var $smileyBox = $('#smiley-box');
+			function setSmileyBoxLocation(location, alternative) {
+				$smileyBox.css(location, '-1000px').css(alternative, 'auto');
+			}
 			if ($smileyBox.is(':visible')) {
-				$('#smiley-box').animate({
-					'left': '-1000px'
-				}, function() {
+				var setLocation = (quickreply.functions.qr_is_fullscreen()) ? {'right': '-1000px'} : {'left': '-1000px'};
+				$smileyBox.animate(setLocation, function() {
 					$(this).hide();
 				});
 			} else {
-				$('#smiley-box').show().animate({
-					'left': '45px'
+				if (quickreply.functions.qr_is_fullscreen()) {
+					setSmileyBoxLocation('right', 'left');
+					$smileyBox.show().animate({
+						'right': '70px'
+					});
+				} else {
+					setSmileyBoxLocation('left', 'right');
+					$smileyBox.show().animate({
+						'left': '45px'
+					});
+				}
+			}
+		});
+
+		$('.qr_fullscreen_button').click(function() {
+			if (quickreply.functions.qr_is_fullscreen()) {
+				quickreply.functions.qr_exit_fullscreen();
+			} else {
+				$('body').css('overflow-y', 'hidden');
+				$(quickreply.editor.mainForm).find('#attach-panel, #format-buttons, .quickreply-title, .additional-element, .submit-buttons').slideDown();
+				$('.qr_fixed_form').animate({
+					'maxHeight': '100%',
+					'height': '100%'
+				}).addClass('qr_fullscreen_form');
+				$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times').attr('title', quickreply.language.FULLSCREEN_EXIT);
+				$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
+
+				var $smileyBox = $('#smiley-box');
+				if ($smileyBox.is(':visible')) {
+					$smileyBox.hide().css('right', '-1000px');
+				}
+
+				$(document).on('keydown.quickreply.fullscreen', function(e) {
+					if (e.keyCode === 27) {
+						quickreply.functions.qr_exit_fullscreen();
+						e.preventDefault();
+						e.stopPropagation();
+					}
+				});
+
+				$(quickreply.editor.mainForm).find('.submit-buttons input[type="submit"]').on('click.quickreply.fullscreen', function() {
+					quickreply.functions.qr_exit_fullscreen();
 				});
 			}
 		});
