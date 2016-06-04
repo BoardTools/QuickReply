@@ -12,7 +12,8 @@
 			});
 		} else {
 			$(document).ready(function() {
-				$(quickreply.editor.mainForm).find('input[name="subject"][type="text"]').attr('disabled', 'disabled').css('color', 'grey');
+				$(quickreply.editor.mainForm).find('input[name="subject"][type="text"]')
+					.attr('disabled', 'disabled').css('color', 'grey');
 			});
 		}
 	}
@@ -117,10 +118,12 @@
 	quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
 		var qr_post_author = $('#qr_author_p' + qr_post_id),
 			nickname = qr_post_author.text(),
-			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
+			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL)
+				.replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
 				return (p2) ? p1 : '';
 			}),
-			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
+			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ?
+				'[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
 
 		// Link to the source post
 		var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
@@ -132,7 +135,8 @@
 		if (selected_text) {
 			quickreply.style.showQuickReplyForm();
 			if (quickreply.settings.allowBBCode) {
-				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + selected_text.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
+				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost +
+					selected_text.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
 			} else {
 				insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
 				var lines = split_lines(selected_text);
@@ -355,7 +359,8 @@
 		$('#qr_posts').on('qr_loaded', quicknick_handle_posts);
 	}
 
-	if (quickreply.settings.quickNickString || (quickreply.settings.quickNick && quickreply.settings.quickNickUserType)) {
+	if (quickreply.settings.quickNickString ||
+		(quickreply.settings.quickNick && quickreply.settings.quickNickUserType)) {
 		$('#qr_posts').on('click', '.qr_quicknick', function(e) {
 			e.preventDefault();
 			var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
@@ -369,7 +374,10 @@
 		/**********************/
 		if (quickreply.plugins.liveSearch) {
 			$(document).ready(function() {
-				$('#topics_live_search').parent().before('<li><a id="qr_quicknick_live_search" href="#qr_postform" title="' + quickreply.language.QUICKNICK_TITLE + '">' + quickreply.language.QUICKNICK + '</a></li><li class="separator"></li>');
+				$('#topics_live_search').parent()
+					.before('<li><a id="qr_quicknick_live_search" href="#qr_postform" title="' +
+						quickreply.language.QUICKNICK_TITLE + '">' + quickreply.language.QUICKNICK +
+						'</a></li><li class="separator"></li>');
 			});
 
 			$('#leavesearch').on('click', '#qr_quicknick_live_search', function() {

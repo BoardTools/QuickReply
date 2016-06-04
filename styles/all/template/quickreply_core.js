@@ -138,9 +138,11 @@
 
 		$('.qr_smiley_button, #smiley-box a').click(function(e) {
 			var $smileyBox = $('#smiley-box');
+
 			function setSmileyBoxLocation(location, alternative) {
 				$smileyBox.css(location, '-1000px').css(alternative, 'auto');
 			}
+
 			if (!$smileyBox.is(':visible')) {
 				if (quickreply.functions.qr_is_fullscreen()) {
 					setSmileyBoxLocation('right', 'left');
@@ -266,7 +268,10 @@
 	 * @param {string} [text] Optional error description.
 	 */
 	function qr_ajax_error(text) {
-		quickreply.functions.alert(quickreply.language.AJAX_ERROR_TITLE, quickreply.language.AJAX_ERROR + ((text) ? '<br />' + text : ''));
+		quickreply.functions.alert(
+			quickreply.language.AJAX_ERROR_TITLE,
+			quickreply.language.AJAX_ERROR + ((text) ? '<br />' + text : '')
+		);
 	}
 
 	/**
@@ -384,19 +389,122 @@
 			$(window).on("unload", function() {
 				var current_state = history.state, d = new Date();
 				if (current_state !== null && current_state.replaced) {
-					phpbb.history.replaceUrl(window.location.href + '&ajax_time=' + d.getTime(), document.title, current_state);
+					phpbb.history.replaceUrl(window.location.href + '&ajax_time=' + d.getTime(), document.title,
+						current_state
+					);
 				}
 			});
 
 			var current_state = history.state;
 			if (current_state !== null) {
-				phpbb.history.replaceUrl(window.location.href.replace(/&ajax_time=\d*/i, ''), document.title, current_state);
+				phpbb.history.replaceUrl(window.location.href.replace(/&ajax_time=\d*/i, ''), document.title,
+					current_state
+				);
 			} else {
 				phpbb.history.replaceUrl(window.location.href, document.title, {
 					url: window.location.href,
 					title: document.title
 				});
 			}
+		}
+	}
+
+	/**
+	 * Shows loading indicator.
+	 */
+	function qr_start_loading() {
+		var $loadingIndicator = phpbb.loadingIndicator(), $dark = $('#darkenwrapper');
+		phpbb.clearLoadingTimeout();
+		if (!$dark.is(':visible') && $(window).width() >= 700) {
+			$dark.fadeIn(phpbb.alertTime);
+		}
+		setTimeout(function() {
+			$loadingIndicator.finish().show();
+		}, 100);
+	}
+
+	/**
+	 * Hides loading indicator.
+	 */
+	function qr_stop_loading() {
+		var alert_box = $('#phpbb_alert'),
+			alert_delay = (alert_box.is(':visible')) ? 3000 : 0,
+			$dark = $('#darkenwrapper'),
+			$loadingIndicator = phpbb.loadingIndicator();
+		if (alert_box.is(':visible')) {
+			alert_box.find('.alert_close').off('click').click(function(e) {
+				phpbb.alert.close(alert_box, true);
+				e.preventDefault();
+			});
+		}
+		setTimeout(function() {
+			$dark.fadeOut(phpbb.alertTime, function() {
+				alert_box.hide();
+				$(document).off('keydown.phpbb.alert');
+			});
+		}, alert_delay);
+		$loadingIndicator.fadeOut(phpbb.alertTime);
+	}
+
+	/**
+	 * Parses the modified page and processes the results.
+	 *
+	 * @param {jQuery}   elements         Newly added elements.
+	 * @param {string}   url              Current page URL (possibly modified).
+	 * @param {boolean}  [scroll_to_last] Whether we need to scroll the page to last element.
+	 * @param {boolean}  [qr_get_unread]  Whether we need to scroll the page to unread elements.
+	 * @param {function} [res_function]   Callback function (receives the element for scrolling).
+	 */
+	function qr_show_response(elements, url, scroll_to_last, qr_get_unread, res_function) {
+		var reply_submit_buttons = $('#qr_submit_buttons'),
+			reply_form_submit_buttons = $(quickreply.editor.mainForm).children().children().children('.submit-buttons');
+		reply_form_submit_buttons.children(':not(input[type="submit"])').remove();
+		reply_form_submit_buttons.prepend(reply_submit_buttons.html());
+
+		// Work with history.
+		if (qr_replace_history) {
+			qr_replace_history = false;
+			phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {
+				url: url,
+				title: reply_submit_buttons.attr('data-page-title'),
+				replaced: true
+			});
+			document.title = reply_submit_buttons.attr('data-page-title');
+		} else if (qr_stop_history) {
+			qr_stop_history = false;
+		} else {
+			phpbb.history.pushUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {
+				url: url,
+				title: reply_submit_buttons.attr('data-page-title')
+			});
+			document.title = reply_submit_buttons.attr('data-page-title');
+		}
+
+		// Cleanup - we used all needed information from this temporary element.
+		reply_submit_buttons.remove();
+
+		// Work with pagination.
+		quickreply.style.handlePagination();
+		handle_drops(quickreply.style.getPagination());
+		quickreply.style.bindPagination();
+
+		// Work with special features.
+		qr_add_ajax(elements);
+		quickreply.special.functions.qr_hide_subject(elements);
+
+		// Done! Let's finish the loading process.
+		$('#qr_posts').trigger('qr_loaded', [$(elements)]);
+		qr_stop_loading();
+
+		if (typeof res_function === "function") {
+			var qr_scroll_element = (typeof scroll_to_last !== "undefined") ?
+				elements.find(quickreply.editor.postSelector).last() :
+				(
+					(qr_get_unread && $(quickreply.editor.unreadPostSelector).length) ?
+						$(quickreply.editor.unreadPostSelector).first() :
+						elements.children().first()
+				);
+			res_function(qr_scroll_element);
 		}
 	}
 
@@ -409,6 +517,8 @@
 	 * @param {boolean}  [scroll_to_last]  Whether we need to scroll to the last post.
 	 */
 	quickreply.functions.qr_ajax_reload = function(url, request_data, result_function, scroll_to_last) {
+		qr_start_loading();
+
 		if (url.indexOf('?') < 0) {
 			url = url.replace(/&/, '?');
 		}
@@ -417,15 +527,8 @@
 			qr_get_unread = (url.substr(url_hash) === '#unread');
 			url = url.substr(0, url_hash);
 		}
+
 		var qr_current_post = $(quickreply.editor.mainForm).find('input[name="qr_cur_post_id"]').val();
-		var $loadingIndicator = phpbb.loadingIndicator(), $dark = $('#darkenwrapper');
-		phpbb.clearLoadingTimeout();
-		if (!$dark.is(':visible') && $(window).width() >= 700) {
-			$dark.fadeIn(phpbb.alertTime);
-		}
-		setTimeout(function() {
-			$loadingIndicator.finish().show();
-		}, 100);
 		var qr_request_method = 'GET', qr_data_object = {qr_cur_post_id: qr_current_post, qr_request: 1};
 		if (quickreply.plugins.seo) {
 			if (qr_get_unread) {
@@ -442,6 +545,7 @@
 		if (request_data) {
 			$.extend(qr_data_object, request_data);
 		}
+
 		$.ajax({
 			url: url,
 			data: qr_data_object,
@@ -454,67 +558,20 @@
 			},
 			success: function(res, x) {
 				if (res.result) {
-					function qr_show_response(elements, res_function) {
-						var reply_submit_buttons = $('#qr_submit_buttons'),
-							reply_form_submit_buttons = $(quickreply.editor.mainForm).children().children().children('.submit-buttons');
-						reply_form_submit_buttons.children(':not(input[type="submit"])').remove();
-						reply_form_submit_buttons.prepend(reply_submit_buttons.html());
-						if (qr_replace_history) {
-							qr_replace_history = false;
-							phpbb.history.replaceUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {
-								url: url,
-								title: reply_submit_buttons.attr('data-page-title'),
-								replaced: true
-							});
-							document.title = reply_submit_buttons.attr('data-page-title');
-						} else if (qr_stop_history) {
-							qr_stop_history = false;
-						} else {
-							phpbb.history.pushUrl(reply_submit_buttons.attr('data-page-url'), reply_submit_buttons.attr('data-page-title'), {
-								url: url,
-								title: reply_submit_buttons.attr('data-page-title')
-							});
-							document.title = reply_submit_buttons.attr('data-page-title');
-						}
-						reply_submit_buttons.remove();
-						quickreply.style.handlePagination();
-						handle_drops(quickreply.style.getPagination());
-						quickreply.style.bindPagination();
-						qr_add_ajax(elements);
-						quickreply.special.functions.qr_hide_subject(elements);
-						$('#qr_posts').trigger('qr_loaded', [$(elements)]);
-						var alert_box = $('#phpbb_alert'), alert_delay = (alert_box.is(':visible')) ? 3000 : 0;
-						if (alert_box.is(':visible')) {
-							alert_box.find('.alert_close').off('click').click(function(e) {
-								phpbb.alert.close(alert_box, true);
-								e.preventDefault();
-							});
-						}
-						setTimeout(function() {
-							$dark.fadeOut(phpbb.alertTime, function() {
-								alert_box.hide();
-								$(document).off('keydown.phpbb.alert');
-							});
-						}, alert_delay);
-						$loadingIndicator.fadeOut(phpbb.alertTime);
-						var qr_scroll_element = (typeof scroll_to_last !== "undefined") ? elements.find(quickreply.editor.postSelector).last() : ((qr_get_unread && $(quickreply.editor.unreadPostSelector).length) ? $(quickreply.editor.unreadPostSelector).first() : elements.children().first());
-						if (typeof res_function === "function") {
-							res_function(qr_scroll_element);
-						}
-					}
-
 					if (res.insert) {
 						quickreply.style.markRead($('#qr_posts'));
 						var reply_temp_container = $(quickreply.editor.tempContainer);
 						reply_temp_container.html(res.result);
 						qr_replace_history = true;
-						qr_show_response(reply_temp_container, function(element) {
+						qr_show_response(reply_temp_container, url, scroll_to_last, qr_get_unread, function(element) {
 							if (quickreply.settings.softScroll) {
 								reply_temp_container.slideDown(qr_slide_interval, function() {
 									qr_responsive_links(reply_temp_container);
 									$('#qr_posts').trigger('qr_completed', [reply_temp_container]);
+
 									reply_temp_container.children().appendTo('#qr_posts');
 									reply_temp_container.hide();
+
 									if (quickreply.settings.enableScroll) {
 										quickreply.functions.qr_soft_scroll(element);
 									}
@@ -522,13 +579,17 @@
 							} else {
 								var reply_posts = $('#qr_posts');
 								reply_posts.trigger('qr_insert_before');
+
 								// Restore the subject of the first post.
 								quickreply.style.restoreFirstSubject(reply_posts, reply_temp_container);
+
 								reply_temp_container.show();
 								qr_responsive_links(reply_temp_container);
 								reply_posts.trigger('qr_completed', [reply_temp_container]);
+
 								var reply_posts_inserted = reply_temp_container.children().appendTo('#qr_posts');
 								reply_temp_container.hide();
+
 								if (quickreply.settings.enableScroll) {
 									quickreply.functions.qr_soft_scroll(reply_posts_inserted.first());
 								}
@@ -539,7 +600,7 @@
 						if (quickreply.settings.softScroll) {
 							reply_posts.slideUp(qr_slide_interval, function() {
 								$(this).html(res.result);
-								qr_show_response($(this), function(element) {
+								qr_show_response($(this), url, scroll_to_last, qr_get_unread, function(element) {
 									reply_posts.slideDown(qr_slide_interval, function() {
 										qr_responsive_links(reply_posts);
 										reply_posts.trigger('qr_completed', [reply_posts]);
@@ -551,7 +612,7 @@
 							});
 						} else {
 							reply_posts.html(res.result);
-							qr_show_response(reply_posts);
+							qr_show_response(reply_posts, url, scroll_to_last, qr_get_unread);
 							qr_responsive_links(reply_posts);
 							reply_posts.trigger('qr_completed', [reply_posts]);
 							if (quickreply.settings.enableScroll) {
@@ -564,20 +625,7 @@
 					}
 				} else if (res.captcha_refreshed) {
 					$('#qr_captcha_container').slideUp(qr_slide_interval, function() {
-						var alert_box = $('#phpbb_alert'), alert_delay = (alert_box.is(':visible')) ? 3000 : 0;
-						if (alert_box.is(':visible')) {
-							alert_box.find('.alert_close').off('click').click(function(e) {
-								phpbb.alert.close(alert_box, true);
-								e.preventDefault();
-							});
-						}
-						setTimeout(function() {
-							$dark.fadeOut(phpbb.alertTime, function() {
-								alert_box.hide();
-								$(document).off('keydown.phpbb.alert');
-							});
-						}, alert_delay);
-						$loadingIndicator.fadeOut(phpbb.alertTime);
+						qr_stop_loading();
 						$(this).html(res.captcha_result).slideDown(qr_slide_interval, function() {
 							$('#qr_postform').trigger('qr_captcha_refreshed');
 						});
@@ -609,7 +657,8 @@
 			if (baseUrl.indexOf('?') === -1) {
 				quickreply.functions.qr_ajax_reload(baseUrl + '?' + startName + '=' + ((page - 1) * perPage));
 			} else {
-				quickreply.functions.qr_ajax_reload(baseUrl.replace(/&amp;/g, '&') + '&' + startName + '=' + ((page - 1) * perPage));
+				quickreply.functions.qr_ajax_reload(baseUrl.replace(/&amp;/g, '&') +
+					'&' + startName + '=' + ((page - 1) * perPage));
 			}
 		}
 	};
@@ -639,18 +688,22 @@
 			if (phpbb_seo.page > 0) {
 				var phpEXtest = false;
 
-				if (start_name !== 'start' || base_url.indexOf('?') >= 0 || (phpEXtest = base_url.match("/\." + phpbb_seo.phpEX + "$/i"))) {
-					quickreply.functions.qr_ajax_reload(base_url.replace(/&amp;/g, '&') + (phpEXtest ? '?' : '&') + start_name + '=' + phpbb_seo.page + anchor);
+				if (start_name !== 'start' || base_url.indexOf('?') >= 0 ||
+					(phpEXtest = base_url.match("/\." + phpbb_seo.phpEX + "$/i"))) {
+					quickreply.functions.qr_ajax_reload(base_url.replace(/&amp;/g, '&') +
+						(phpEXtest ? '?' : '&') + start_name + '=' + phpbb_seo.page + anchor);
 				} else {
 					var ext = base_url.match(/\.[a-z0-9]+$/i);
 
 					if (ext) {
 						// location.ext => location-xx.ext
-						quickreply.functions.qr_ajax_reload(base_url.replace(/\.[a-z0-9]+$/i, '') + phpbb_seo.delim_start + phpbb_seo.page + ext + anchor);
+						quickreply.functions.qr_ajax_reload(base_url.replace(/\.[a-z0-9]+$/i, '') +
+							phpbb_seo.delim_start + phpbb_seo.page + ext + anchor);
 					} else {
 						// location and location/ to location/pagexx.html
 						var slash = base_url.match(/\/$/) ? '' : '/';
-						quickreply.functions.qr_ajax_reload(base_url + slash + phpbb_seo.static_pagination + phpbb_seo.page + phpbb_seo.ext_pagination + anchor);
+						quickreply.functions.qr_ajax_reload(base_url + slash +
+							phpbb_seo.static_pagination + phpbb_seo.page + phpbb_seo.ext_pagination + anchor);
 					}
 				}
 			} else {
@@ -675,19 +728,23 @@
 		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
 			switch (res.status) {
 				case "success":
-					quickreply.functions.qr_ajax_reload(res.url.replace(/&amp;/ig, '&'), qr_get_reply_data(res.merged), function() {
-						$('#qr_postform').trigger('ajax_submit_success');
-						qr_refresh_form();
-					}, true);
-				break;
+					quickreply.functions.qr_ajax_reload(
+						res.url.replace(/&amp;/ig, '&'), qr_get_reply_data(res.merged), function() {
+							$('#qr_postform').trigger('ajax_submit_success');
+							qr_refresh_form();
+						}, true
+					);
+					break;
 
 				case "new_posts":
-					quickreply.functions.qr_ajax_reload(res.NEXT_URL.replace(/&amp;/ig, '&') + '#unread', qr_get_reply_data(res.merged), function() {
-						if (quickreply.settings.allowedGuest) {
-							quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
+					quickreply.functions.qr_ajax_reload(
+						res.NEXT_URL.replace(/&amp;/ig, '&') + '#unread', qr_get_reply_data(res.merged), function() {
+							if (quickreply.settings.allowedGuest) {
+								quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
+							}
 						}
-					});
-				break;
+					);
+					break;
 
 				case "preview":
 					var $preview = $('#preview');
@@ -701,25 +758,25 @@
 						quickreply.functions.qr_soft_scroll($preview);
 					}
 					$('#qr_postform').trigger('ajax_submit_preview', [$preview]);
-				break;
+					break;
 
 				case "no_approve":
 					qr_refresh_form();
-				break;
+					break;
 
 				case "post_update":
 					// Send the message again with the updated ID of the last post.
 					$(quickreply.editor.mainForm)
 						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id)
 						.end().find('input[name="post"]').click();
-				break;
+					break;
 
 				default:
 					if (quickreply.settings.allowedGuest) {
 						quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 					}
 					// else qr_ajax_error();
-				break;
+					break;
 			}
 			/* Fix for phpBB 3.1.9 */
 			$(quickreply.editor.mainForm).find('input[data-clicked]').removeAttr('data-clicked');

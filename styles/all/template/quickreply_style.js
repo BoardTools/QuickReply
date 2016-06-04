@@ -229,10 +229,10 @@
 	/**
 	 * Generates an HTML element for a dropdown element.
 	 *
-	 * @param {Array|string}  contentRows    Array with content for the rows in a list
-	 * @param {string}        dropdownStyle  Style of dropdown element
-	 * @param {string}        [pointerStyle] Optional style of pointer element
-	 * @param {string}        [appendClass]  Optional dropdown class
+	 * @param {Array}  contentRows    Array with content for the rows in a list
+	 * @param {string} dropdownStyle  Style of dropdown element
+	 * @param {string} [pointerStyle] Optional style of pointer element
+	 * @param {string} [appendClass]  Optional dropdown class
 	 * @returns {jQuery}
 	 */
 	quickreply.style.createDropdown = function(contentRows, dropdownStyle, pointerStyle, appendClass) {
