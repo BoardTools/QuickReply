@@ -31,7 +31,7 @@
 	/***********************/
 	/* Fix for phpBB 3.1.9 */
 	/***********************/
-	$(quickreply.editor.mainForm).submit(function () {
+	$(quickreply.editor.mainForm).submit(function() {
 		if (!$(this).find('input[type="submit"][data-clicked]').length) {
 			$(this).find('input[name="post"]').attr('data-clicked', 'true');
 		}
@@ -59,35 +59,33 @@
 	}
 
 	/**
-	 * Get full post
+	 * Returns the formatted post content.
 	 *
+	 * @param {string} qr_post_id   ID of the current post
 	 * @returns {string}
 	 */
-	function qr_getFullPost(qr_post_id, theSelection) {
-		var message_name = 'decoded_p' + qr_post_id;
-		var divarea = false;
+	function qr_getPostContent(qr_post_id) {
+		var theSelection = '', message_name = 'decoded_p' + qr_post_id, divarea = false;
 
 		if (document.all) {
 			divarea = document.all[message_name];
 		} else {
 			divarea = document.getElementById(message_name);
 		}
-			
-		if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null) {
-			if (divarea.innerHTML) {
-				theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
-				theSelection = theSelection.replace(/<br\/>/ig, '\n');
-				theSelection = theSelection.replace(/&lt\;/ig, '<');
-				theSelection = theSelection.replace(/&gt\;/ig, '>');
-				theSelection = theSelection.replace(/&amp\;/ig, '&');
-				theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
-			} else if (document.all) {
-				theSelection = divarea.innerText;
-			} else if (divarea.textContent) {
-				theSelection = divarea.textContent;
-			} else if (divarea.firstChild.nodeValue) {
-				theSelection = divarea.firstChild.nodeValue;
-			}
+
+		if (divarea.innerHTML) {
+			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
+			theSelection = theSelection.replace(/<br\/>/ig, '\n');
+			theSelection = theSelection.replace(/&lt\;/ig, '<');
+			theSelection = theSelection.replace(/&gt\;/ig, '>');
+			theSelection = theSelection.replace(/&amp\;/ig, '&');
+			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
+		} else if (document.all) {
+			theSelection = divarea.innerText;
+		} else if (divarea.textContent) {
+			theSelection = divarea.textContent;
+		} else if (divarea.firstChild.nodeValue) {
+			theSelection = divarea.firstChild.nodeValue;
 		}
 
 		return theSelection;
@@ -113,39 +111,37 @@
 	/**
 	 * Inserts a quote from the specified post to quick reply textarea.
 	 *
-	 * @param {string} qr_post_id      The ID of the post
+	 * @param {string} qr_post_id    The ID of the post
 	 * @param {string} selected_text Selected text
 	 */
-	if (quickreply.settings.quickQuote || quickreply.settings.quickQuoteButton || quickreply.settings.fullQuote) {
-		quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
-			var qr_post_author = $('#qr_author_p' + qr_post_id),
-				nickname = qr_post_author.text(),
-				user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
-					return (p2) ? p1 : '';
-				}),
-				qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
+	quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
+		var qr_post_author = $('#qr_author_p' + qr_post_id),
+			nickname = qr_post_author.text(),
+			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL).replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
+				return (p2) ? p1 : '';
+			}),
+			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ? '[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
 
-			// Link to the source post
-			var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
+		// Link to the source post
+		var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
 
-			//var clientPC = navigator.userAgent.toLowerCase(); // Get client info
-			//var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1)); // Зачем? Нигде не используется
-			var i;
+		//var clientPC = navigator.userAgent.toLowerCase(); // Get client info
+		//var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1)); // Зачем? Нигде не используется
+		var i;
 
-			if (selected_text) {
-				quickreply.style.showQuickReplyForm();
-				if (quickreply.settings.allowBBCode) {
-					insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + selected_text.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
-				} else {
-					insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
-					var lines = split_lines(selected_text);
-					for (i = 0; i < lines.length; i++) {
-						insert_text('> ' + lines[i] + '\n');
-					}
+		if (selected_text) {
+			quickreply.style.showQuickReplyForm();
+			if (quickreply.settings.allowBBCode) {
+				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost + selected_text.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
+			} else {
+				insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
+				var lines = split_lines(selected_text);
+				for (i = 0; i < lines.length; i++) {
+					insert_text('> ' + lines[i] + '\n');
 				}
 			}
-		};
-	}
+		}
+	};
 
 	/**********************/
 	/* Quick Quote Plugin */
@@ -221,33 +217,36 @@
 		function qr_add_full_quote(e, element) {
 			e.preventDefault();
 			var qr_post_id = quickreply.style.getPostId(element);
-			var sel = '';
-			
+			var theSelection = '';
+
 			if (quickreply.settings.quickQuoteButton) {
-				sel = qr_getSelection();
+				theSelection = qr_getSelection();
 			}
 
 			if (quickreply.settings.fullQuote && !element.hasClass('qr-quickquote')) {
-				sel = qr_getFullPost(qr_post_id, sel);
+				if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null) {
+					theSelection = qr_getPostContent(qr_post_id);
+				}
 			}
 
-			if (sel != '') {
-				quickreply.functions.insertQuote(qr_post_id, sel);
+			if (theSelection != '') {
+				quickreply.functions.insertQuote(qr_post_id, theSelection);
 			} else {
-				// @TODO alert "no selection"
+				quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
 			}
 		}
 
 		function qr_full_quote(e, elements) {
 			if (quickreply.settings.quickQuoteButton) {
+				var quote_buttons = null, last_quote_button = null;
 				if (!quickreply.settings.fullQuote || !quickreply.settings.fullQuoteAllowed) {
 					// Style all quote buttons
-					var quote_buttons = quickreply.style.getAllQuoteButtons(elements);
+					quote_buttons = quickreply.style.getAllQuoteButtons(elements);
 					quickreply.style.setQuickQuoteButton(quote_buttons);
-				} else if (!quickreply.settings.lastQuote) {
+				} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
 					// Style only last quote button
-					var quote_buttons = quickreply.style.getAllQuoteButtons($('#qr_posts'));
-					var last_quote_button = quickreply.style.getLastQuoteButton(elements);
+					quote_buttons = quickreply.style.getAllQuoteButtons($('#qr_posts'));
+					last_quote_button = quickreply.style.getLastQuoteButton(elements);
 					quickreply.style.removeQuickQuoteButton(quote_buttons);
 					quickreply.style.setQuickQuoteButton(last_quote_button);
 				}
@@ -355,9 +354,9 @@
 		});
 		$('#qr_posts').on('qr_loaded', quicknick_handle_posts);
 	}
-	
+
 	if (quickreply.settings.quickNickString || (quickreply.settings.quickNick && quickreply.settings.quickNickUserType)) {
-		$('#qr_posts').on('click', '.qr_quicknick', function(e){
+		$('#qr_posts').on('click', '.qr_quicknick', function(e) {
 			e.preventDefault();
 			var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
 			quickreply.functions.quickNick(link);

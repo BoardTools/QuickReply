@@ -130,9 +130,9 @@ class ajax_helper
 		page_header($page_title, false, $forum_id);
 		page_footer(false, false, false);
 		self::send_json(array(
-			'success' => true,
-			'result'  => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
-			'insert'  => $this->qr_insert
+			'status' => 'success',
+			'result' => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
+			'insert' => $this->qr_insert
 		));
 	}
 
@@ -155,9 +155,9 @@ class ajax_helper
 		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
 
 		self::send_json(array(
-			'success' => true,
-			'url'     => $result_url,
-			'merged'  => ($qr_cur_post_id === $data['post_id']) ? 'merged' : 'not_merged'
+			'status' => 'success',
+			'url'    => $result_url,
+			'merged' => ($qr_cur_post_id === $data['post_id']),
 		));
 	}
 
@@ -219,8 +219,9 @@ class ajax_helper
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 
 		self::send_json(array(
+			'status'        => 'new_posts',
 			'error'         => true,
-			'merged'        => ($post_id_next === $current_post) ? 'merged' : 'not_merged',
+			'merged'        => ($post_id_next === $current_post),
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 			'MESSAGE_TEXT'  => $error_text,
 			'NEXT_URL'      => $url_next_post,
@@ -233,7 +234,7 @@ class ajax_helper
 	public function send_approval_notify()
 	{
 		self::send_json(array(
-			'noapprove'     => true,
+			'status'        => 'no_approve',
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 			'MESSAGE_TEXT'  => $this->user->lang['POST_STORED_MOD'] . (($this->user->data['user_id'] == ANONYMOUS) ? '' : ' ' . $this->user->lang['POST_APPROVAL_NOTIFY']),
 			'REFRESH_DATA'  => array(
@@ -250,8 +251,8 @@ class ajax_helper
 	public function send_last_post_id($post_id)
 	{
 		self::send_json(array(
-			'post_update' => true,
-			'post_id'     => $post_id,
+			'status'  => 'post_update',
+			'post_id' => $post_id,
 		));
 	}
 
@@ -282,6 +283,14 @@ class ajax_helper
 		);
 	}
 
+	/**
+	 * Checks whether Ajax callback function needs
+	 * to insert the post instead of updating the page
+	 *
+	 * @param int   $current_post Current post ID
+	 * @param array $post_list    Array of fetched post IDs
+	 * @return bool
+	 */
 	public function no_refresh($current_post, $post_list)
 	{
 		return $this->request->is_ajax() && $this->request->variable('qr_no_refresh', 0) && in_array($current_post, $post_list);

@@ -24,7 +24,7 @@
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post bg2" style="display: none; margin-top: 50px;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
+		$(quickreply.editor.mainForm).before('<div id="preview" class="post profile_hidden bg2" style="display: none; margin-top: 50px;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
 	};
 
 	/**
@@ -209,54 +209,30 @@
 		elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', fn);
 	};
 
+	quickreply.style.isLastPage = function() {
+		var paginationContainer = $('.action-bar.top .pagination ul');
+		return (paginationContainer.find('li').last().hasClass('active') || typeof paginationContainer.html() === "undefined");
+	};
+
 	quickreply.style.setQuickQuoteButton = function(elements) {
-		var title = elements.attr('title');
-		var responsive_text = elements.children('span').text();
-		
-		elements.addClass('qr-quickquote');
-		elements.attr('title', quickreply.language.QUICKQUOTE_TITLE);
-		elements.children('span').text(quickreply.language.QUICKQUOTE_TEXT);
-	}
+		elements.addClass('qr-quickquote')
+			.attr('title', quickreply.language.QUICKQUOTE_TITLE)
+			.children('span').text(quickreply.language.QUICKQUOTE_TEXT);
+	};
 
 	quickreply.style.removeQuickQuoteButton = function(elements) {
-		elements.removeClass('qr-quickquote');
-		elements.attr('title', quickreply.language.REPLY_WITH_QUOTE);
-		elements.children('span').text(quickreply.language.BUTTON_QUOTE);
-	}
-
-	/**
-	 * Generates an HTML string for a link from an object with parameters.
-	 *
-	 * @param {object} parameters Object with HTML attributes (href, id, class, title)
-	 *                            and link text
-	 * @returns {string}
-	 */
-	quickreply.style.makeLink = function(parameters) {
-		if (typeof parameters !== 'object') {
-			return '';
-		}
-		var link = '<a';
-		link += (parameters.href) ? ' href="' + parameters.href + '"' : ' href="#"';
-		if (parameters.id) {
-			link += ' id="' + parameters.id + '"';
-		}
-		if (parameters.class) {
-			link += ' class="' + parameters.class + '"';
-		}
-		if (parameters.title) {
-			link += ' title="' + parameters.title + '"';
-		}
-		link += '>' + ((parameters.text) ? parameters.text : '') + '</a>';
-		return link;
+		elements.removeClass('qr-quickquote')
+			.attr('title', quickreply.language.REPLY_WITH_QUOTE)
+			.children('span').text(quickreply.language.BUTTON_QUOTE);
 	};
 
 	/**
 	 * Generates an HTML element for a dropdown element.
 	 *
-	 * @param {Array}  contentRows    Array with content for the rows in a list
-	 * @param {string} dropdownStyle  Style of dropdown element
-	 * @param {string} [pointerStyle] Optional style of pointer element
-	 * @param {string} [appendClass]  Optional dropdown class
+	 * @param {Array|string}  contentRows    Array with content for the rows in a list
+	 * @param {string}        dropdownStyle  Style of dropdown element
+	 * @param {string}        [pointerStyle] Optional style of pointer element
+	 * @param {string}        [appendClass]  Optional dropdown class
 	 * @returns {jQuery}
 	 */
 	quickreply.style.createDropdown = function(contentRows, dropdownStyle, pointerStyle, appendClass) {
@@ -277,7 +253,7 @@
 	 */
 	quickreply.style.quickQuoteDropdown = function(pageX, pageY) {
 		var dropdownStyle = 'top: ' + (pageY + 8) + 'px; ', pointerStyle = '', listElements = [
-			quickreply.style.makeLink({
+			quickreply.functions.makeLink({
 				href: "#qr_postform",
 				text: quickreply.language.INSERT_TEXT
 			})
@@ -303,7 +279,7 @@
 	 */
 	quickreply.style.quickNickDropdown = function(pageX, pageY, viewProfileURL, qrPMLink) {
 		var dropdownStyle = 'top: ' + (pageY + 8) + 'px; ', pointerStyle = '', listElements = [
-			quickreply.style.makeLink({
+			quickreply.functions.makeLink({
 				href: "#qr_postform",
 				class: "qr_quicknick",
 				title: quickreply.language.QUICKNICK_TITLE,
@@ -313,7 +289,7 @@
 
 		if (quickreply.settings.quickNickPM && qrPMLink.length) {
 			listElements.push(
-				quickreply.style.makeLink({
+				quickreply.functions.makeLink({
 					href: qrPMLink.attr('href'),
 					class: "qr_reply_in_pm",
 					title: quickreply.language.REPLY_IN_PM,
@@ -323,7 +299,7 @@
 		}
 
 		listElements.push(
-			quickreply.style.makeLink({
+			quickreply.functions.makeLink({
 				href: viewProfileURL,
 				class: "qr_profile",
 				title: quickreply.language.PROFILE,
@@ -339,7 +315,4 @@
 		}
 		return quickreply.style.createDropdown(listElements, dropdownStyle, pointerStyle);
 	};
-	//quickreply.style. = function() {
-	//
-	//};
 })(jQuery, window, document);

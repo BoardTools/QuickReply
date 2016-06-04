@@ -25,14 +25,14 @@ function translit() {
 		buf = txtarea.value;
 	}
 
-	for (i = 0; i < quickreply.settings.foreign_lang_cap.length; i++) {
-		eval('regexp = /'+quickreply.settings.foreign_lang_cap[i]+'/g');
-		buf = buf.replace(regexp, quickreply.settings.this_lang_cap[i]);
+	for (i = 0; i < quickreply.translit.foreign_lang_cap.length; i++) {
+		eval('regexp = /'+quickreply.translit.foreign_lang_cap[i]+'/g');
+		buf = buf.replace(regexp, quickreply.translit.this_lang_cap[i]);
 	}
 
-	for (i = 0; i < quickreply.settings.foreign_lang.length; i++) {
-		eval('regexp = /'+quickreply.settings.foreign_lang[i]+'/g');
-		buf = buf.replace(regexp, quickreply.settings.this_lang[i]);
+	for (i = 0; i < quickreply.translit.foreign_lang.length; i++) {
+		eval('regexp = /'+quickreply.translit.foreign_lang[i]+'/g');
+		buf = buf.replace(regexp, quickreply.translit.this_lang[i]);
 	}
 
 	if (selection) {

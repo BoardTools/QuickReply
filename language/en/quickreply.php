@@ -29,6 +29,7 @@ $lang = array_merge($lang, array(
 	'QR_QUICKQUOTE'                    => 'Quick quote',
 	'QR_QUICKQUOTE_TITLE'              => 'Reply with quick quote',
 	'QR_MORE'                          => 'More actions',
+	'QR_NO_FULL_QUOTE'                 => 'Please select a part of the message to be able to quote it.',
 	'QR_PROFILE'                       => 'Go to profile',
 	'QR_QUICKNICK'                     => 'Refer by username',
 	'QR_QUICKNICK_TITLE'               => 'Insert username in the Quick Reply form',

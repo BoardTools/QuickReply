@@ -265,11 +265,25 @@ class listener_helper
 		);
 	}
 
-	public function review_is_enable($lastclick, $post_data)
+	/**
+	 * Checks whether the current post should be reviewed
+	 *
+	 * @param int   $lastclick The time of the last click event
+	 * @param array $post_data Array with post data
+	 * @return bool
+	 */
+	public function post_needs_review($lastclick, $post_data)
 	{
 		return ($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW);
 	}
 
+	/**
+	 * Checks whether the currently displayed last post on the page
+	 * is not the last post in the topic
+	 *
+	 * @param array $post_data Array with post data
+	 * @return bool
+	 */
 	public function post_is_not_last($post_data)
 	{
 		return $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'];

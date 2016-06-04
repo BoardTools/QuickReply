@@ -12,6 +12,11 @@
 	padding-bottom: 5px;
 }
 
+.quote-icon.qr-quickquote::before {
+	background-position: -122px -21px;
+}
+
+/* Fixed form style. */
 .qr_fixed_form {
 	position: fixed;
 	bottom: 0;
@@ -25,11 +30,7 @@
 }
 
 .qr_fixed_form textarea.qr_fixed_textarea {
-	height: 30% !important;
-}
-
-.qr_fullscreen_form textarea {
-	max-height: 50%;
+	height: 115px !important;
 	transition: height 0.7s ease;
 }
 
@@ -42,24 +43,10 @@
 	display: none;
 }
 
-.quote-icon.qr-quickquote::before {
-	background-position: -122px -21px;
-}
-
-#qr_text_action_box {
-	display: inline-block;
-	width: 25px;
-	float: left;
-}
-
 .qr_fixed_form #message-box {
 	box-sizing: border-box;
 	padding-left: 35px;
 	width: 100%;
-}
-
-.qr_fullscreen_form #message-box {
-	padding-left: 0;
 }
 
 .qr_fixed_form #message-box textarea {
@@ -68,20 +55,14 @@
 	box-sizing: border-box;
 }
 
-#qr_action_box, #qr_text_action_box {
-	display: none;
-}
-
-.qr_fixed_form #qr_action_box, .qr_fixed_form #qr_text_action_box {
+#qr_text_action_box {
 	display: block;
-}
-
-.qr_fullscreen_form #qr_text_action_box {
-	display: none;
+	width: 30px;
+	float: left;
 }
 
 #qr_text_action_box i,
-#qr_action_box i{
+#qr_action_box i {
 	font-size: 1.4em;
 	border: 1px solid;
 	border-radius: 100%;
@@ -90,7 +71,13 @@
 	cursor: pointer;
 }
 
+#qr_text_action_box i:hover,
+#qr_action_box i:hover {
+	opacity: 0.7;
+}
+
 #qr_action_box {
+	display: block;
 	position: relative;
 	width: 100%;
 	z-index: 5;
@@ -110,16 +97,6 @@
 	top: 38px;
 }
 
-#qr_action_box .qr_smiley_button,
-.qr_fullscreen_form #qr_action_box .qr_attach_button {
-	display: none;
-}
-
-.qr_fullscreen_form #qr_action_box .qr_smiley_button {
-	display: inline-block;
-	top: 38px;
-}
-
 .qr_smilies_dropdown {
 	position: fixed;
 	z-index: 31;
@@ -134,4 +111,46 @@
 	border-radius: 5px;
 	border: 1px solid;
 	padding: 5px;
+}
+
+.qr_fixed_form #format-buttons {
+	margin-top: 0;
+}
+
+/* Compact form style. */
+.qr_fixed_form.qr_compact_form textarea.qr_fixed_textarea {
+	height: 48px !important;
+}
+
+.qr_compact_form #qr_text_action_box,
+.qr_compact_form .qr_attach_button {
+	display: none;
+}
+
+.qr_compact_form #message-box {
+	padding-left: 0;
+}
+
+/* Fullscreen form style. */
+.qr_fullscreen_form textarea {
+	max-height: 50%;
+	transition: height 0.7s ease;
+}
+
+.qr_fullscreen_form #message-box {
+	padding-left: 0;
+}
+
+.qr_fullscreen_form #qr_text_action_box {
+	display: none;
+}
+
+#qr_action_box .qr_smiley_button,
+.qr_fullscreen_form #qr_action_box .qr_attach_button {
+	display: none;
+}
+
+.qr_fullscreen_form #qr_action_box .qr_smiley_button {
+	display: inline-block;
+	top: 38px;
 }

@@ -210,32 +210,6 @@
 	};
 
 	/**
-	 * Generates an HTML string for a link from an object with parameters.
-	 *
-	 * @param {object} parameters Object with HTML attributes (href, id, class, title)
-	 *                            and link text
-	 * @returns {string}
-	 */
-	quickreply.style.makeLink = function(parameters) {
-		if (typeof parameters !== 'object') {
-			return '';
-		}
-		var link = '<a';
-		link += (parameters.href) ? ' href="' + parameters.href + '"' : ' href="#"';
-		if (parameters.id) {
-			link += ' id="' + parameters.id + '"';
-		}
-		if (parameters.class) {
-			link += ' class="' + parameters.class + '"';
-		}
-		if (parameters.title) {
-			link += ' title="' + parameters.title + '"';
-		}
-		link += '>' + ((parameters.text) ? parameters.text : '') + '</a>';
-		return link;
-	};
-
-	/**
 	 * Generates an HTML element for a dropdown element.
 	 *
 	 * @param {Array}  contentRows    Array with content for the rows in a list
@@ -269,7 +243,7 @@
 	 */
 	quickreply.style.quickQuoteDropdown = function(pageX, pageY) {
 		var listElements = [
-			quickreply.style.makeLink({
+			quickreply.functions.makeLink({
 				href: "#qr_postform",
 				text: quickreply.language.INSERT_TEXT
 			})
@@ -289,7 +263,7 @@
 	 */
 	quickreply.style.quickNickDropdown = function(pageX, pageY, viewProfileURL, qrPMLink) {
 		var listElements = [
-			quickreply.style.makeLink({
+			quickreply.functions.makeLink({
 				href: "#qr_postform",
 				class: "qr_quicknick",
 				title: quickreply.language.QUICKNICK_TITLE,
@@ -299,7 +273,7 @@
 
 		if (quickreply.settings.quickNickPM && qrPMLink.length) {
 			listElements.push(
-				quickreply.style.makeLink({
+				quickreply.functions.makeLink({
 					href: qrPMLink.attr('href'),
 					class: "qr_reply_in_pm",
 					title: quickreply.language.REPLY_IN_PM,
@@ -309,7 +283,7 @@
 		}
 
 		listElements.push(
-			quickreply.style.makeLink({
+			quickreply.functions.makeLink({
 				href: viewProfileURL,
 				class: "qr_profile",
 				title: quickreply.language.PROFILE,

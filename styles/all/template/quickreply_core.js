@@ -50,6 +50,9 @@
 			'maxHeight': '50%',
 			'height': 'auto'
 		}).removeClass('qr_fullscreen_form');
+		if (!$(quickreply.editor.mainForm).hasClass('qr_compact_form')) {
+			$('#qr_text_action_box, .qr_attach_button').show();
+		}
 		$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times').attr('title', quickreply.language.FULLSCREEN);
 		$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
@@ -76,10 +79,11 @@
 		// Switch off Quick Reply Toggle Plugin
 		$("#reprap").remove();
 
-		$(quickreply.editor.mainForm).finish().addClass('qr_fixed_form');
+		$(quickreply.editor.mainForm).finish().addClass('qr_fixed_form qr_compact_form');
 		$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box').addClass('additional-element').hide();
+		$('#qr_text_action_box, .qr_attach_button').hide();
 		quickreply.functions.setBodyMarginBottom();
 
 		// Add events.
@@ -100,14 +104,35 @@
 		});
 
 		$(quickreply.editor.textareaSelector).focus(function() {
-			$(quickreply.editor.mainForm).not('.qr_fullscreen_form').find('.submit-buttons').slideDown(function() {
+			$(quickreply.editor.mainForm).not('.qr_fullscreen_form')
+				.find('.qr_attach_button').delay(100).fadeIn().end()
+				.removeClass('qr_compact_form')
+				.find('#qr_text_action_box, .submit-buttons').slideDown(function() {
 				quickreply.functions.setBodyMarginBottom();
 			});
-		}).blur(function() {
-			if (!$(this).val()) {
-				$(quickreply.editor.mainForm).not('.qr_fullscreen_form').find('.submit-buttons').slideUp(function() {
-					quickreply.functions.setBodyMarginBottom();
-				});
+		});
+
+
+		// Hide active dropdowns when click event happens outside
+		$('body').on('mousedown.quickreply', function(e) {
+			var $parents = $(e.target).parents();
+			if (!$parents.is(quickreply.editor.mainForm)) {
+				if (!$(quickreply.editor.textareaSelector).val()) {
+					$('#qr_text_action_box, .qr_attach_button').hide();
+					$(quickreply.editor.mainForm).not('.qr_fullscreen_form').addClass('qr_compact_form').find('#attach-panel, #format-buttons, .quickreply-title, .additional-element, .submit-buttons').slideUp(function() {
+						quickreply.functions.setBodyMarginBottom();
+					});
+				}
+			}
+
+			var $smileyBox = $('#smiley-box');
+			if (!$parents.is($smileyBox)) {
+				if ($smileyBox.is(':visible')) {
+					var setLocation = (quickreply.functions.qr_is_fullscreen()) ? {'right': '-1000px'} : {'left': '-1000px'};
+					$smileyBox.animate(setLocation, function() {
+						$(this).hide();
+					});
+				}
 			}
 		});
 
@@ -116,12 +141,7 @@
 			function setSmileyBoxLocation(location, alternative) {
 				$smileyBox.css(location, '-1000px').css(alternative, 'auto');
 			}
-			if ($smileyBox.is(':visible')) {
-				var setLocation = (quickreply.functions.qr_is_fullscreen()) ? {'right': '-1000px'} : {'left': '-1000px'};
-				$smileyBox.animate(setLocation, function() {
-					$(this).hide();
-				});
-			} else {
+			if (!$smileyBox.is(':visible')) {
 				if (quickreply.functions.qr_is_fullscreen()) {
 					setSmileyBoxLocation('right', 'left');
 					$smileyBox.show().animate({
@@ -142,6 +162,7 @@
 			} else {
 				$('body').css('overflow-y', 'hidden');
 				$(quickreply.editor.mainForm).find('#attach-panel, #format-buttons, .quickreply-title, .additional-element, .submit-buttons').slideDown();
+				$('#qr_text_action_box, .qr_attach_button').hide();
 				$('.qr_fixed_form').animate({
 					'maxHeight': '100%',
 					'height': '100%'
@@ -225,17 +246,27 @@
 	};
 
 	/**
-	 * Shows an alert with an error message.
+	 * Shows an alert with the specified message.
 	 *
-	 * @param {string} [text] Optional error description.
+	 * @param {string} title Title of the alert.
+	 * @param {string} text  Text of the alert.
 	 */
-	function qr_ajax_error(text) {
-		var alert = phpbb.alert(quickreply.language.AJAX_ERROR_TITLE, quickreply.language.AJAX_ERROR + ((text) ? '<br />' + text : ''));
+	quickreply.functions.alert = function(title, text) {
+		var alert = phpbb.alert(title, text);
 		setTimeout(function() {
 			$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
 				alert.hide();
 			});
 		}, 3000);
+	};
+
+	/**
+	 * Shows an alert with an error message.
+	 *
+	 * @param {string} [text] Optional error description.
+	 */
+	function qr_ajax_error(text) {
+		quickreply.functions.alert(quickreply.language.AJAX_ERROR_TITLE, quickreply.language.AJAX_ERROR + ((text) ? '<br />' + text : ''));
 	}
 
 	/**
@@ -266,6 +297,47 @@
 				$preview.find('.content').after(ops.attachments);
 			}
 		}
+	}
+
+	/**
+	 * Removes last post and related content from the page.
+	 */
+	function qr_remove_last_post() {
+		var reply_posts = $('#qr_posts'), merged_post = reply_posts.find(quickreply.editor.postSelector).last(),
+			merged_post_id = merged_post.attr('id');
+		merged_post.remove();
+		reply_posts.find('.divider').last().remove();
+		var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
+		if (decoded_post.length) {
+			decoded_post.remove();
+		}
+		if (qr_author.length) {
+			qr_author.remove();
+		}
+	}
+
+	/**
+	 * Returns the request_data object for Ajax callback function.
+	 * Used when new messages have been added to the topic.
+	 *
+	 * @param {boolean} merged Whether the post has been merged.
+	 * @returns {object}
+	 */
+	function qr_get_reply_data(merged) {
+		var reply_set_data = {qr_no_refresh: 1};
+		if (merged) {
+			$.extend(reply_set_data, {qr_get_current: 1});
+			if (quickreply.settings.softScroll) {
+				$('#qr_posts').find(quickreply.editor.postSelector).last().slideUp(qr_slide_interval, function() {
+					qr_remove_last_post();
+				});
+			} else {
+				$('#qr_posts').one('qr_insert_before', function() {
+					qr_remove_last_post();
+				});
+			}
+		}
+		return reply_set_data;
 	}
 
 	/**
@@ -601,66 +673,23 @@
 
 	if (quickreply.settings.ajaxSubmit) {
 		phpbb.addAjaxCallback('qr_ajax_submit', function(res) {
-			if (res.success) {
-				var reply_set_data = {qr_no_refresh: 1};
-				if (res.merged === 'merged') {
-					$.extend(reply_set_data, {qr_get_current: 1});
-					if (quickreply.settings.softScroll) {
-						$('#qr_posts').find(quickreply.editor.postSelector).last().slideUp(qr_slide_interval, function() {
-							var merged_post_id = $(this).attr('id');
-							$('#qr_posts').find('.divider').last().remove();
-							$(this).remove();
-							var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
-							if (decoded_post.length) {
-								decoded_post.remove();
-							}
-							if (qr_author.length) {
-								qr_author.remove();
-							}
-						});
-					}
-					else {
-						$('#qr_posts').one('qr_insert_before', function() {
-							var reply_posts = $('#qr_posts'), merged_post = reply_posts.find(quickreply.editor.postSelector).last(),
-								merged_post_id = merged_post.attr('id');
-							merged_post.remove();
-							reply_posts.find('.divider').last().remove();
-							var decoded_post = $('#decoded_' + merged_post_id), qr_author = $('#qr_author_' + merged_post_id);
-							if (decoded_post.length) {
-								decoded_post.remove();
-							}
-							if (qr_author.length) {
-								qr_author.remove();
-							}
-						});
-					}
-				}
-				quickreply.functions.qr_ajax_reload(res.url.replace(/&amp;/ig, '&'), reply_set_data, function() {
-					$('#qr_postform').trigger('ajax_submit_success');
-					qr_refresh_form();
-				}, true);
-			} else {
-				if (res.NEXT_URL) {
-					var reply_set_data = {qr_no_refresh: 1};
-					if (res.merged === 'merged') {
-						$.extend(reply_set_data, {qr_get_current: 1});
-						if (quickreply.settings.softScroll) {
-							$('#qr_posts').find(quickreply.editor.postSelector).last().slideUp(qr_slide_interval, function() {
-								$('#qr_posts').find('.divider').last().remove();
-								$(this).remove();
-							});
-						} else {
-							$('#qr_posts').one('qr_insert_before', function() {
-								$('#qr_posts').find(quickreply.editor.postSelector).last().remove();
-							});
-						}
-					}
-					quickreply.functions.qr_ajax_reload(res.NEXT_URL.replace(/&amp;/ig, '&') + '#unread', reply_set_data, function() {
+			switch (res.status) {
+				case "success":
+					quickreply.functions.qr_ajax_reload(res.url.replace(/&amp;/ig, '&'), qr_get_reply_data(res.merged), function() {
+						$('#qr_postform').trigger('ajax_submit_success');
+						qr_refresh_form();
+					}, true);
+				break;
+
+				case "new_posts":
+					quickreply.functions.qr_ajax_reload(res.NEXT_URL.replace(/&amp;/ig, '&') + '#unread', qr_get_reply_data(res.merged), function() {
 						if (quickreply.settings.allowedGuest) {
 							quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 						}
 					});
-				} else if (res.preview) {
+				break;
+
+				case "preview":
 					var $preview = $('#preview');
 					qr_set_preview({
 						display: 'block',
@@ -672,17 +701,25 @@
 						quickreply.functions.qr_soft_scroll($preview);
 					}
 					$('#qr_postform').trigger('ajax_submit_preview', [$preview]);
-				} else if (res.noapprove) {
+				break;
+
+				case "no_approve":
 					qr_refresh_form();
-				} else if (res.post_update) {
+				break;
+
+				case "post_update":
 					// Send the message again with the updated ID of the last post.
 					$(quickreply.editor.mainForm)
 						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id)
 						.end().find('input[name="post"]').click();
-				} else if (quickreply.settings.allowedGuest) {
-					quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
-				}
-				// else qr_ajax_error();
+				break;
+
+				default:
+					if (quickreply.settings.allowedGuest) {
+						quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
+					}
+					// else qr_ajax_error();
+				break;
 			}
 			/* Fix for phpBB 3.1.9 */
 			$(quickreply.editor.mainForm).find('input[data-clicked]').removeAttr('data-clicked');

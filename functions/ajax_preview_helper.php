@@ -54,7 +54,7 @@ class ajax_preview_helper
 		$this->preview_attachments($message_parser, $forum_id);
 
 		ajax_helper::send_json(array(
-			'preview'        => true,
+			'status'         => 'preview',
 			'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
 			'PREVIEW_TEXT'   => $this->preview_message,
 			'PREVIEW_ATTACH' => $this->preview_attachments,
@@ -64,8 +64,8 @@ class ajax_preview_helper
 	/**
 	 * Attachments preview
 	 *
-	 * @param object $message_parser
-	 * @param int    $forum_id
+	 * @param \parse_message $message_parser Message parser object
+	 * @param int            $forum_id       Forum ID
 	 */
 	public function preview_attachments($message_parser, $forum_id)
 	{

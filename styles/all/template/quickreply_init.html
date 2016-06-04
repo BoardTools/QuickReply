@@ -45,13 +45,6 @@ quickreply.settings = {
 	softScroll: <!-- IF S_QR_SOFT_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
 	sourcePost: <!-- IF QR_SOURCE_POST -->true<!-- ELSE -->false<!-- ENDIF -->,
 	unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
-<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
-	,
-	foreign_lang: {QR_FOREIGN_LANG},
-	this_lang: {QR_THIS_LANG},
-	foreign_lang_cap: {QR_FOREIGN_LANG_CAP},
-	this_lang_cap: {QR_THIS_LANG_CAP}
-<!-- ENDIF -->
 };
 
 // Useful variables for QuickReply.
@@ -71,6 +64,12 @@ quickreply.editor = {
 
 // Global functions for QuickReply.
 quickreply.functions = {
+	/**
+	 * Converts RGB function to the hex string.
+	 *
+	 * @param {string} color Color in RGB function format
+	 * @returns {string}
+	 */
 	getHexColor: function(color) {
 		color = color.replace(/\s/g, "");
 		var colorRGB = color.match(/^rgb\((\d{1,3}[%]?),(\d{1,3}[%]?),(\d{1,3}[%]?)\)$/i),
@@ -79,6 +78,31 @@ quickreply.functions = {
 			colorHEX += Math.round((colorRGB[i][colorRGB[i].length - 1] == "%" ? 2.55 : 1) * parseInt(colorRGB[i])).toString(16).replace(/^(.)$/, '0$1');
 		}
 		return "#" + colorHEX;
+	},
+	/**
+	 * Generates an HTML string for a link from an object with parameters.
+	 *
+	 * @param {object} parameters Object with HTML attributes
+	 *                            (href, id, class, title) and link text
+	 * @returns {string}
+	 */
+	makeLink: function(parameters) {
+		if (typeof parameters !== 'object') {
+			return '';
+		}
+		var link = '<a';
+		link += (parameters.href) ? ' href="' + parameters.href + '"' : ' href="#"';
+		if (parameters.id) {
+			link += ' id="' + parameters.id + '"';
+		}
+		if (parameters.class) {
+			link += ' class="' + parameters.class + '"';
+		}
+		if (parameters.title) {
+			link += ' title="' + parameters.title + '"';
+		}
+		link += '>' + ((parameters.text) ? parameters.text : '') + '</a>';
+		return link;
 	}
 };
 
@@ -87,9 +111,11 @@ quickreply.language = {
 	AJAX_ERROR: '{LA_AJAX_ERROR_TEXT}',
 	AJAX_ERROR_TITLE: '{LA_AJAX_ERROR_TITLE}',
 	BUTTON_QUOTE: '{LA_BUTTON_QUOTE}',
+	ERROR: '{LA_ERROR}',
 	FULLSCREEN: '{LA_QR_FULLSCREEN}',
 	FULLSCREEN_EXIT: '{LA_QR_FULLSCREEN_EXIT}',
 	INSERT_TEXT: '{LA_QR_INSERT_TEXT}',
+	NO_FULL_QUOTE: '{LA_QR_NO_FULL_QUOTE}',
 	PROFILE: '{LA_QR_PROFILE}',
 	QUICKNICK: '{LA_QR_QUICKNICK}',
 	QUICKNICK_TITLE: '{LA_QR_QUICKNICK_TITLE}',
@@ -99,6 +125,16 @@ quickreply.language = {
 	REPLY_WITH_QUOTE: '{LA_REPLY_WITH_QUOTE}',
 	TYPE_REPLY: '{LA_QR_TYPE_REPLY}',
 	WROTE: '{LA_WROTE}'
+};
+<!-- ENDIF -->
+<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
+
+// Language arrays for translit feature.
+quickreply.translit = {
+	foreign_lang: {QR_FOREIGN_LANG},
+	this_lang: {QR_THIS_LANG},
+	foreign_lang_cap: {QR_FOREIGN_LANG_CAP},
+	this_lang_cap: {QR_THIS_LANG_CAP}
 };
 <!-- ENDIF -->
 

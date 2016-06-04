@@ -147,7 +147,7 @@ class listener_ajax implements EventSubscriberInterface
 			$post_data = $event['post_data'];
 			$lastclick = $this->request->variable('lastclick', time());
 
-			if ($this->helper->review_is_enable($lastclick, $post_data))
+			if ($this->helper->post_needs_review($lastclick, $post_data))
 			{
 				$forum_id = (int) $post_data['forum_id'];
 				$topic_id = (int) $post_data['topic_id'];
