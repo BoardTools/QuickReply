@@ -53,6 +53,27 @@
 	};
 
 	/**
+	 * Sets and hides additional form elements.
+	 * Used in fixed form mode.
+	 */
+	quickreply.style.setAdditionalElements = function() {
+		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box')
+			.addClass('additional-element').hide();
+	};
+
+	/**
+	 * Returns jQuery object with form editor elements.
+	 * 
+	 * @param {boolean} selectSubmitButtons Whether we need to select submit buttons.
+	 * @returns {jQuery}
+	 */
+	quickreply.style.formEditorElements = function(selectSubmitButtons) {
+		var $qrForm = $(quickreply.editor.mainForm),
+			$elements = $qrForm.find('#attach-panel, #format-buttons, .quickreply-title, .additional-element');
+		return (selectSubmitButtons) ? $elements.add($qrForm.find('.submit-buttons')) : $elements;
+	};
+
+	/**
 	 * Gets the jQuery object for pagination elements.
 	 *
 	 * @returns {jQuery}

@@ -10,6 +10,7 @@
 
 	// Modify editor variables and add new ones.
 	$.extend(quickreply.editor, {
+		attachPanel: '#attach-tab',
 		postSelector: 'div.post-body',
 		postTitleSelector: '.panel-heading h3:first',
 		totalPostsContainer: '.total-posts-container',
@@ -53,6 +54,29 @@
 			$this.removeClass('panel-collapsed');
 			$this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
 		}
+	};
+
+	/**
+	 * Sets and hides additional form elements.
+	 * Used in fixed form mode.
+	 */
+	quickreply.style.setAdditionalElements = function() {
+		var $messageBox = $('#message-box'),
+			$form_groups = $messageBox.closest('.form-group').siblings(),
+			$additional_tabs = $messageBox.closest('fieldset').siblings().not(quickreply.editor.attachPanel);
+		$('#register-and-translit').add($form_groups).add($additional_tabs).addClass('additional-element').hide();
+	};
+
+	/**
+	 * Returns jQuery object with form editor elements.
+	 *
+	 * @param {boolean} selectSubmitButtons Whether we need to select submit buttons.
+	 * @returns {jQuery}
+	 */
+	quickreply.style.formEditorElements = function(selectSubmitButtons) {
+		var $qrForm = $(quickreply.editor.mainForm),
+			$elements = $qrForm.find('#attach-tab, #format-buttons, .additional-element');
+		return (selectSubmitButtons) ? $elements.add($qrForm.find('.submit-buttons')) : $elements;
 	};
 
 	/**
@@ -293,6 +317,20 @@
 
 		return quickreply.style.createDropdown(listElements, pageX, pageY);
 	};
+
+	// Style-specific functions.
+	function qr_set_position() {
+		$(quickreply.editor.mainForm).css('bottom', $('#footer-nav').height());
+		if (quickreply.functions.qr_is_fullscreen()) {
+			$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
+		}
+	}
+	$(window).on('load resize', qr_set_position);
+	$(quickreply.editor.mainForm).on('fullscreen', function() {
+		$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height() + 'px');
+	}).on('fullscreen-exit', function() {
+		$(quickreply.editor.mainForm).css('padding-top', '0');
+	});
 
 	// Special handling for events.
 	// Re-initialize to-top animation.

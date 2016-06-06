@@ -203,7 +203,7 @@
 							</select>
 						</div>
 						<div class="btn-group btn-group-sm">
-							<button onclick="change_palette();" title="{L_BBCODE_S_HELP}" accesskey="s" name="bbpalette" type="button" class="btn btn-default btn-xs" >
+							<button onclick="change_palette();" title="{L_BBCODE_S_HELP}" accesskey="s" name="bbpalette" type="button" class="btn btn-default btn-xs" id="bbpalette" >
 								<i class="fa fa-paint-brush fa-lg"></i>
 							</button>
 						</div>
@@ -232,6 +232,28 @@
 				<!-- ENDIF -->
 				<!-- ENDIF -->
 			</div>
+			<!-- IF S_QR_FORM_TYPE > 0 -->
+			<div id="qr_action_box">
+				<i class="qr_fullscreen_button fa fa-fw fa-arrows-alt" title="{L_QR_FULLSCREEN}"></i>
+				<!-- IF S_QR_SHOW_ATTACH_BOX -->
+				<i class="qr_attach_button fa fa-fw fa-paperclip" title="{L_ATTACHMENTS}"></i>
+				<!-- ENDIF -->
+				<!-- IF S_SMILIES_ALLOWED and .smiley -->
+				<i class="qr_smiley_button fa fa-fw fa-smile-o" title="{L_SMILIES}"></i>
+				<!-- ENDIF -->
+			</div>
+			<div id="qr_text_action_box">
+				<!-- IF S_BBCODE_BUTTONS -->
+				<i class="qr_bbcode_button fa fa-fw fa-bold" title="{L_QR_BBCODE}"></i>
+				<!-- ENDIF -->
+				<!-- IF S_SMILIES_ALLOWED and .smiley -->
+				<i class="qr_smiley_button fa fa-fw fa-smile-o" title="{L_SMILIES}"></i>
+				<!-- ENDIF -->
+				<!-- IF S_QR_CAPS_ENABLE or S_QR_SHOW_BUTTON_TRANSLIT-->
+				<i class="qr_more_actions_button fa fa-fw fa-chevron-down" title="{L_QR_MORE}"></i>
+				<!-- ENDIF -->
+			</div>
+			<!-- ENDIF -->
 			<div class="panel-body no-padding">
 				<!-- EVENT posting_editor_message_before -->
 				<div id="message-box">

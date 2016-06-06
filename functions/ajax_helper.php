@@ -32,6 +32,9 @@ class ajax_helper
 	/** @var \phpbb\request\request */
 	protected $request;
 
+	/** @var \phpbb\template\context */
+	protected $template_context;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -47,6 +50,9 @@ class ajax_helper
 	/** @var bool */
 	public $qr_first;
 
+	/** @var array */
+	private static $qr_fields = array();
+
 	/**
 	 * Constructor
 	 *
@@ -57,11 +63,12 @@ class ajax_helper
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param \phpbb\content_visibility         $phpbb_content_visibility
 	 * @param \phpbb\request\request            $request
+	 * @param \phpbb\template\context           $template_context
 	 * @param string                            $phpbb_root_path Root path
 	 * @param string                            $php_ext
 	 * @param ajax_preview_helper               $ajax_preview_helper
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\request\request $request, $phpbb_root_path, $php_ext, ajax_preview_helper $ajax_preview_helper)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\content_visibility $phpbb_content_visibility, \phpbb\request\request $request, \phpbb\template\context $template_context, $phpbb_root_path, $php_ext, ajax_preview_helper $ajax_preview_helper)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -70,6 +77,7 @@ class ajax_helper
 		$this->db = $db;
 		$this->phpbb_content_visibility = $phpbb_content_visibility;
 		$this->request = $request;
+		$this->template_context = $template_context;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->ajax_preview_helper = $ajax_preview_helper;
@@ -121,7 +129,6 @@ class ajax_helper
 			'qr'             => 1,
 			'qr_cur_post_id' => (int) $current_post_id
 		)));
-		// Output the page
 		$this->output_ajax_response($page_title, $forum_id);
 	}
 
@@ -179,6 +186,43 @@ class ajax_helper
 	}
 
 	/**
+	 * Checks whether we need to send new form token
+	 *
+	 * @param array $error     Array with error strings
+	 * @param array $post_data Array with post data
+	 * @return bool
+	 */
+	public function check_form_token(&$error, $post_data)
+	{
+		if (!sizeof($error))
+		{
+			return false;
+		}
+
+		$form_error_key = array_search($this->user->lang['FORM_INVALID'], $error);
+		if ($form_error_key !== false)
+		{
+			add_form_key('posting');
+
+			$rootref = &$this->template_context->get_root_ref();
+			$qr_hidden_fields = array(
+				'topic_cur_post_id' => (int) $post_data['topic_last_post_id'],
+				'lastclick'         => (int) time(),
+				'topic_id'          => (int) $post_data['topic_id'],
+				'forum_id'          => (int) $post_data['forum_id'],
+			);
+			self::$qr_fields = array(
+				'qr_fields' => $rootref['S_FORM_TOKEN'] . "\n" . build_hidden_fields($qr_hidden_fields)
+			);
+			unset($error[$form_error_key]);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sends ajax response in case of errors
 	 *
 	 * @param array $error Array with error strings
@@ -187,12 +231,33 @@ class ajax_helper
 	{
 		if (sizeof($error))
 		{
-			self::send_json(array(
-				'error'         => true,
-				'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-				'MESSAGE_TEXT'  => implode('<br />', $error),
-			));
+			$this->output_errors($error);
 		}
+	}
+
+	/**
+	 * Sends new form token as the only response
+	 */
+	public function send_form_token()
+	{
+		self::send_json(array(
+			'status' => 'outdated_form',
+		));
+	}
+
+	/**
+	 * Sends the occurred errors with additional information (if provided)
+	 *
+	 * @param array $error  Array with error strings
+	 * @param array $params Array with additional information (optional)
+	 */
+	public function output_errors($error, $params = array())
+	{
+		self::send_json(array_merge(array(
+			'error'         => true,
+			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
+			'MESSAGE_TEXT'  => implode('<br />', $error),
+		), $params));
 	}
 
 	/**
@@ -264,7 +329,7 @@ class ajax_helper
 	public static function send_json($data)
 	{
 		$json_response = new \phpbb\json_response;
-		$json_response->send($data);
+		$json_response->send(array_merge(self::$qr_fields, $data));
 	}
 
 	public function template_variables_for_ajax($topic_data)

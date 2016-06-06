@@ -1,0 +1,185 @@
+/* This file is common and should be inherited by all styles. */
+/* Styling for some features of QuickReply Reloaded. */
+.qr_quickquote {
+	cursor: pointer;
+}
+
+#qr_loading_text {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	margin-top: -30px;
+	color: #FFF;
+	z-index: 50;
+}
+
+#qr_loading_text > i {
+	display: inline-block;
+	font-size: 36px;
+	vertical-align: top;
+}
+
+#qr_loading_text > span {
+	display: inline-block;
+	font-size: 24px;
+	font-weight: bold;
+	margin: 3px 20px 0;
+}
+
+#qr_loading_text > div {
+	margin: 10px 15px 0;
+	font-size: 18px;
+	font-style: italic;
+}
+
+#qr_loading_explain {
+	display: none;
+}
+
+/* Fixed form style. */
+.qr_fixed_form {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 41;
+	background-color: #FFF;
+	max-height: 50%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#qr_postform.qr_fixed_form #message-box {
+	box-sizing: border-box;
+	padding-left: 35px;
+	width: 100%;
+}
+
+#qr_postform.qr_fixed_form #message-box textarea {
+	padding-right: 45px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#qr_postform.qr_fixed_form #message-box textarea.qr_fixed_textarea {
+	height: 115px !important;
+	min-height: 0;
+	transition: height 0.7s ease;
+}
+
+.qr_fixed_form #attach-panel,
+.qr_fixed_form #format-buttons,
+.qr_fixed_form #smiley-box,
+.qr_fixed_form .quickreply-title,
+.qr_fixed_form .additional-element,
+.qr_fixed_form .submit-buttons {
+	display: none;
+}
+
+#qr_text_action_box {
+	display: block;
+	width: 30px;
+	float: left;
+}
+
+#qr_text_action_box i,
+#qr_action_box i {
+	box-sizing: content-box;
+	font-size: 16px;
+	border: 1px solid;
+	border-radius: 100%;
+	padding: 0.35em 0.2em;
+	margin-top: 7px;
+	cursor: pointer;
+}
+
+#qr_text_action_box i:hover,
+#qr_action_box i:hover {
+	opacity: 0.7;
+}
+
+#qr_action_box {
+	display: block;
+	position: relative;
+	width: 100%;
+	z-index: 5;
+	height: 0;
+}
+
+#qr_action_box i {
+	position: absolute;
+	right: 25px;
+}
+
+#qr_action_box .qr_fullscreen_button {
+	top: 3px;
+}
+
+#qr_action_box .qr_attach_button {
+	top: 38px;
+}
+
+.qr_smilies_dropdown {
+	position: fixed;
+	z-index: 31;
+}
+
+.qr_fixed_form #smiley-box {
+	position: absolute;
+	left: -1000px;
+	z-index: 31;
+	width: 30%;
+	background-color: #fff;
+	border-radius: 5px;
+	border: 1px solid;
+	padding: 5px;
+}
+
+.qr_fixed_form #format-buttons {
+	margin-top: 0;
+}
+
+.qr_fixed_form > div {
+	margin-bottom: 0;
+}
+
+/* Compact form style. */
+#qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
+	height: 48px !important;
+}
+
+.qr_compact_form #qr_text_action_box,
+.qr_compact_form .qr_attach_button {
+	display: none;
+}
+
+#qr_postform.qr_fixed_form.qr_compact_form #message-box {
+	padding: 0;
+}
+
+/* Fullscreen form style. */
+#qr_postform.qr_fullscreen_form textarea {
+	max-height: 50%;
+	transition: height 0.7s ease;
+}
+
+#qr_postform.qr_fixed_form.qr_fullscreen_form #message-box {
+	padding-left: 0;
+}
+
+.qr_fullscreen_form #qr_text_action_box {
+	display: none;
+}
+
+#qr_action_box .qr_smiley_button,
+.qr_fullscreen_form #qr_action_box .qr_attach_button {
+	display: none;
+}
+
+.qr_fullscreen_form #qr_action_box .qr_smiley_button {
+	display: inline-block;
+	top: 38px;
+}

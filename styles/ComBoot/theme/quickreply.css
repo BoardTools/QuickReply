@@ -1,3 +1,4 @@
+/* This file is style-specific and can be modified in other styles. */
 /* Styling for some features of QuickReply Reloaded. */
 a span.imageset.icon_topic_latest {
 	display: inline-block;
@@ -71,4 +72,39 @@ a span.imageset.icon_topic_latest:before {
 .hidden_subject .panel-body .post-info-right,
 .hidden_subject .panel-body.badger-left:after {
 	border-top-left-radius: 4px;
+}
+
+/* Compact form style. */
+
+/* Fixed form style. */
+.qr_fixed_form #attach-tab,
+.qr_fixed_form > .panel > .panel-heading {
+	display: none;
+}
+
+.qr_fixed_form .col-md-9 {
+	width: 100%;
+}
+
+#qr_text_action_box {
+	margin-left: 3px;
+}
+
+.qr_fixed_form #format-buttons,
+.qr_fixed_form .submit-buttons {
+	padding: 10px 15px;
+}
+
+.qr_fixed_form .form-group .panel-heading,
+.qr_fixed_form .panel-footer {
+	padding: 0;
+}
+
+.qr_fixed_form .panel,
+.qr_fixed_form .form-group:not(.additional-element) {
+	margin-bottom: 0;
+}
+
+.qr_fixed_form #attach-tab {
+	margin-top: 15px;
 }

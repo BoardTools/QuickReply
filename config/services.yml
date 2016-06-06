@@ -50,6 +50,7 @@ services:
             - @dbal.conn
             - @content.visibility
             - @request
+            - @template_context
             - %core.root_path%
             - %core.php_ext%
             - @boardtools.quickreply.ajax_preview_helper

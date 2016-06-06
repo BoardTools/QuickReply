@@ -96,7 +96,7 @@ class listener_ajax implements EventSubscriberInterface
 			// Check whether no posts are found.
 			if (!$qr_get_current && max($post_list) <= $current_post)
 			{
-				$this->ajax_helper->check_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
+				$this->ajax_helper->output_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
 		}
 	}
@@ -142,11 +142,15 @@ class listener_ajax implements EventSubscriberInterface
 		// Ajax submit
 		if ($this->ajax_helper->qr_is_ajax_submit())
 		{
-			$this->ajax_helper->check_errors($event['error']);
-
 			$post_data = $event['post_data'];
+			$error = $event['error'];
 			$lastclick = $this->request->variable('lastclick', time());
 
+			$refresh_token = $this->ajax_helper->check_form_token($error, $post_data);
+			$this->ajax_helper->check_errors($error);
+			$event['error'] = $error;
+
+			// New form token is always sent if needed.
 			if ($this->helper->post_needs_review($lastclick, $post_data))
 			{
 				$forum_id = (int) $post_data['forum_id'];
@@ -155,8 +159,14 @@ class listener_ajax implements EventSubscriberInterface
 			}
 			else if ($this->helper->post_is_not_last($post_data))
 			{
+				// @TODO remove this stuff for getting new ID - post review is checked above.
 				// Send new post number as a response.
 				$this->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
+			}
+			else if ($refresh_token)
+			{
+				// Send only the new form token as a response.
+				$this->ajax_helper->send_form_token();
 			}
 		}
 		// This is needed for BBCode QR_BBPOST.
