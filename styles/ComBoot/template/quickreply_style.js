@@ -192,6 +192,7 @@
 	quickreply.style.setPostReplyHandler = function() {
 		$('.row:has(.pagination)').find('.fa-lock, .fa-pencil-square-o').closest('a').click(function(e) {
 			e.preventDefault();
+			$(window).off('beforeunload.quickreply');
 			$(quickreply.editor.mainForm).off('submit').find('[name="preview"]').off('click').click();
 		});
 	};
@@ -210,10 +211,16 @@
 	 * Gets quote buttons for the specified elements.
 	 *
 	 * @param {jQuery} elements jQuery elements, e.g. posts
+	 * @param {string} [type]   Selection specification:
+	 *                          by default non-resposive quote buttons of all posts are returned
+	 *                          'all' for including buttons in responsive menu
+	 *                          'last' for getting all quote buttons of the last post (including responsive ones)
 	 * @returns {jQuery}
 	 */
-	quickreply.style.getQuoteButtons = function(elements) {
-		return elements.find('.topic-buttons .fa-quote-left').parent('a');
+	quickreply.style.getQuoteButtons = function(elements, type) {
+		// There are no responsive quote buttons in this style.
+		var container = (type == 'last') ? elements.find('.post:last-child') : elements;
+		return container.find('.topic-buttons .fa-quote-left').parent('a');
 	};
 
 	/**
@@ -231,6 +238,38 @@
 	 */
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
 		// Do nothing - there is no responsive menu.
+	};
+
+	/**
+	 * Whether the last page is currently being displayed.
+	 *
+	 * @returns {boolean}
+	 */
+	quickreply.style.isLastPage = function() {
+		return ($(quickreply.editor.paginationContainer).find('a').last().hasClass('btn-primary') ||
+			typeof $(quickreply.editor.paginationContainer).html() === "undefined");
+	};
+
+	/**
+	 * Styles the quote button for quick quote only.
+	 *
+	 * @param {jQuery} elements
+	 */
+	quickreply.style.setQuickQuoteButton = function(elements) {
+		elements.addClass('qr-quickquote')
+			.attr('title', quickreply.language.QUICKQUOTE_TITLE)
+			.children('span').text(quickreply.language.QUICKQUOTE_TEXT);
+	};
+
+	/**
+	 * Styles the quote button like a standard one.
+	 *
+	 * @param {jQuery} elements
+	 */
+	quickreply.style.removeQuickQuoteButton = function(elements) {
+		elements.removeClass('qr-quickquote')
+			.attr('title', quickreply.language.REPLY_WITH_QUOTE)
+			.children('span').text(quickreply.language.BUTTON_QUOTE);
 	};
 
 	/**

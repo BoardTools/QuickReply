@@ -27,7 +27,7 @@ abstract class acp_module_helper
 	protected $form_key;
 
 	/** @var bool */
-	protected $submit;
+	protected $submit = false;
 
 	/** @var array */
 	protected $error;
@@ -47,10 +47,41 @@ abstract class acp_module_helper
 	/** @var array */
 	public $new_config = array();
 
+	public function main($id, $mode)
+	{
+		global $config, $template, $user, $request;
+
+		$this->config = $config;
+		$this->new_config = $config;
+		$this->template = $template;
+		$this->user = $user;
+		$this->request = $request;
+
+		$this->set_submit();
+		$this->generate_display_vars();
+		$this->submit_form();
+
+		// Output relevant page
+		$this->output_page();
+	}
+
+	/**
+	 * Generates the array of display_vars
+	 */
+	abstract protected function generate_display_vars();
+
+	/**
+	 * Sets the requested submission state
+	 */
+	protected function set_submit()
+	{
+		$this->submit = $this->request->is_set_post('submit');
+	}
+
 	/**
 	 * When form is submitting
 	 */
-	public function submit_form()
+	protected function submit_form()
 	{
 		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', array('' => ''), true) : $this->new_config;
 		$this->error = array();
@@ -69,9 +100,9 @@ abstract class acp_module_helper
 	/**
 	 * Check submitting errors
 	 */
-	public function check_form_valid()
+	protected function check_form_valid()
 	{
-		if ($this->submit && !check_form_key($this->form_key))
+		if ($this->submit && (!isset($this->form_key) || !check_form_key($this->form_key)))
 		{
 			$this->error[] = $this->user->lang['FORM_INVALID'];
 		}
@@ -84,11 +115,11 @@ abstract class acp_module_helper
 	}
 
 	/**
-	 * Set the new configuration array
+	 * Sets the new configuration array
 	 *
 	 * @param array $cfg_array Array with new values
 	 */
-	public function set_config($cfg_array)
+	protected function set_config($cfg_array)
 	{
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($this->display_vars['vars'] as $config_name => $null)
@@ -114,7 +145,7 @@ abstract class acp_module_helper
 	 * @param array  $cfg_array
 	 * @return bool
 	 */
-	public function invalid_var($config_name, $cfg_array)
+	protected function invalid_var($config_name, $cfg_array)
 	{
 		return (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false);
 	}
@@ -124,7 +155,7 @@ abstract class acp_module_helper
 	 *
 	 * @param string $display_vars_lang
 	 */
-	public function add_langs(&$display_vars_lang)
+	protected function add_langs(&$display_vars_lang)
 	{
 		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 		if (isset($display_vars_lang))
@@ -134,12 +165,14 @@ abstract class acp_module_helper
 	}
 
 	/**
-	 * Get text for title (if exists)
+	 * Gets text for title (if exists)
 	 *
-	 * @param array $vars Array of vars
+	 * @param array  $vars Array of vars
+	 * @param string $key
+	 * @param string $key2
 	 * @return string
 	 */
-	public function get_title($vars, $key, $key2 = '')
+	protected function get_title($vars, $key, $key2 = '')
 	{
 		if (isset($this->user->lang[$vars[$key] . $key2]))
 		{
@@ -152,29 +185,31 @@ abstract class acp_module_helper
 	}
 
 	/**
-	 * Get text for title explanation (if exists)
+	 * Gets text for title explanation (if exists)
 	 *
 	 * @param array $vars Array of vars
 	 * @return string
 	 */
-	public function get_title_explain($vars)
+	protected function get_title_explain($vars)
 	{
-		$l_explain = '';
-		if ($vars['explain'] && isset($vars['lang_explain']))
+		if (!$vars['explain'])
 		{
-			$l_explain = $this->get_title($vars, 'lang_explain');
+			return '';
 		}
-		else if ($vars['explain'])
+		else if (isset($vars['lang_explain']))
 		{
-			$l_explain = $this->get_title($vars, 'lang', '_EXPLAIN');
+			return $this->get_title($vars, 'lang_explain');
 		}
-		return $l_explain;
+		else
+		{
+			return $this->get_title($vars, 'lang', '_EXPLAIN');
+		}
 	}
 
 	/**
-	 * Output title and errors
+	 * Outputs page title and errors
 	 */
-	public function output_basic_vars()
+	protected function output_basic_vars()
 	{
 		$this->template->assign_vars(array(
 			'L_TITLE'         => $this->user->lang[$this->display_vars['title']],
@@ -185,7 +220,14 @@ abstract class acp_module_helper
 		));
 	}
 
-	public function output_options($config_key, $vars, $content)
+	/**
+	 * Outputs generated array for an option to the template
+	 *
+	 * @param string $config_key The name of the option
+	 * @param array  $vars       Array of parameters
+	 * @param string $content    Generated template option string
+	 */
+	protected function output_options($config_key, $vars, $content)
 	{
 		$this->template->assign_block_vars('options', array(
 			'KEY'           => $config_key,
@@ -196,17 +238,40 @@ abstract class acp_module_helper
 		));
 	}
 
+	/**                         
+	 * Gets array with language strings for a legend 
+	 *
+	 * @param array|string $vars String with legend language key or
+	 *                           array with legend and legend explain language keys
+	 * @return array
+	 */
+	protected function get_legend_array($vars)
+	{
+		if (is_array($vars))
+		{
+			$legend = $this->user->lang(array_shift($vars));
+			$legend_explain = $this->user->lang(array_shift($vars));
+		}
+		else
+		{
+			$legend = $this->user->lang($vars);
+			$legend_explain = '';
+		}
+		return array(
+			'S_LEGEND' => true,
+			'LEGEND'   => $legend,
+			'LEGEND_EXPLAIN' => $legend_explain,
+		);
+	}
+
 	/**
 	 * Output options
 	 */
-	public function output_vars($config_key, $vars)
+	protected function output_vars($config_key, $vars)
 	{
 		if (strpos($config_key, 'legend') !== false)
 		{
-			$this->template->assign_block_vars('options', array(
-				'S_LEGEND' => true,
-				'LEGEND'   => $this->user->lang($vars)
-			));
+			$this->template->assign_block_vars('options', $this->get_legend_array($vars));
 		}
 		else
 		{
@@ -225,7 +290,7 @@ abstract class acp_module_helper
 	/**
 	 * Output the page
 	 */
-	public function output_page()
+	protected function output_page()
 	{
 		$this->page_title = $this->display_vars['title'];
 		$this->add_langs($this->display_vars['lang']);

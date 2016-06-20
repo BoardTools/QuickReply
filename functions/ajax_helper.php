@@ -206,6 +206,8 @@ class ajax_helper
 
 			$rootref = &$this->template_context->get_root_ref();
 			$qr_hidden_fields = array(
+				'qr'                => 1,
+				'qr_cur_post_id'    => (int) $this->request->variable('qr_cur_post_id', 0),
 				'topic_cur_post_id' => (int) $post_data['topic_last_post_id'],
 				'lastclick'         => (int) time(),
 				'topic_id'          => (int) $post_data['topic_id'],

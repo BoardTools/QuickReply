@@ -13,7 +13,12 @@
 }
 
 #qr_postform.qr_fixed_form {
-	background: #ECEBEA;
+	background: #111;
+}
+
+#qr_postform.qr_fixed_form #message-box {
+	padding-top: 0;
+	padding-right: 0;
 }
 
 #qr_loading_text {

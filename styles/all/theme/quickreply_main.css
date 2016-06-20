@@ -73,6 +73,7 @@
 .qr_fixed_form #attach-panel,
 .qr_fixed_form #format-buttons,
 .qr_fixed_form #smiley-box,
+.qr_fixed_form #qr_captcha_container,
 .qr_fixed_form .quickreply-title,
 .qr_fixed_form .additional-element,
 .qr_fixed_form .submit-buttons {

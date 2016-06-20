@@ -21,6 +21,7 @@
 		<!-- ENDIF -->
 		<fieldset>
 			<legend>{options.LEGEND}</legend>
+			<!-- IF options.LEGEND_EXPLAIN != '' --><p>{options.LEGEND_EXPLAIN}</p><!-- ENDIF -->
 	<!-- ELSE -->
 
 		<dl>
@@ -30,7 +31,6 @@
 
 	<!-- ENDIF -->
 <!-- END options -->
-
 
 	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;

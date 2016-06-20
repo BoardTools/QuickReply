@@ -57,20 +57,20 @@
 	 * Used in fixed form mode.
 	 */
 	quickreply.style.setAdditionalElements = function() {
-		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box')
+		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box, #qr_captcha_container')
 			.addClass('additional-element').hide();
 	};
 
 	/**
 	 * Returns jQuery object with form editor elements.
-	 * 
-	 * @param {boolean} selectSubmitButtons Whether we need to select submit buttons.
+	 *
+	 * @param {boolean} selectStandard Whether we need to select submit buttons and CAPTCHA container.
 	 * @returns {jQuery}
 	 */
-	quickreply.style.formEditorElements = function(selectSubmitButtons) {
+	quickreply.style.formEditorElements = function(selectStandard) {
 		var $qrForm = $(quickreply.editor.mainForm),
 			$elements = $qrForm.find('#attach-panel, #format-buttons, .quickreply-title, .additional-element');
-		return (selectSubmitButtons) ? $elements.add($qrForm.find('.submit-buttons')) : $elements;
+		return (selectStandard) ? $elements.add($qrForm.find('.submit-buttons, #qr_captcha_container')) : $elements;
 	};
 
 	/**
@@ -181,6 +181,7 @@
 	quickreply.style.setPostReplyHandler = function() {
 		$('.action-bar .buttons').find('.reply-icon, .locked-icon').click(function(e) {
 			e.preventDefault();
+			$(window).off('beforeunload.quickreply');
 			$(quickreply.editor.mainForm).off('submit').find('#qr_full_editor').off('click').click();
 		});
 	};
@@ -199,18 +200,16 @@
 	 * Gets quote buttons for the specified elements.
 	 *
 	 * @param {jQuery} elements jQuery elements, e.g. posts
+	 * @param {string} [type]   Selection specification:
+	 *                          by default non-resposive quote buttons of all posts are returned
+	 *                          'all' for including buttons in responsive menu
+	 *                          'last' for getting all quote buttons of the last post (including responsive ones)
 	 * @returns {jQuery}
 	 */
-	quickreply.style.getQuoteButtons = function(elements) {
-		return elements.find('.post-buttons .quote-icon').not('.responsive-menu .quote-icon');
-	};
-
-	quickreply.style.getAllQuoteButtons = function(elements) {
-		return elements.find('.post-buttons .quote-icon');
-	};
-
-	quickreply.style.getLastQuoteButton = function(elements) {
-		return elements.find('.post-container:last-child .post-buttons .quote-icon');
+	quickreply.style.getQuoteButtons = function(elements, type) {
+		var container = (type == 'last') ? elements.find('.post:last-child') : elements,
+			buttons = container.find('.post-buttons .quote-icon');
+		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons;
 	};
 
 	/**
@@ -230,17 +229,32 @@
 		elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', fn);
 	};
 
+	/**
+	 * Whether the last page is currently being displayed.
+	 *
+	 * @returns {boolean}
+	 */
 	quickreply.style.isLastPage = function() {
 		var paginationContainer = $('.action-bar.top .pagination ul');
 		return (paginationContainer.find('li').last().hasClass('active') || typeof paginationContainer.html() === "undefined");
 	};
 
+	/**
+	 * Styles the quote button for quick quote only.
+	 *
+	 * @param {jQuery} elements
+	 */
 	quickreply.style.setQuickQuoteButton = function(elements) {
 		elements.addClass('qr-quickquote')
 			.attr('title', quickreply.language.QUICKQUOTE_TITLE)
 			.children('span').text(quickreply.language.QUICKQUOTE_TEXT);
 	};
 
+	/**
+	 * Styles the quote button like a standard one.
+	 *
+	 * @param {jQuery} elements
+	 */
 	quickreply.style.removeQuickQuoteButton = function(elements) {
 		elements.removeClass('qr-quickquote')
 			.attr('title', quickreply.language.REPLY_WITH_QUOTE)

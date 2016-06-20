@@ -2,7 +2,11 @@
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
-	$('input[name=creation_time]').val('0');  // @todo delete it.
+
+	var qr_slide_interval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0,
+		qrAlertTimer = null,
+		$body = $('body');
+
 	/***********************/
 	/* Initial adjustments */
 	/***********************/
@@ -19,6 +23,15 @@
 		});
 	}
 
+	/**
+	 * Show the confirmation warning before unloading the page if the reply is still in the form.
+ 	 */
+	$(window).on('beforeunload.quickreply', function() {
+		if ($(quickreply.editor.textareaSelector).val()) {
+			return quickreply.language.WARN_BEFORE_UNLOAD;
+		}
+	});
+
 	if (quickreply.settings.ajaxSubmit) {
 		$(quickreply.editor.mainForm).attr('data-ajax', 'qr_ajax_submit');
 		quickreply.style.initPreview();
@@ -31,9 +44,22 @@
 
 			qr_start_loading();
 
+			var $clickedButton = $(this).find('input[type="submit"][data-clicked]');
+
 			// Fix for phpBB 3.1.9
-			if (!$(this).find('input[type="submit"][data-clicked]').length) {
-				$(this).find('input[name="post"]').attr('data-clicked', 'true');
+			if (!$clickedButton.length) {
+				$clickedButton = $(this).find('input[name="post"]').attr('data-clicked', 'true');
+			}
+
+			if ($('#qr_loading_explain').is(':empty')) {
+				switch ($clickedButton.attr('name')) {
+					case "preview":
+						qr_set_loading_explain(quickreply.language.loading.PREVIEW);
+						break;
+					case "post":
+						qr_set_loading_explain(quickreply.language.loading.SUBMITTING);
+						break;
+				}
 			}
 		}).attr('data-overlay', false);
 
@@ -48,13 +74,11 @@
 		}
 	});
 
-	var qr_slide_interval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0;
-
 	/**
 	 * Sets padding-bottom for body element equal to quick reply form height.
 	 */
 	function qr_setBodyPaddingBottom() {
-		$('body').css('padding-bottom', $(quickreply.editor.mainForm).height() + 'px');
+		$body.css('padding-bottom', $(quickreply.editor.mainForm).height() + 'px');
 	}
 
 	/**
@@ -64,7 +88,7 @@
 		$(document).off('keydown.quickreply.fullscreen');
 		$(quickreply.editor.mainForm).find('.submit-buttons input[type="submit"]').off('click.quickreply.fullscreen');
 
-		$('body').css('overflow-y', '');
+		$body.css('overflow-y', '');
 		qr_hide_colour_palette();
 		$('.qr_fixed_form').animate({
 			'maxHeight': '50%',
@@ -124,7 +148,7 @@
 		$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 		quickreply.style.setAdditionalElements();
-		$('#qr_text_action_box, .qr_attach_button').hide();
+		$('#qr_text_action_box, #qr_captcha_container, .qr_attach_button').hide();
 		setTimeout(qr_setBodyPaddingBottom, 500);
 
 		// Add events.
@@ -152,14 +176,14 @@
 			$(quickreply.editor.mainForm).not('.qr_fullscreen_form')
 				.find('.qr_attach_button').delay(100).fadeIn().end()
 				.removeClass('qr_compact_form')
-				.find('#qr_text_action_box, .submit-buttons').slideDown({
+				.find('#qr_text_action_box, #qr_captcha_container, .submit-buttons').slideDown({
 				duration: qr_slide_interval,
 				progress: qr_setBodyPaddingBottom
 			});
 		});
 
 		// Hide active dropdowns when click event happens outside
-		$('body').on('mousedown.quickreply', function(e) {
+		$body.on('mousedown.quickreply', function(e) {
 			var $parents = $(e.target).parents();
 			if (!$parents.is(quickreply.editor.mainForm)) {
 				if (!$(quickreply.editor.textareaSelector).val() &&
@@ -206,7 +230,7 @@
 			if (quickreply.functions.qr_is_fullscreen()) {
 				quickreply.functions.qr_exit_fullscreen();
 			} else {
-				$('body').css('overflow-y', 'hidden');
+				$body.css('overflow-y', 'hidden');
 				quickreply.style.formEditorElements(true).slideDown(qr_slide_interval);
 				$('#qr_text_action_box, .qr_attach_button').hide();
 				$('.qr_fixed_form').animate({
@@ -301,11 +325,22 @@
 	 */
 	quickreply.functions.alert = function(title, text) {
 		var alert = phpbb.alert(title, text);
-		setTimeout(function() {
+		qrAlertTimer = setTimeout(function() {
 			$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
 				alert.hide();
 			});
 		}, 3000);
+	};
+
+	/**
+	 * Clear loading alert timeout
+	 */
+	quickreply.functions.clearLoadingTimeout = function() {
+		if (qrAlertTimer !== null) {
+			clearTimeout(qrAlertTimer);
+			qrAlertTimer = null;
+		}
+		phpbb.clearLoadingTimeout();
 	};
 
 	/**
@@ -466,18 +501,10 @@
 	 * Shows loading indicator.
 	 */
 	function qr_start_loading() {
-		// var $loadingIndicator = phpbb.loadingIndicator(), $dark = $('#darkenwrapper');
-		// phpbb.clearLoadingTimeout();
-		// if (!$dark.is(':visible') && $(window).width() >= 700) {
-		// 	$dark.fadeIn(phpbb.alertTime);
-		// }
-		// setTimeout(function() {
-		// 	$loadingIndicator.finish().show();
-		// }, 100);
-
 		var $dark = $('#darkenwrapper'), $loadingText = $('#qr_loading_text');
 		if (!$loadingText.is(':visible')) {
-			phpbb.clearLoadingTimeout();
+			quickreply.functions.clearLoadingTimeout();
+			$('#phpbb_alert').hide();
 			$dark.off('click');
 			if (!$dark.is(':visible')) {
 				$dark.fadeIn(phpbb.alertTime);
@@ -486,31 +513,23 @@
 		}
 	}
 
+	/**
+	 * Sets loading explanation text to inform the user about current state.
+	 *
+	 * @param {string} text HTML string with informative text.
+	 */
 	function qr_set_loading_explain(text) {
-		$('#qr_loading_explain').fadeOut(phpbb.alertTime).html(text).fadeIn(phpbb.alertTime);
+		$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
+			$(this).html(text).fadeIn(phpbb.alertTime);
+		});
 	}
 
 	/**
 	 * Hides loading indicator.
+	 *
+	 * @param {boolean} [keepDark] Whether we should not hide the dark.
 	 */
 	function qr_stop_loading(keepDark) {
-		// var alert_box = $('#phpbb_alert'),
-		// 	alert_delay = (alert_box.is(':visible')) ? 3000 : 0,
-		// 	$dark = $('#darkenwrapper'),
-		// 	$loadingIndicator = phpbb.loadingIndicator();
-		// if (alert_box.is(':visible')) {
-		// 	alert_box.find('.alert_close').off('click').click(function(e) {
-		// 		phpbb.alert.close(alert_box, true);
-		// 		e.preventDefault();
-		// 	});
-		// }
-		// setTimeout(function() {
-		// 	$dark.fadeOut(phpbb.alertTime, function() {
-		// 		alert_box.hide();
-		// 		$(document).off('keydown.phpbb.alert');
-		// 	});
-		// }, alert_delay);
-		// $loadingIndicator.fadeOut(phpbb.alertTime);
 		var $dark = $('#darkenwrapper'), $loadingText = $('#qr_loading_text');
 		$loadingText.fadeOut(phpbb.alertTime);
 		$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
@@ -521,6 +540,9 @@
 		}
 	}
 
+	/**
+	 * Keeps loading indicator shown.
+	 */
 	function qr_continue_loading() {
 		$('#darkenwrapper').stop().fadeIn(phpbb.alertTime);
 	}
@@ -532,7 +554,7 @@
 	 */
 	function qr_update_form_fields(qr_fields) {
 		var reply_form_submit_buttons = $(quickreply.editor.mainForm).children().children().children('.submit-buttons');
-		reply_form_submit_buttons.children(':not(input[type="submit"],input[name^="qr"])').remove();
+		reply_form_submit_buttons.children(':not(input[type="submit"])').remove();
 		reply_form_submit_buttons.prepend(qr_fields);
 	}
 
@@ -871,18 +893,27 @@
 				case "post_update":
 					// Send the message again with the updated ID of the last post.
 					$(quickreply.editor.mainForm)
-						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id)
-						.end().find('input[name="post"]').click();
+						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id).end()
+						.find('input[name="post"]').click();
 					break;
 
 				case "outdated_form":
 					qr_set_loading_explain(quickreply.language.loading.NEW_FORM_TOKEN);
-					// Send the message again with the updated form token.
-					$(quickreply.editor.mainForm).find('input[data-clicked="true"]').click();
+
+					// data-clicked attribute is cleared below, but we need to click the same button after the timeout.
+					var $clickedButton = $(quickreply.editor.mainForm).find('input[data-clicked="true"]');
+
+					// The timeout is needed because phpBB checks the time difference for 'lastclick'.
+					setTimeout(function() {
+						// Send the message again with the updated form token.
+						$clickedButton.click();
+					}, 2000);
 					break;
 
 				default:
-					//qr_stop_loading();
+					if (!res.error) {
+						qr_stop_loading();
+					}
 					if (quickreply.settings.allowedGuest) {
 						quickreply.functions.qr_ajax_reload(document.location.href, {qr_captcha_refresh: 1});
 					}
@@ -955,7 +986,6 @@
 		 */
 		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
 			var $this = $(this),
-				$body = $('body'),
 				filterSkip = '.breadcrumbs, [data-skip-responsive]',
 				filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
 				persist = $this.attr('id') == 'nav-main',
