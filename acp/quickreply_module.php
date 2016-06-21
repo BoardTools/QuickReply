@@ -68,7 +68,7 @@ class quickreply_module
 		 */
 		if (version_compare($config['version'], '3.1.8', '>'))
 		{
-			unset($display_vars['qr_ctrlenter']);
+			unset($display_vars['vars']['qr_ctrlenter']);
 		}
 
 		if (isset($display_vars['lang']))
