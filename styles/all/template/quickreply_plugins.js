@@ -32,76 +32,49 @@
 	/********************/
 	/* Helper functions */
 	/********************/
-	/**
-	 * Get text selection - not only the post content :(
-	 * IE9 must use the document.selection method but has the *.getSelection so we just force no IE
-	 *
-	 * @returns {string}
-	 */
-	function qr_getSelection() {
-		var theSelection = '',
+	function QrHelper() {
+		this._selection = '';
+		this._replyPosts = $('#qr_posts');
+
+		var self = this,
 			clientPC = navigator.userAgent.toLowerCase(), // Get client info
-			is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
+			isIE = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
 
-		if (window.getSelection && !is_ie && !window.opera) {
-			theSelection = window.getSelection().toString();
-		} else if (document.getSelection && !is_ie) {
-			theSelection = document.getSelection();
-		} else if (document.selection) {
-			theSelection = document.selection.createRange().text;
-		}
+		/**
+		 * Get text selection - not only the post content :(
+		 * IE9 must use the document.selection method but has the *.getSelection so we just force no IE
+		 *
+		 * @returns {string}
+		 */
+		self._getSelection = function() {
+			self._selection = '';
 
-		return theSelection;
-	}
-
-	/**
-	 * Returns the formatted post content.
-	 *
-	 * @param {string} qr_post_id ID of the current post
-	 * @returns {string}
-	 */
-	function qr_getPostContent(qr_post_id) {
-		var theSelection = '', message_name = 'decoded_p' + qr_post_id, divarea = false;
-
-		if (document.all) {
-			divarea = document.all[message_name];
-		} else {
-			divarea = document.getElementById(message_name);
-		}
-
-		if (divarea.innerHTML) {
-			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
-			theSelection = theSelection.replace(/<br\/>/ig, '\n');
-			theSelection = theSelection.replace(/&lt\;/ig, '<');
-			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');
-			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
-		} else if (document.all) {
-			theSelection = divarea.innerText;
-		} else if (divarea.textContent) {
-			theSelection = divarea.textContent;
-		} else if (divarea.firstChild.nodeValue) {
-			theSelection = divarea.firstChild.nodeValue;
-		}
-
-		return theSelection;
-	}
-
-	/**
-	 * Gets cursor coordinates.
-	 *
-	 * @param {Event} evt jQuery Event object
-	 * @returns {object}
-	 */
-	function qr_getCoordinates(evt) {
-		if (evt.type == 'touchstart') {
-			evt.pageX = evt.originalEvent.touches[0].pageX;
-			evt.pageY = evt.originalEvent.touches[0].pageY;
-		}
-		return {
-			x: evt.pageX || evt.clientX + document.documentElement.scrollLeft, // FF || IE
-			y: evt.pageY || evt.clientY + document.documentElement.scrollTop
+			if (window.getSelection && !isIE && !window.opera) {
+				self._selection = window.getSelection().toString();
+			} else if (document.getSelection && !isIE) {
+				self._selection = document.getSelection();
+			} else if (document.selection) {
+				self._selection = document.selection.createRange().text;
+			}
 		};
+
+		/**
+		 * Gets cursor coordinates.
+		 *
+		 * @param {Event} evt jQuery Event object
+		 * @returns {object}
+		 */
+		self._getCoordinates = function(evt) {
+			if (evt.type == 'touchstart') {
+				evt.pageX = evt.originalEvent.touches[0].pageX;
+				evt.pageY = evt.originalEvent.touches[0].pageY;
+			};
+
+			return {
+				x: evt.pageX || evt.clientX + document.documentElement.scrollLeft, // FF || IE
+				y: evt.pageY || evt.clientY + document.documentElement.scrollTop
+			};
+		}
 	}
 
 	/**************************************/
@@ -113,31 +86,49 @@
 	 * @param {string} qr_post_id    The ID of the post
 	 * @param {string} selected_text Selected text
 	 */
-	quickreply.functions.insertQuote = function(qr_post_id, selected_text) {
-		var qr_post_author = $('#qr_author_p' + qr_post_id),
-			nickname = qr_post_author.text(),
-			user_profile_url = qr_post_author.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL)
-				.replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, function(str, p1, p2) {
-					return (p2) ? p1 : '';
-				}),
-			qr_user_name = (quickreply.settings.quickQuoteLink && user_profile_url && quickreply.settings.allowBBCode) ?
-			'[url=' + user_profile_url + ']' + nickname + '[/url]' : nickname;
+	function QrQuote() {
+		QrHelper.apply(this, arguments);
 
-		// Link to the source post
-		var qr_bbpost = (quickreply.settings.sourcePost) ? '[post]' + qr_post_id + '[/post] ' : '';
+		this._postID = 0;
 
-		var i;
+		var self = this;
 
-		if (selected_text) {
-			quickreply.style.showQuickReplyForm();
-			if (quickreply.settings.allowBBCode) {
-				insert_text('[quote="' + qr_user_name + '"]' + qr_bbpost +
-					selected_text.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '') + '[/quote]\r');
-			} else {
-				insert_text(qr_user_name + ' ' + quickreply.language.WROTE + ':' + '\n');
-				var lines = split_lines(selected_text);
-				for (i = 0; i < lines.length; i++) {
-					insert_text('> ' + lines[i] + '\n');
+		function getUserName() {
+			var postAuthor = $('#qr_author_p' + self._postID),
+				nickname = postAuthor.text(),
+				userProfileUrl = postAuthor.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL)
+					.replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, 
+						function(str, p1, p2) {
+							return (p2) ? p1 : '';
+						}
+					),
+				userName = (quickreply.settings.quickQuoteLink && userProfileUrl && quickreply.settings.allowBBCode) ?
+								'[url=' + userProfileUrl + ']' + nickname + '[/url]' : nickname;
+
+			return userName;
+		};
+
+		function getBBpost() {
+			return (quickreply.settings.sourcePost) ? '[post]' + self._postID + '[/post] ' : '';
+		};
+		
+		self._insertQuote = function() {
+			var username = getUserName(),
+				bbpost = getBBpost(); // Link to the source post
+
+			if (self._selection) {
+				quickreply.style.showQuickReplyForm();
+
+				if (quickreply.settings.allowBBCode) {
+					insert_text('[quote="' + username + '"]' + bbpost + self._selection + '[/quote]\r');
+				} else {
+					insert_text(username + ' ' + quickreply.language.WROTE + ':' + '\n');
+
+					var lines = split_lines(self._selection);
+
+					for (var i = 0; i < lines.length; i++) {
+						insert_text('> ' + lines[i] + '\n');
+					}
 				}
 			}
 		}
@@ -147,139 +138,199 @@
 	/* Quick Quote Plugin */
 	/**********************/
 	if (quickreply.settings.quickQuote) {
-		var qrAlert = false;
+		var QuickQuote = new function() {
+			QrQuote.apply(this, arguments);
+		
+			var self = this,
+				qrAlert = false,
+				quickQuoteCancelEvent = false;
 
-		function qr_alert_remove(e) {
-			if (qrAlert) {
-				qrAlert.remove();
-				$(document.body).unbind('mousedown', qr_alert_remove);
-				qrAlert = false;
-			}
-		}
-
-		function qr_quickquote(evt, element) {
-			var $target = $(evt.target), $element = element || $(this);
-			if ($target.is('a') && $target.parents('.codebox').length) {
-				return;
-			}
-
-			var coordinates = qr_getCoordinates(evt);
-			// Which mouse button is pressed?
-			var key = evt.button || evt.which || null; // IE || FF || Unknown
-
-			var qr_post_id = quickreply.style.getPostId($element);
-
-			setTimeout(function() { // Timeout prevents popup when clicking on selected text
-				var sel = qr_getSelection();
-
-				if (sel && key <= 1) { // If text selected && right mouse button not pressed
-					function qr_insert_quickquote() {
-						quickreply.functions.insertQuote(qr_post_id, sel);
-						qr_alert_remove();
-						return false;
-					}
-
-					if (qrAlert) {
-						qr_alert_remove();
-					}
-					qrAlert = quickreply.style.quickQuoteDropdown(coordinates.x, coordinates.y)
-						.mousedown(qr_insert_quickquote);
-					setTimeout(function() {
-						$(document.body).one('mousedown', qr_alert_remove);
-					}, 10);
+			function qrAlertRemove(e) {
+				if (qrAlert) {
+					qrAlert.remove();
+					$(document.body).unbind('mousedown', qrAlertRemove);
+					qrAlert = false;
 				}
-			}, 0);
+			};
+			
+			function insertQuickQuote() {
+				self._insertQuote();
+				qrAlertRemove();
+				return false;
+			};
+
+			function addQuickQuote(evt, element) {
+				var $target = $(evt.target), $element = element || $(this);
+
+				if ($target.is('a') && $target.parents('.codebox').length) {
+					return;
+				}
+
+				var coordinates = self._getCoordinates(evt);
+				// Which mouse button is pressed?
+				var key = evt.button || evt.which || null; // IE || FF || Unknown
+
+				self._postID = quickreply.style.getPostId($element);
+
+				setTimeout(function() { // Timeout prevents popup when clicking on selected text
+					self._getSelection();
+
+					if (self._selection && key <= 1) { // If text selected && right mouse button not pressed
+						if (qrAlert) {
+							qrAlertRemove();
+						}
+
+						qrAlert = quickreply.style.quickQuoteDropdown(coordinates.x, coordinates.y)
+									.mousedown(insertQuickQuote);
+
+						setTimeout(function() {
+							$(document.body).one('mousedown', qrAlertRemove);
+						}, 10);
+					}
+				}, 0);
+			};
+
+			function handleQuickQuote(evt) {
+				addQuickQuote(evt, $(this));
+
+				if (!quickQuoteCancelEvent) {
+					self._replyPosts.on('mousemove', '.content', addQuickQuote);
+
+					$(document.body).one('mouseup', function(evt) {
+						self._replyPosts.off('mousemove', '.content', addQuickQuote);
+						quickQuoteCancelEvent = false;
+					});
+	
+					quickQuoteCancelEvent = true;
+				}
+			};
+
+			self.init = function() {
+				if ('ontouchstart' in window) {
+					self._replyPosts.on('mousedown touchstart', '.content', handleQuickQuote);
+				}
+
+				self._replyPosts.on('mouseup', '.content', addQuickQuote);
+			};
 		}
 
-		var reply_posts = $('#qr_posts'), quickquote_cancel_event = false;
-
-		function qr_handle_quickquote(evt) {
-			qr_quickquote(evt, $(this));
-			if (!quickquote_cancel_event) {
-				reply_posts.on('mousemove', '.content', qr_quickquote);
-				$(document.body).one('mouseup', function(evt) {
-					reply_posts.off('mousemove', '.content', qr_quickquote);
-					quickquote_cancel_event = false;
-				});
-				quickquote_cancel_event = true;
-			}
-		}
-
-		if ('ontouchstart' in window) {
-			reply_posts.on('mousedown touchstart', '.content', qr_handle_quickquote);
-		}
-		reply_posts.on('mouseup', '.content', qr_quickquote);
+		QuickQuote.init();
 	}
 
 	/*********************/
 	/* Full Quote Plugin */
 	/*********************/
 	if (quickreply.settings.fullQuote || quickreply.settings.quickQuoteButton) {
-		function qr_add_full_quote(e, element) {
-			e.preventDefault();
-			var qr_post_id = quickreply.style.getPostId(element);
-			var theSelection = '';
+		var FullQuote = new function() {
+			QrQuote.apply(this, arguments);
 
-			if (quickreply.settings.quickQuoteButton) {
-				theSelection = qr_getSelection();
-			}
+			var self = this;
 
-			if (quickreply.settings.fullQuote && !element.hasClass('qr-quickquote')) {
-				if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null) {
-					theSelection = qr_getPostContent(qr_post_id);
+			function getPostContent() {
+				self._selection = '';
+
+				var messageName = 'decoded_p' + self._postID, divarea = false;
+
+				if (document.all) {
+					divarea = document.all[messageName];
+				} else {
+					divarea = document.getElementById(messageName);
 				}
-			}
 
-			if (theSelection != '') {
-				quickreply.functions.insertQuote(qr_post_id, theSelection);
-			} else {
-				quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
-			}
-		}
-
-		function qr_full_quote(e, elements) {
-			if (quickreply.settings.quickQuoteButton) {
-				var quote_buttons = null, last_quote_button = null;
-				if (!quickreply.settings.fullQuote || !quickreply.settings.fullQuoteAllowed) {
-					// Style all quote buttons
-					quote_buttons = quickreply.style.getQuoteButtons(elements, 'all');
-					quickreply.style.setQuickQuoteButton(quote_buttons);
-				} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
-					// Style only last quote button
-					quote_buttons = quickreply.style.getQuoteButtons($('#qr_posts'), 'all');
-					last_quote_button = quickreply.style.getQuoteButtons(elements, 'last');
-					quickreply.style.removeQuickQuoteButton(quote_buttons);
-					quickreply.style.setQuickQuoteButton(last_quote_button);
+				if (divarea.innerHTML) {
+					self._selection = divarea.innerHTML.replace(/<br>/ig, '\n');
+					self._selection = self._selection.replace(/<br\/>/ig, '\n');
+					self._selection = self._selection.replace(/&lt\;/ig, '<');
+					self._selection = self._selection.replace(/&gt\;/ig, '>');
+					self._selection = self._selection.replace(/&amp\;/ig, '&');
+					self._selection = self._selection.replace(/&nbsp\;/ig, ' ');
+				} else if (document.all) {
+					self._selection = divarea.innerText;
+				} else if (divarea.textContent) {
+					self._selection = divarea.textContent;
+				} else if (divarea.firstChild.nodeValue) {
+					self._selection = divarea.firstChild.nodeValue;
 				}
+
+				self._selection = self._selection.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '');
+			};
+			
+			function addFullQuote(e, element) {
+				e.preventDefault();
+				self._postID = quickreply.style.getPostId(element);
+				self._selection = '';
+
+				if (quickreply.settings.quickQuoteButton) {
+					self._getSelection();
+				}
+
+				if (quickreply.settings.fullQuote && !element.hasClass('qr-quickquote')) {
+					if (self._selection === '' || typeof self._selection === 'undefined' || self._selection === null) {
+						getPostContent();
+					}
+				}
+
+				if (self._selection != '') {
+					self._insertQuote();
+				} else { //@TODO учитывать права доступа!!
+					quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
+				}
+			};
+
+			function qrFullQuote(e, elements) { //@TODO неочевидное название функции, придумать новое
+				if (quickreply.settings.quickQuoteButton) {
+					var quoteButtons = null, lastQuoteButton = null;
+
+					if (!quickreply.settings.fullQuote || !quickreply.settings.fullQuoteAllowed) {
+						// Style all quote buttons
+						quoteButtons = quickreply.style.getQuoteButtons(elements, 'all');
+
+						quickreply.style.setQuickQuoteButton(quoteButtons);
+
+					} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
+						// Style only last quote button
+						quoteButtons = quickreply.style.getQuoteButtons(this._replyPosts, 'all');
+						lastQuoteButton = quickreply.style.getQuoteButtons(elements, 'last');
+						
+						quickreply.style.removeQuickQuoteButton(quoteButtons);
+						quickreply.style.setQuickQuoteButton(lastQuoteButton);
+					}
+				}
+
+				quickreply.style.getQuoteButtons(elements).click(function(e) {
+					addFullQuote(e, $(this));
+				});
+			};
+
+			function qrFullQuoteResponsive(e) {
+				addFullQuote(e, $(this));
+
+				var $container = $(this).parents('.dropdown-container'),
+					$trigger = $container.find('.dropdown-trigger:first'),
+					data;
+
+				if (!$trigger.length) {
+					data = $container.attr('data-dropdown-trigger');
+					$trigger = data ? $container.children(data) : $container.children('a:first');
+				}
+
+				$trigger.click();
+			};
+
+			self.init = function() {
+				$(window).on('load', function(e) {
+					qrFullQuote(e, self._replyPosts);
+					quickreply.style.responsiveQuotesOnClick(self._replyPosts, qrFullQuoteResponsive);
+				});
+
+				$('#qr_posts').on('qr_completed', function(e, elements) {
+					qrFullQuote(e, elements);
+					quickreply.style.responsiveQuotesOnClick(elements, qrFullQuoteResponsive);
+				});
 			}
-
-			quickreply.style.getQuoteButtons(elements).click(function(e) {
-				qr_add_full_quote(e, $(this));
-			});
 		}
-
-		function qr_full_quote_responsive(e) {
-			qr_add_full_quote(e, $(this));
-			var $container = $(this).parents('.dropdown-container'),
-				$trigger = $container.find('.dropdown-trigger:first'),
-				data;
-
-			if (!$trigger.length) {
-				data = $container.attr('data-dropdown-trigger');
-				$trigger = data ? $container.children(data) : $container.children('a:first');
-			}
-			$trigger.click();
-		}
-
-		$(window).on('load', function(e) {
-			var reply_posts = $('#qr_posts');
-			qr_full_quote(e, reply_posts);
-			quickreply.style.responsiveQuotesOnClick(reply_posts, qr_full_quote_responsive);
-		});
-		$('#qr_posts').on('qr_completed', function(e, elements) {
-			qr_full_quote(e, elements);
-			quickreply.style.responsiveQuotesOnClick(elements, qr_full_quote_responsive);
-		});
+		
+		FullQuote.init();
 	}
 
 	/*********************/
@@ -290,84 +341,112 @@
 	 *
 	 * @param {jQuery} link jQuery element for the user profile link
 	 */
-	quickreply.functions.quickNick = function(link) {
-		var nickname = link.text(),
-			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
-			color = (link.hasClass('username-coloured')) ? link.css('color') : false,
-			qr_color = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
-		quickreply.style.showQuickReplyForm();
-		if (!quickreply.settings.allowBBCode) {
-			insert_text(nickname + comma, false);
-		} else if (!quickreply.settings.quickNickRef) {
-			insert_text('[b]' + nickname + '[/b]' + comma, false);
-		} else {
-			insert_text('[ref' + qr_color + ']' + nickname + '[/ref]' + comma, false);
-		}
-	};
-
-	if (quickreply.settings.quickNick && !quickreply.settings.quickNickUserType) {
-		function qr_quicknick(evt, link) {
-			// Get cursor coordinates
-			if (!evt) {
-				evt = window.event;
-			}
-			evt.preventDefault();
-			var coordinates = qr_getCoordinates(evt);
-
-			// Get nick and id
-			var viewprofile_url = link.attr('href');
-			var qr_pm_link = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
-
-			var qrNickAlert = quickreply.style.quickNickDropdown(
-				coordinates.x, coordinates.y, viewprofile_url, qr_pm_link
-			);
-
-			$('a.qr_quicknick', qrNickAlert).mousedown(function() {
-				quickreply.functions.quickNick(link);
-				qrNickAlert.remove();
-				return false;
-			});
-			$('a', qrNickAlert).mousedown(function(e) {
-				e.preventDefault();
-				return false;
-			});
-			function qr_alert_remove(e) {
-				qrNickAlert.remove();
-				$(document.body).unbind('mousedown', qr_alert_remove);
-			}
-
-			setTimeout(function() {
-				$(document.body).mousedown(qr_alert_remove);
-			}, 10);
-		}
-
-		/* Ajax Submit */
-		$('#qr_posts').on('click', quickreply.editor.profileLinkSelector, function(e) {
-			qr_quicknick(e, $(this));
-		});
-
-		function quicknick_handle_posts(e, elements) {
-			elements.find(quickreply.editor.profileLinkSelector).each(function() {
-				$(this).attr('title', quickreply.language.QUICKNICK);
-			});
-		}
-
-		$(document).ready(function(e) {
-			quicknick_handle_posts(e, $('#qr_posts'));
-		});
-		$('#qr_posts').on('qr_loaded', quicknick_handle_posts);
-	}
-
-	if (quickreply.settings.quickNickString ||
-		(quickreply.settings.quickNick && quickreply.settings.quickNickUserType)) {
-		$('#qr_posts').on('click', '.qr_quicknick', function(e) {
-			e.preventDefault();
-			var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
-			quickreply.functions.quickNick(link);
-		})
-	}
-
 	if (quickreply.settings.quickNick || quickreply.settings.quickNickString) {
+		var QuickNick = new function() {
+			QrHelper.apply(this, arguments);
+
+			var self = this,
+				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n';
+
+			function quickNickIsDropdown() {
+				return (quickreply.settings.quickNick && !quickreply.settings.quickNickUserType) ? true : false;
+			};
+
+			function quickNickIsString() {
+				return (
+						quickreply.settings.quickNickString ||
+							(
+								quickreply.settings.quickNick 
+									&& quickreply.settings.quickNickUserType
+							)
+						) 
+						? true : false;
+			};
+			
+			function qrQuickNick(evt, link) {
+				// Get cursor coordinates
+				if (!evt) {
+					evt = window.event;
+				}
+				evt.preventDefault();
+				var coordinates = self._getCoordinates(evt);
+
+				// Get nick and id
+				var viewprofile_url = link.attr('href');
+				var qr_pm_link = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
+
+				var qrNickAlert = quickreply.style.quickNickDropdown(
+					coordinates.x, coordinates.y, viewprofile_url, qr_pm_link
+				);
+				
+				function qrAlertRemove(e) {
+					qrNickAlert.remove();
+					$(document.body).unbind('mousedown', qrAlertRemove);
+				};
+
+				$('a.qr_quicknick', qrNickAlert).mousedown(function() {
+					insertQuickNick(link);
+					qrNickAlert.remove();
+					return false;
+				});
+	
+				$('a', qrNickAlert).mousedown(function(e) {
+					e.preventDefault();
+					return false;
+				});
+
+				setTimeout(function() {
+					$(document.body).mousedown(qrAlertRemove);
+				}, 10);
+			};
+
+			function quickNickHandlePosts(e, elements) {
+				elements.find(quickreply.editor.profileLinkSelector).each(function() {
+					$(this).attr('title', quickreply.language.QUICKNICK);
+				});
+			};
+			
+			function insertQuickNick(link) {
+				var nickname = link.text(),
+					color = (link.hasClass('username-coloured')) ? link.css('color') : false,
+					qrColor = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
+				
+				quickreply.style.showQuickReplyForm();
+
+				if (!quickreply.settings.allowBBCode) {
+					insert_text(nickname + comma, false);
+				} else if (!quickreply.settings.quickNickRef) {
+					insert_text('[b]' + nickname + '[/b]' + comma, false);
+				} else {
+					insert_text('[ref' + qrColor + ']' + nickname + '[/ref]' + comma, false);
+				}
+			};
+
+			self.init = function() {
+				if (quickNickIsDropdown()) {
+					$(document).ready(function(e) {
+						quickNickHandlePosts(e, self._replyPosts);
+					});
+					self._replyPosts.on('qr_loaded', quickNickHandlePosts);
+
+					/* Ajax Submit */
+					self._replyPosts.on('click', quickreply.editor.profileLinkSelector, function(e) {
+						qrQuickNick(e, $(this));
+					});
+				}
+
+				if (quickNickIsString()) {
+					self._replyPosts.on('click', '.qr_quicknick', function(e) {
+						e.preventDefault();
+						var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
+						insertQuickNick(link);
+					})
+				}
+			}
+		}
+
+		QuickNick.init();
+
 		/**********************/
 		/* Live Search Plugin */
 		/**********************/
@@ -382,6 +461,7 @@
 			$('#leavesearch').on('click', '#qr_quicknick_live_search', function() {
 				var comma = (quickreply.settings.enableComma) ? ', ' : '',
 					nickname = $('#user_live_search').val();
+
 				quickreply.style.showQuickReplyForm();
 				insert_text('[ref]' + nickname + '[/ref]' + comma, false);
 			});
