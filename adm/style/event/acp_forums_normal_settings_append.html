@@ -7,5 +7,17 @@
 <!-- ENDIF -->
 <dl>
 	<dt><label for="qr_form_type">{L_ACP_QR_FORM_TYPE}{L_COLON}</label><br /><span>{L_ACP_QR_FORM_TYPE_EXPLAIN}</span></dt>
-	<dd><select id="qr_form_type" name="qr_form_type"><option value="0"<!-- IF S_QR_FORM_TYPE == 0 --> selected="selected"<!-- ENDIF -->>{L_ACP_QR_FORM_TYPE_STANDARD}</option><option value="1"<!-- IF S_QR_FORM_TYPE == 1 --> selected="selected"<!-- ENDIF -->>{L_ACP_QR_FORM_TYPE_FIXED}</option><option value="2"<!-- IF S_QR_FORM_TYPE == 2 --> selected="selected"<!-- ENDIF -->>{L_ACP_QR_FORM_TYPE_SCROLL}</option></select></dd>
+	<dd>
+		<select id="qr_form_type" name="qr_form_type">
+			<option value="1"<!-- IF S_QR_FORM_TYPE == 1 --> selected="selected"<!-- ENDIF -->>
+				{L_ACP_QR_FORM_TYPE_STANDARD}
+			</option>
+			<option value="2"<!-- IF S_QR_FORM_TYPE == 2 --> selected="selected"<!-- ENDIF -->>
+				{L_ACP_QR_FORM_TYPE_FIXED}
+			</option>
+			<option value="3"<!-- IF S_QR_FORM_TYPE == 3 --> selected="selected"<!-- ENDIF -->>
+				{L_ACP_QR_FORM_TYPE_SCROLL}
+			</option>
+		</select>
+	</dd>
 </dl>

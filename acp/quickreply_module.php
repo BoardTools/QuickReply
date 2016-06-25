@@ -40,7 +40,11 @@ class quickreply_module extends acp_module_helper
 			'vars'  => array(
 				'legend1'                 => 'ACP_QR_LEGEND_GENERAL',
 				'allow_quick_reply'       => array('lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'forum_qr_enable'         => array('lang' => 'ACP_QR_ENABLE_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
 				'qr_allow_for_guests'     => array('lang' => 'ACP_QR_ALLOW_FOR_GUESTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				//
+				'legend2'                 => 'ACP_QR_LEGEND_DISPLAY',
+				'forum_qr_form_type'      => array('lang' => 'ACP_QR_FORM_TYPE', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_qr_form_type', 'explain' => true),
 				'qr_ctrlenter'            => array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_attach'               => array('lang' => 'ACP_QR_ATTACH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_bbcode'               => array('lang' => 'ACP_QR_BBCODE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
@@ -48,15 +52,11 @@ class quickreply_module extends acp_module_helper
 				'qr_capslock_transfer'    => array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_show_button_translit' => array('lang' => 'ACP_QR_SHOW_BUTTON_TRANSLIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				//
-				'legend2'                 => 'ACP_QR_LEGEND_AJAX',
+				'legend3'                 => 'ACP_QR_LEGEND_AJAX',
 				'qr_ajax_pagination'      => array('lang' => 'ACP_QR_AJAX_PAGINATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_scroll_time'          => array('lang' => 'ACP_QR_SCROLL_TIME', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true),
 				'qr_ajax_submit'          => array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				//
-				'legend3'                 => array('ACP_QR_LEGEND_FORUM', 'ACP_QR_LEGEND_FORUM_EXPLAIN'),
-				'forum_qr_enable'         => array('lang' => 'ENABLE_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
-				'forum_qr_ajax_submit'    => array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'forum_qr_form_type'      => array('lang' => 'ACP_QR_FORM_TYPE', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_qr_form_type', 'explain' => true),
+				'forum_qr_ajax_submit'    => array('lang' => 'ACP_QR_ENABLE_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
 				//
 				'legend4'                 => 'ACP_SUBMIT_CHANGES',
 			),
@@ -72,17 +72,9 @@ class quickreply_module extends acp_module_helper
 		}
 
 		// Set default values.
-		$this->new_config['forum_qr_enable'] = true;
-		$this->new_config['forum_qr_ajax_submit'] = true;
-		$this->new_config['forum_qr_form_type'] = 2;
-	}
-
-	/**
-	 * Sets the requested submission state
-	 */
-	protected function set_submit()
-	{
-		$this->submit = $this->request->is_set_post('submit') || $this->request->is_set_post('apply_forum_settings');
+		$this->new_config['forum_qr_enable'] = false;
+		$this->new_config['forum_qr_ajax_submit'] = false;
+		$this->new_config['forum_qr_form_type'] = 0;
 	}
 
 	/**
@@ -105,7 +97,20 @@ class quickreply_module extends acp_module_helper
 	 */
 	function select_qr_form_type($value, $key = '')
 	{
-		return '<select id="qr_form_type" name="config[forum_qr_form_type]"><option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $this->user->lang('ACP_QR_FORM_TYPE_STANDARD') . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $this->user->lang('ACP_QR_FORM_TYPE_FIXED') . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $this->user->lang('ACP_QR_FORM_TYPE_SCROLL') . '</option></select><br /><br /><input class="button2" type="submit" id="apply_forum_settings" name="apply_forum_settings" value="' . $this->user->lang['ACP_QR_APPLY_FORUM_SETTINGS'] . '" />';
+		return '<select id="qr_form_type" name="config[forum_qr_form_type]">
+			<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>
+				' . $this->user->lang('ACP_QR_LEAVE_AS_IS') . '
+			</option>
+			<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>
+				' . $this->user->lang('ACP_QR_FORM_TYPE_STANDARD') . '
+			</option>
+			<option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>
+				' . $this->user->lang('ACP_QR_FORM_TYPE_FIXED') . '
+			</option>
+			<option value="3"' . (($value == 3) ? ' selected="selected"' : '') . '>
+				' . $this->user->lang('ACP_QR_FORM_TYPE_SCROLL') . '
+			</option>
+		</select>';
 	}
 
 	/**
@@ -115,16 +120,28 @@ class quickreply_module extends acp_module_helper
 	 */
 	public function apply_forum_settings($cfg_array)
 	{
-		if ($this->request->is_set_post('apply_forum_settings'))
-		{
-			if ($cfg_array['forum_qr_enable'])
-			{
-				enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
-			}
+		$sql_set = '';
 
+		if ($cfg_array['forum_qr_enable'])
+		{
+			enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
+		}
+
+		if ($cfg_array['forum_qr_ajax_submit'])
+		{
+			$sql_set .= 'qr_ajax_submit = ' . (int) $cfg_array['forum_qr_ajax_submit'];
+		}
+
+		if ($cfg_array['forum_qr_form_type'])
+		{
+			$sql_set .= ($sql_set !== '') ? ', ' : '';
+			$sql_set .= 'qr_form_type = ' . (int) $cfg_array['forum_qr_form_type'];
+		}
+			
+		if ($sql_set)
+		{
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET qr_ajax_submit = ' . (int) $cfg_array['forum_qr_ajax_submit'] . ',
-						qr_form_type = ' . (int) $cfg_array['forum_qr_form_type'];
+					SET ' . $sql_set;
 			$this->db->sql_query($sql);
 		}
 	}
