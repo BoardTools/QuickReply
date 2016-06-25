@@ -111,11 +111,11 @@ class listener implements EventSubscriberInterface
 			));
 		}
 
-		if (!$this->config['qr_quickquote_button'] && 
+		if (!$this->config['qr_quickquote_button'] &&
 			(
-				!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) || 
+				!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) ||
 				(
-					!$this->config['qr_last_quote'] && 
+					!$this->config['qr_last_quote'] &&
 					$topic_data['topic_last_post_id'] === $row['post_id']
 				)
 			)
