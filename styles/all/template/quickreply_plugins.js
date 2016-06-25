@@ -33,8 +33,43 @@
 	/* Helper functions */
 	/********************/
 	function QrHelper() {
-		this._selection = '';
 		this._replyPosts = $('#qr_posts');
+
+		var self = this;
+
+		/**
+		 * Gets cursor coordinates.
+		 *
+		 * @param {Event} evt jQuery Event object
+		 * @returns {object}
+		 */
+		self._getCoordinates = function(evt) {
+			if (evt.type == 'touchstart') {
+				evt.pageX = evt.originalEvent.touches[0].pageX;
+				evt.pageY = evt.originalEvent.touches[0].pageY;
+			}
+
+			return {
+				x: evt.pageX || evt.clientX + document.documentElement.scrollLeft, // FF || IE
+				y: evt.pageY || evt.clientY + document.documentElement.scrollTop
+			};
+		};
+	}
+
+	/**************************************/
+	/* Quick Quote and Full Quote Plugins */
+	/**************************************/
+	/**
+	 * Inserts a quote from the specified post to quick reply textarea.
+	 *
+	 * @param {string} qr_post_id    The ID of the post
+	 * @param {string} selected_text Selected text
+	 */
+	function QrQuote() {
+		QrHelper.apply(this, arguments);
+
+		this._postID = 0;
+		this._selection = '';
 
 		var self = this,
 			clientPC = navigator.userAgent.toLowerCase(), // Get client info
@@ -57,41 +92,6 @@
 				self._selection = document.selection.createRange().text;
 			}
 		};
-
-		/**
-		 * Gets cursor coordinates.
-		 *
-		 * @param {Event} evt jQuery Event object
-		 * @returns {object}
-		 */
-		self._getCoordinates = function(evt) {
-			if (evt.type == 'touchstart') {
-				evt.pageX = evt.originalEvent.touches[0].pageX;
-				evt.pageY = evt.originalEvent.touches[0].pageY;
-			}
-
-			return {
-				x: evt.pageX || evt.clientX + document.documentElement.scrollLeft, // FF || IE
-				y: evt.pageY || evt.clientY + document.documentElement.scrollTop
-			};
-		}
-	}
-
-	/**************************************/
-	/* Quick Quote and Full Quote Plugins */
-	/**************************************/
-	/**
-	 * Inserts a quote from the specified post to quick reply textarea.
-	 *
-	 * @param {string} qr_post_id    The ID of the post
-	 * @param {string} selected_text Selected text
-	 */
-	function QrQuote() {
-		QrHelper.apply(this, arguments);
-
-		this._postID = 0;
-
-		var self = this;
 
 		function getUserName() {
 			var postAuthor = $('#qr_author_p' + self._postID),
@@ -129,7 +129,7 @@
 					}
 				}
 			}
-		}
+		};
 	}
 
 	/**********************/
@@ -254,7 +254,6 @@
 			}
 
 			function addFullQuote(e, element) {
-				e.preventDefault();
 				self._postID = quickreply.style.getPostId(element);
 				self._selection = '';
 
@@ -269,8 +268,10 @@
 				}
 
 				if (self._selection != '') {
+					e.preventDefault();
 					self._insertQuote();
-				} else { //@TODO учитывать права доступа!!
+				} else if (!quickreply.settings.fullQuoteAllowed) {
+					e.preventDefault();
 					quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
 				}
 			}
@@ -325,7 +326,7 @@
 					qrFullQuote(e, elements);
 					quickreply.style.responsiveQuotesOnClick(elements, qrFullQuoteResponsive);
 				});
-			}
+			};
 		};
 
 		FullQuote.init();
