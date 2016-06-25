@@ -68,7 +68,7 @@
 			if (evt.type == 'touchstart') {
 				evt.pageX = evt.originalEvent.touches[0].pageX;
 				evt.pageY = evt.originalEvent.touches[0].pageY;
-			};
+			}
 
 			return {
 				x: evt.pageX || evt.clientX + document.documentElement.scrollLeft, // FF || IE
@@ -97,21 +97,19 @@
 			var postAuthor = $('#qr_author_p' + self._postID),
 				nickname = postAuthor.text(),
 				userProfileUrl = postAuthor.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL)
-					.replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/, 
+					.replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/,
 						function(str, p1, p2) {
 							return (p2) ? p1 : '';
 						}
-					),
-				userName = (quickreply.settings.quickQuoteLink && userProfileUrl && quickreply.settings.allowBBCode) ?
+					);
+			return (quickreply.settings.quickQuoteLink && userProfileUrl && quickreply.settings.allowBBCode) ?
 								'[url=' + userProfileUrl + ']' + nickname + '[/url]' : nickname;
-
-			return userName;
-		};
+		}
 
 		function getBBpost() {
 			return (quickreply.settings.sourcePost) ? '[post]' + self._postID + '[/post] ' : '';
-		};
-		
+		}
+
 		self._insertQuote = function() {
 			var username = getUserName(),
 				bbpost = getBBpost(); // Link to the source post
@@ -132,7 +130,7 @@
 				}
 			}
 		}
-	};
+	}
 
 	/**********************/
 	/* Quick Quote Plugin */
@@ -140,7 +138,7 @@
 	if (quickreply.settings.quickQuote) {
 		var QuickQuote = new function() {
 			QrQuote.apply(this, arguments);
-		
+
 			var self = this,
 				qrAlert = false,
 				quickQuoteCancelEvent = false;
@@ -151,13 +149,13 @@
 					$(document.body).unbind('mousedown', qrAlertRemove);
 					qrAlert = false;
 				}
-			};
-			
+			}
+
 			function insertQuickQuote() {
 				self._insertQuote();
 				qrAlertRemove();
 				return false;
-			};
+			}
 
 			function addQuickQuote(evt, element) {
 				var $target = $(evt.target), $element = element || $(this);
@@ -188,7 +186,7 @@
 						}, 10);
 					}
 				}, 0);
-			};
+			}
 
 			function handleQuickQuote(evt) {
 				addQuickQuote(evt, $(this));
@@ -200,10 +198,10 @@
 						self._replyPosts.off('mousemove', '.content', addQuickQuote);
 						quickQuoteCancelEvent = false;
 					});
-	
+
 					quickQuoteCancelEvent = true;
 				}
-			};
+			}
 
 			self.init = function() {
 				if ('ontouchstart' in window) {
@@ -212,7 +210,7 @@
 
 				self._replyPosts.on('mouseup', '.content', addQuickQuote);
 			};
-		}
+		};
 
 		QuickQuote.init();
 	}
@@ -253,8 +251,8 @@
 				}
 
 				self._selection = self._selection.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '');
-			};
-			
+			}
+
 			function addFullQuote(e, element) {
 				e.preventDefault();
 				self._postID = quickreply.style.getPostId(element);
@@ -275,7 +273,7 @@
 				} else { //@TODO учитывать права доступа!!
 					quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
 				}
-			};
+			}
 
 			function qrFullQuote(e, elements) { //@TODO неочевидное название функции, придумать новое
 				if (quickreply.settings.quickQuoteButton) {
@@ -291,7 +289,7 @@
 						// Style only last quote button
 						quoteButtons = quickreply.style.getQuoteButtons(this._replyPosts, 'all');
 						lastQuoteButton = quickreply.style.getQuoteButtons(elements, 'last');
-						
+
 						quickreply.style.removeQuickQuoteButton(quoteButtons);
 						quickreply.style.setQuickQuoteButton(lastQuoteButton);
 					}
@@ -300,7 +298,7 @@
 				quickreply.style.getQuoteButtons(elements).click(function(e) {
 					addFullQuote(e, $(this));
 				});
-			};
+			}
 
 			function qrFullQuoteResponsive(e) {
 				addFullQuote(e, $(this));
@@ -315,7 +313,7 @@
 				}
 
 				$trigger.click();
-			};
+			}
 
 			self.init = function() {
 				$(window).on('load', function(e) {
@@ -328,8 +326,8 @@
 					quickreply.style.responsiveQuotesOnClick(elements, qrFullQuoteResponsive);
 				});
 			}
-		}
-		
+		};
+
 		FullQuote.init();
 	}
 
@@ -349,20 +347,19 @@
 				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n';
 
 			function quickNickIsDropdown() {
-				return (quickreply.settings.quickNick && !quickreply.settings.quickNickUserType) ? true : false;
-			};
+				return !!(quickreply.settings.quickNick && !quickreply.settings.quickNickUserType);
+			}
 
 			function quickNickIsString() {
-				return (
-						quickreply.settings.quickNickString ||
-							(
-								quickreply.settings.quickNick 
-									&& quickreply.settings.quickNickUserType
-							)
-						) 
-						? true : false;
-			};
-			
+				return !!(
+					quickreply.settings.quickNickString ||
+					(
+						quickreply.settings.quickNick
+						&& quickreply.settings.quickNickUserType
+					)
+				);
+			}
+
 			function qrQuickNick(evt, link) {
 				// Get cursor coordinates
 				if (!evt) {
@@ -378,18 +375,18 @@
 				var qrNickAlert = quickreply.style.quickNickDropdown(
 					coordinates.x, coordinates.y, viewprofile_url, qr_pm_link
 				);
-				
+
 				function qrAlertRemove(e) {
 					qrNickAlert.remove();
 					$(document.body).unbind('mousedown', qrAlertRemove);
-				};
+				}
 
 				$('a.qr_quicknick', qrNickAlert).mousedown(function() {
 					insertQuickNick(link);
 					qrNickAlert.remove();
 					return false;
 				});
-	
+
 				$('a', qrNickAlert).mousedown(function(e) {
 					e.preventDefault();
 					return false;
@@ -398,19 +395,19 @@
 				setTimeout(function() {
 					$(document.body).mousedown(qrAlertRemove);
 				}, 10);
-			};
+			}
 
 			function quickNickHandlePosts(e, elements) {
 				elements.find(quickreply.editor.profileLinkSelector).each(function() {
 					$(this).attr('title', quickreply.language.QUICKNICK);
 				});
-			};
-			
+			}
+
 			function insertQuickNick(link) {
 				var nickname = link.text(),
 					color = (link.hasClass('username-coloured')) ? link.css('color') : false,
 					qrColor = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
-				
+
 				quickreply.style.showQuickReplyForm();
 
 				if (!quickreply.settings.allowBBCode) {
@@ -420,7 +417,7 @@
 				} else {
 					insert_text('[ref' + qrColor + ']' + nickname + '[/ref]' + comma, false);
 				}
-			};
+			}
 
 			self.init = function() {
 				if (quickNickIsDropdown()) {
@@ -443,7 +440,7 @@
 					})
 				}
 			}
-		}
+		};
 
 		QuickNick.init();
 
