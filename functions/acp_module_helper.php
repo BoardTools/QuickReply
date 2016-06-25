@@ -238,7 +238,7 @@ abstract class acp_module_helper
 		));
 	}
 
-	/**               
+	/**
 	 * Gets array with language strings for a legend
 	 *
 	 * @param array|string $vars String with legend language key or
