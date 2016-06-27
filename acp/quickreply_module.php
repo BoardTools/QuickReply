@@ -46,7 +46,7 @@ class quickreply_module extends acp_module_helper
 				'legend2'                 => 'ACP_QR_LEGEND_DISPLAY',
 				'forum_qr_form_type'      => array('lang' => 'ACP_QR_FORM_TYPE', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_qr_form_type', 'explain' => true),
 				'qr_ctrlenter'            => array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_attach'               => array('lang' => 'ACP_QR_ATTACH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_attach'               => array('lang' => 'ACP_QR_ATTACH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_bbcode'               => array('lang' => 'ACP_QR_BBCODE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_smilies'              => array('lang' => 'ACP_QR_SMILIES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer'    => array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
@@ -74,7 +74,7 @@ class quickreply_module extends acp_module_helper
 		// Set default values.
 		$this->new_config['forum_qr_enable'] = false;
 		$this->new_config['forum_qr_ajax_submit'] = false;
-		$this->new_config['forum_qr_form_type'] = 0;
+		$this->new_config['forum_qr_form_type'] = -1;
 	}
 
 	/**
@@ -97,20 +97,16 @@ class quickreply_module extends acp_module_helper
 	 */
 	function select_qr_form_type($value, $key = '')
 	{
-		return '<select id="qr_form_type" name="config[forum_qr_form_type]">
-			<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>
-				' . $this->user->lang('ACP_QR_LEAVE_AS_IS') . '
-			</option>
-			<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>
-				' . $this->user->lang('ACP_QR_FORM_TYPE_STANDARD') . '
-			</option>
-			<option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>
-				' . $this->user->lang('ACP_QR_FORM_TYPE_FIXED') . '
-			</option>
-			<option value="3"' . (($value == 3) ? ' selected="selected"' : '') . '>
-				' . $this->user->lang('ACP_QR_FORM_TYPE_SCROLL') . '
-			</option>
-		</select>';
+		$form_types = array(
+			-1 => 'ACP_QR_LEAVE_AS_IS',
+			0  => 'ACP_QR_FORM_TYPE_STANDARD',
+			1  => 'ACP_QR_FORM_TYPE_FIXED',
+			2  => 'ACP_QR_FORM_TYPE_SCROLL',
+		);
+
+		return '<select id="qr_form_type" name="config[forum_qr_form_type]">' .
+			build_select($form_types, -1)
+			. '</select>';
 	}
 
 	/**
@@ -120,7 +116,7 @@ class quickreply_module extends acp_module_helper
 	 */
 	public function apply_forum_settings($cfg_array)
 	{
-		$sql_set = '';
+		$sql_set = array();
 
 		if ($cfg_array['forum_qr_enable'])
 		{
@@ -129,19 +125,18 @@ class quickreply_module extends acp_module_helper
 
 		if ($cfg_array['forum_qr_ajax_submit'])
 		{
-			$sql_set .= 'qr_ajax_submit = ' . (int) $cfg_array['forum_qr_ajax_submit'];
+			$sql_set = array_merge($sql_set, array('qr_ajax_submit' => (int) $cfg_array['forum_qr_ajax_submit']));
 		}
 
-		if ($cfg_array['forum_qr_form_type'])
+		if ($cfg_array['forum_qr_form_type'] > -1)
 		{
-			$sql_set .= ($sql_set !== '') ? ', ' : '';
-			$sql_set .= 'qr_form_type = ' . (int) $cfg_array['forum_qr_form_type'];
+			$sql_set = array_merge($sql_set, array('qr_form_type' => (int) $cfg_array['forum_qr_form_type']));
 		}
-			
-		if ($sql_set)
+
+		if (sizeof($sql_set))
 		{
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET ' . $sql_set;
+					SET ' . $this->db->sql_build_array('UPDATE', $sql_set);
 			$this->db->sql_query($sql);
 		}
 	}
