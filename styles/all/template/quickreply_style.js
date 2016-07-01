@@ -110,7 +110,7 @@
 	 * Adds Ajax functionality for the pagination.
 	 */
 	quickreply.style.bindPagination = function() {
-		if (quickreply.settings.ajaxPagination) {
+		if (quickreply.settings.saveReply) {
 			$('.action-bar .pagination a:not(.dropdown-trigger, .mark)').click(function(event) {
 				event.preventDefault();
 				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
@@ -131,7 +131,7 @@
 
 		$('.action-bar .pagination .page-jump-form :button').click(function() {
 			var $input = $(this).siblings('input.inputbox');
-			if (!quickreply.settings.ajaxPagination) {
+			if (!quickreply.settings.saveReply) {
 				pageJump($input);
 			} else if (quickreply.plugins.seo) {
 				quickreply.functions.qr_seo_page_jump($input);

@@ -254,6 +254,7 @@ class listener_helper
 			'S_QR_FULL_QUOTE'         => $this->config['qr_full_quote'],
 			'S_QR_FULL_QUOTE_ALLOWED' => $this->auth->acl_get('f_qr_full_quote', $forum_id),
 			'S_QR_LAST_QUOTE'         => $this->config['qr_last_quote'],
+			'S_QR_SAVE_REPLY'         => $this->user->data['ajax_pagination'],
 			'S_QR_CE_ENABLE'          => $this->plugins_helper->qr_ctrlenter_enabled(),
 			'QR_SOURCE_POST'          => $this->config['qr_source_post'],
 			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],

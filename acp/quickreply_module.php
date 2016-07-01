@@ -89,7 +89,6 @@ class quickreply_module extends acp_module_helper
 
 	/**
 	 * Select quick reply form type.
-	 * Also generate the button to apply forum based settings
 	 *
 	 * @param string $value Current value
 	 * @param string $key   Current config key
@@ -105,8 +104,8 @@ class quickreply_module extends acp_module_helper
 		);
 
 		return '<select id="qr_form_type" name="config[forum_qr_form_type]">' .
-			build_select($form_types, -1)
-			. '</select>';
+			build_select($form_types, $value) .
+		'</select>';
 	}
 
 	/**
@@ -116,7 +115,7 @@ class quickreply_module extends acp_module_helper
 	 */
 	public function apply_forum_settings($cfg_array)
 	{
-		$sql_set = array();
+		$sql_update_array = array();
 
 		if ($cfg_array['forum_qr_enable'])
 		{
@@ -125,18 +124,18 @@ class quickreply_module extends acp_module_helper
 
 		if ($cfg_array['forum_qr_ajax_submit'])
 		{
-			$sql_set = array_merge($sql_set, array('qr_ajax_submit' => (int) $cfg_array['forum_qr_ajax_submit']));
+			$sql_update_array['qr_ajax_submit'] = (int) $cfg_array['forum_qr_ajax_submit'];
 		}
 
 		if ($cfg_array['forum_qr_form_type'] > -1)
 		{
-			$sql_set = array_merge($sql_set, array('qr_form_type' => (int) $cfg_array['forum_qr_form_type']));
+			$sql_update_array['qr_form_type'] = (int) $cfg_array['forum_qr_form_type'];
 		}
 
-		if (sizeof($sql_set))
+		if (sizeof($sql_update_array))
 		{
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET ' . $this->db->sql_build_array('UPDATE', $sql_set);
+					SET ' . $this->db->sql_build_array('UPDATE', $sql_update_array);
 			$this->db->sql_query($sql);
 		}
 	}

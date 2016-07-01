@@ -119,7 +119,7 @@
 	 * Adds Ajax functionality for the pagination.
 	 */
 	quickreply.style.bindPagination = function() {
-		if (quickreply.settings.ajaxPagination) {
+		if (quickreply.settings.saveReply) {
 			$('nav .pagination a:not([href="#"])').click(function(event) {
 				event.preventDefault();
 				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
@@ -140,7 +140,7 @@
 
 		$('.total-posts-container .page-jump-form :button').click(function() {
 			var $input = $(this).parent().siblings('input.form-control');
-			if (!quickreply.settings.ajaxPagination) {
+			if (!quickreply.settings.saveReply) {
 				pageJump($input);
 			} else if (quickreply.plugins.seo) {
 				quickreply.functions.qr_seo_page_jump($input);
@@ -153,7 +153,7 @@
 		$('.total-posts-container .page-jump-form input.form-control').on('keypress', function(event) {
 			if (event.which === 13 || event.keyCode === 13) {
 				event.preventDefault();
-				if (!quickreply.settings.ajaxPagination) {
+				if (!quickreply.settings.saveReply) {
 					pageJump($(this));
 				} else if (quickreply.plugins.seo) {
 					quickreply.functions.qr_seo_page_jump($(this));
@@ -360,7 +360,7 @@
 	// Style-specific functions.
 	function qr_set_position() {
 		$(quickreply.editor.mainForm).css('bottom', $('#footer-nav').height());
-		if (quickreply.functions.qr_is_fullscreen()) {
+		if (quickreply.form.is('fullscreen')) {
 			$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
 		}
 	}

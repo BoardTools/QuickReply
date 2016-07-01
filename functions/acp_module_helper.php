@@ -258,8 +258,8 @@ abstract class acp_module_helper
 			$legend_explain = '';
 		}
 		return array(
-			'S_LEGEND' => true,
-			'LEGEND'   => $legend,
+			'S_LEGEND'       => true,
+			'LEGEND'         => $legend,
 			'LEGEND_EXPLAIN' => $legend_explain,
 		);
 	}

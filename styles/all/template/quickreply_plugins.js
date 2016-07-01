@@ -1,7 +1,10 @@
-/* global quickreply, grecaptcha */
+/* global quickreply, grecaptcha, insert_text, split_lines */
+/* jshint -W040 */
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
+	'use strict';
+
 	/*****************************/
 	/* Not Change Subject Plugin */
 	/*****************************/
@@ -23,7 +26,7 @@
 	/*********************/
 	if (quickreply.settings.ctrlEnter) {
 		$(quickreply.editor.textareaSelector).keydown(function(event) {
-			if (event.ctrlKey && (event.keyCode == 13 || event.keyCode == 10)) {
+			if (event.ctrlKey && (event.keyCode === 13 || event.keyCode === 10)) {
 				$(this).parents('form').find('input[name="post"]').click();
 			}
 		});
@@ -44,7 +47,7 @@
 		 * @returns {object}
 		 */
 		self._getCoordinates = function(evt) {
-			if (evt.type == 'touchstart') {
+			if (evt.type === 'touchstart') {
 				evt.pageX = evt.originalEvent.touches[0].pageX;
 				evt.pageY = evt.originalEvent.touches[0].pageY;
 			}
@@ -143,7 +146,7 @@
 				qrAlert = false,
 				quickQuoteCancelEvent = false;
 
-			function qrAlertRemove(e) {
+			function qrAlertRemove() {
 				if (qrAlert) {
 					qrAlert.remove();
 					$(document.body).unbind('mousedown', qrAlertRemove);
@@ -194,7 +197,7 @@
 				if (!quickQuoteCancelEvent) {
 					self._replyPosts.on('mousemove', '.content', addQuickQuote);
 
-					$(document.body).one('mouseup', function(evt) {
+					$(document.body).one('mouseup', function() {
 						self._replyPosts.off('mousemove', '.content', addQuickQuote);
 						quickQuoteCancelEvent = false;
 					});
@@ -267,7 +270,7 @@
 					}
 				}
 
-				if (self._selection != '') {
+				if (self._selection !== '') {
 					e.preventDefault();
 					self._insertQuote();
 				} else if (!quickreply.settings.fullQuoteAllowed) {
@@ -353,10 +356,8 @@
 
 			function quickNickIsString() {
 				return !!(
-					quickreply.settings.quickNickString ||
-					(
-						quickreply.settings.quickNick
-						&& quickreply.settings.quickNickUserType
+					quickreply.settings.quickNickString || (
+						quickreply.settings.quickNick && quickreply.settings.quickNickUserType
 					)
 				);
 			}
@@ -377,7 +378,7 @@
 					coordinates.x, coordinates.y, viewprofile_url, qr_pm_link
 				);
 
-				function qrAlertRemove(e) {
+				function qrAlertRemove() {
 					qrNickAlert.remove();
 					$(document.body).unbind('mousedown', qrAlertRemove);
 				}
@@ -438,9 +439,9 @@
 						e.preventDefault();
 						var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
 						insertQuickNick(link);
-					})
+					});
 				}
-			}
+			};
 		};
 
 		QuickNick.init();
@@ -486,7 +487,7 @@
 	/* reCAPTCHA2 Plugin */
 	/*********************/
 	if (quickreply.plugins.reCAPTCHA2) {
-		$('#qr_postform').on('qr_captcha_refreshed', function(e) {
+		$('#qr_postform').on('qr_captcha_refreshed', function() {
 			var recaptcha2_wrapper = $('.g-recaptcha');
 			recaptcha2_wrapper.html('');
 			grecaptcha.render(document.getElementsByClassName('g-recaptcha')[0], {
