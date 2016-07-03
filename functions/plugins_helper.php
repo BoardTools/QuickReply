@@ -112,6 +112,24 @@ class plugins_helper
 	}
 
 	/**
+	 * Returns whether the quote button should be hidden from the user.
+	 *
+	 * @param array $topic_data Array with topic data
+	 * @param array $row        Array with original post and user data
+	 * @return bool
+	 */
+	public function quote_button_disabled($topic_data, $row)
+	{
+		return !$this->config['qr_quickquote_button'] && (
+			!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) ||
+			(
+				!$this->config['qr_last_quote'] &&
+				$topic_data['topic_last_post_id'] === $row['post_id']
+			)
+		);
+	}
+
+	/**
 	 * Detects whether Ctrl+Enter feature is enabled in QuickReply extension.
 	 * We need to disable this feature in phpBB 3.1.9 and higher
 	 * as it has been added to the core.

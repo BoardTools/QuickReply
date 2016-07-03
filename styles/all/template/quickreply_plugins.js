@@ -36,9 +36,8 @@
 	/* Helper functions */
 	/********************/
 	function QrHelper() {
-		this._replyPosts = $('#qr_posts');
-
-		var self = this;
+		var self = this,
+			dropdown = false;
 
 		/**
 		 * Gets cursor coordinates.
@@ -57,17 +56,39 @@
 				y: evt.pageY || evt.clientY + document.documentElement.scrollTop
 			};
 		};
+
+		/**
+		 * Sets new dropdown and adds body event handler.
+		 *
+		 * @param {jQuery} newDropdown jQuery object for new dropdown
+		 */
+		self._setDropdown = function(newDropdown) {
+			dropdown = newDropdown;
+
+			// Hide active dropdowns when click event happens outside
+			$(document.body).on('mousedown.quickreply.dropdown', function(e) {
+				var $parents = $(e.target).parents();
+				if (!$parents.is(dropdown)) {
+					self._removeDropdown();
+				}
+			});
+		};
+
+		/**
+		 * Removes the dropdown.
+		 */
+		self._removeDropdown = function() {
+			if (dropdown) {
+				dropdown.remove();
+				$(document.body).off('mousedown.quickreply.dropdown');
+				dropdown = false;
+			}
+		};
 	}
 
 	/**************************************/
 	/* Quick Quote and Full Quote Plugins */
 	/**************************************/
-	/**
-	 * Inserts a quote from the specified post to quick reply textarea.
-	 *
-	 * @param {string} qr_post_id    The ID of the post
-	 * @param {string} selected_text Selected text
-	 */
 	function QrQuote() {
 		QrHelper.apply(this, arguments);
 
@@ -81,8 +102,6 @@
 		/**
 		 * Get text selection - not only the post content :(
 		 * IE9 must use the document.selection method but has the *.getSelection so we just force no IE
-		 *
-		 * @returns {string}
 		 */
 		self._getSelection = function() {
 			self._selection = '';
@@ -96,6 +115,11 @@
 			}
 		};
 
+		/**
+		 * Generates a proper username string (with profile link if needed).
+		 *
+		 * @returns {string}
+		 */
 		function getUserName() {
 			var postAuthor = $('#qr_author_p' + self._postID),
 				nickname = postAuthor.text(),
@@ -109,13 +133,21 @@
 								'[url=' + userProfileUrl + ']' + nickname + '[/url]' : nickname;
 		}
 
-		function getBBpost() {
+		/**
+		 * Generates the string with [post] BBCode used for back link to the replied message.
+		 *
+		 * @returns {string}
+		 */
+		function getPostBBCode() {
 			return (quickreply.settings.sourcePost) ? '[post]' + self._postID + '[/post] ' : '';
 		}
 
+		/**
+		 * Inserts a quote from the specified post to quick reply textarea.
+		 */
 		self._insertQuote = function() {
 			var username = getUserName(),
-				bbpost = getBBpost(); // Link to the source post
+				bbpost = getPostBBCode(); // Link to the source post
 
 			if (self._selection) {
 				quickreply.style.showQuickReplyForm();
@@ -138,313 +170,364 @@
 	/**********************/
 	/* Quick Quote Plugin */
 	/**********************/
-	if (quickreply.settings.quickQuote) {
-		var QuickQuote = new function() {
-			QrQuote.apply(this, arguments);
+	function QuickQuote() {
+		QrQuote.apply(this, arguments);
 
-			var self = this,
-				qrAlert = false,
-				quickQuoteCancelEvent = false;
+		var self = this,
+			quickQuoteCancelEvent = false;
 
-			function qrAlertRemove() {
-				if (qrAlert) {
-					qrAlert.remove();
-					$(document.body).unbind('mousedown', qrAlertRemove);
-					qrAlert = false;
-				}
+		/**
+		 * Inserts quick quote to quick reply textarea.
+		 *
+		 * @returns {boolean}
+		 */
+		function insertQuickQuote() {
+			self._insertQuote();
+			self._removeDropdown();
+			return false;
+		}
+
+		/**
+		 * Generates new QuickQuote dropdown.
+		 *
+		 * @param {event}  evt     jQuery Event object
+		 * @param {jQuery} element jQuery container
+		 */
+		function addQuickQuote(evt, element) {
+			var $target = $(evt.target), $element = element || $(this);
+
+			if ($target.is('a') && $target.parents('.codebox').length) {
+				return;
 			}
 
-			function insertQuickQuote() {
-				self._insertQuote();
-				qrAlertRemove();
-				return false;
+			var coordinates = self._getCoordinates(evt);
+			// Which mouse button is pressed?
+			var key = evt.button || evt.which || null; // IE || FF || Unknown
+
+			self._postID = quickreply.style.getPostId($element);
+
+			setTimeout(function() { // Timeout prevents popup when clicking on selected text
+				self._getSelection();
+
+				if (self._selection && key <= 1) { // If text selected && right mouse button not pressed
+					self._removeDropdown();
+					self._setDropdown(quickreply.style.quickQuoteDropdown(coordinates.x, coordinates.y)
+						.mousedown(insertQuickQuote));
+				}
+			}, 0);
+		}
+
+		/**
+		 * Adds new QuickQuote dropdown each time when the selection is changed.
+		 *
+		 * @param {event} evt jQuery Event object
+		 */
+		function handleQuickQuote(evt) {
+			addQuickQuote(evt, $(this));
+
+			if (!quickQuoteCancelEvent) {
+				quickreply.$.qrPosts.on('mousemove', '.content', addQuickQuote);
+
+				$(document.body).one('mouseup', function() {
+					quickreply.$.qrPosts.off('mousemove', '.content', addQuickQuote);
+					quickQuoteCancelEvent = false;
+				});
+
+				quickQuoteCancelEvent = true;
+			}
+		}
+
+		/**
+		 * Initializes QuickQuote functionality.
+		 */
+		self.init = function() {
+			if ('ontouchstart' in window) {
+				quickreply.$.qrPosts.on('mousedown touchstart', '.content', handleQuickQuote);
 			}
 
-			function addQuickQuote(evt, element) {
-				var $target = $(evt.target), $element = element || $(this);
-
-				if ($target.is('a') && $target.parents('.codebox').length) {
-					return;
-				}
-
-				var coordinates = self._getCoordinates(evt);
-				// Which mouse button is pressed?
-				var key = evt.button || evt.which || null; // IE || FF || Unknown
-
-				self._postID = quickreply.style.getPostId($element);
-
-				setTimeout(function() { // Timeout prevents popup when clicking on selected text
-					self._getSelection();
-
-					if (self._selection && key <= 1) { // If text selected && right mouse button not pressed
-						if (qrAlert) {
-							qrAlertRemove();
-						}
-
-						qrAlert = quickreply.style.quickQuoteDropdown(coordinates.x, coordinates.y)
-									.mousedown(insertQuickQuote);
-
-						setTimeout(function() {
-							$(document.body).one('mousedown', qrAlertRemove);
-						}, 10);
-					}
-				}, 0);
-			}
-
-			function handleQuickQuote(evt) {
-				addQuickQuote(evt, $(this));
-
-				if (!quickQuoteCancelEvent) {
-					self._replyPosts.on('mousemove', '.content', addQuickQuote);
-
-					$(document.body).one('mouseup', function() {
-						self._replyPosts.off('mousemove', '.content', addQuickQuote);
-						quickQuoteCancelEvent = false;
-					});
-
-					quickQuoteCancelEvent = true;
-				}
-			}
-
-			self.init = function() {
-				if ('ontouchstart' in window) {
-					self._replyPosts.on('mousedown touchstart', '.content', handleQuickQuote);
-				}
-
-				self._replyPosts.on('mouseup', '.content', addQuickQuote);
-			};
+			quickreply.$.qrPosts.on('mouseup', '.content', addQuickQuote);
 		};
+	}
+	quickreply.plugins.quickQuote = new QuickQuote();
 
-		QuickQuote.init();
+	if (quickreply.settings.quickQuote) {
+		quickreply.plugins.quickQuote.init();
 	}
 
 	/*********************/
 	/* Full Quote Plugin */
 	/*********************/
-	if (quickreply.settings.fullQuote || quickreply.settings.quickQuoteButton) {
-		var FullQuote = new function() {
-			QrQuote.apply(this, arguments);
+	function FullQuote() {
+		QrQuote.apply(this, arguments);
 
-			var self = this;
+		var self = this;
 
-			function getPostContent() {
-				self._selection = '';
+		/**
+		 * Gets full decoded post content to the selection.
+		 */
+		function getPostContent() {
+			self._selection = '';
 
-				var messageName = 'decoded_p' + self._postID, divarea = false;
+			var messageName = 'decoded_p' + self._postID, divarea = false;
 
-				if (document.all) {
-					divarea = document.all[messageName];
-				} else {
-					divarea = document.getElementById(messageName);
-				}
-
-				if (divarea.innerHTML) {
-					self._selection = divarea.innerHTML.replace(/<br>/ig, '\n');
-					self._selection = self._selection.replace(/<br\/>/ig, '\n');
-					self._selection = self._selection.replace(/&lt\;/ig, '<');
-					self._selection = self._selection.replace(/&gt\;/ig, '>');
-					self._selection = self._selection.replace(/&amp\;/ig, '&');
-					self._selection = self._selection.replace(/&nbsp\;/ig, ' ');
-				} else if (document.all) {
-					self._selection = divarea.innerText;
-				} else if (divarea.textContent) {
-					self._selection = divarea.textContent;
-				} else if (divarea.firstChild.nodeValue) {
-					self._selection = divarea.firstChild.nodeValue;
-				}
-
-				self._selection = self._selection.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '');
+			if (document.all) {
+				divarea = document.all[messageName];
+			} else {
+				divarea = document.getElementById(messageName);
 			}
 
-			function addFullQuote(e, element) {
-				self._postID = quickreply.style.getPostId(element);
-				self._selection = '';
+			if (divarea.innerHTML) {
+				self._selection = divarea.innerHTML.replace(/<br>/ig, '\n');
+				self._selection = self._selection.replace(/<br\/>/ig, '\n');
+				self._selection = self._selection.replace(/&lt\;/ig, '<');
+				self._selection = self._selection.replace(/&gt\;/ig, '>');
+				self._selection = self._selection.replace(/&amp\;/ig, '&');
+				self._selection = self._selection.replace(/&nbsp\;/ig, ' ');
+			} else if (document.all) {
+				self._selection = divarea.innerText;
+			} else if (divarea.textContent) {
+				self._selection = divarea.textContent;
+			} else if (divarea.firstChild.nodeValue) {
+				self._selection = divarea.firstChild.nodeValue;
+			}
 
-				if (quickreply.settings.quickQuoteButton) {
-					self._getSelection();
-				}
+			self._selection = self._selection.replace(/(\[attachment.*?\]|\[\/attachment\])/g, '');
+		}
 
-				if (quickreply.settings.fullQuote && !element.hasClass('qr-quickquote')) {
-					if (self._selection === '' || typeof self._selection === 'undefined' || self._selection === null) {
-						getPostContent();
-					}
-				}
+		/**
+		 * Handles full quote insertion.
+		 *
+		 * @param {event}  e       jQuery Event object
+		 * @param {jQuery} element jQuery container
+		 */
+		function addFullQuote(e, element) {
+			self._postID = quickreply.style.getPostId(element);
+			self._selection = '';
 
-				if (self._selection !== '') {
-					e.preventDefault();
-					self._insertQuote();
-				} else if (!quickreply.settings.fullQuoteAllowed) {
-					e.preventDefault();
-					quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
+			if (quickreply.settings.quickQuoteButton) {
+				self._getSelection();
+			}
+
+			if (quickreply.settings.fullQuote && !element.hasClass('qr-quickquote')) {
+				if (self._selection === '' || typeof self._selection === 'undefined' || self._selection === null) {
+					getPostContent();
 				}
 			}
 
-			function qrFullQuote(e, elements) { //@TODO неочевидное название функции, придумать новое
-				if (quickreply.settings.quickQuoteButton) {
-					var quoteButtons = null, lastQuoteButton = null;
+			if (self._selection !== '') {
+				e.preventDefault();
+				self._insertQuote();
+			} else if (!quickreply.settings.fullQuoteAllowed) {
+				e.preventDefault();
+				quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
+			}
+		}
 
-					if (!quickreply.settings.fullQuote || !quickreply.settings.fullQuoteAllowed) {
-						// Style all quote buttons
-						quoteButtons = quickreply.style.getQuoteButtons(elements, 'all');
+		/**
+		 * Handles standard quote buttons.
+		 *
+		 * @param {event}  e        jQuery Event object
+		 * @param {jQuery} elements jQuery container
+		 */
+		function setQuoteButtons(e, elements) {
+			if (quickreply.settings.quickQuoteButton) {
+				var quoteButtons = null, lastQuoteButton = null;
 
-						quickreply.style.setQuickQuoteButton(quoteButtons);
+				if (!quickreply.settings.fullQuote || !quickreply.settings.fullQuoteAllowed) {
+					// Style all quote buttons
+					quoteButtons = quickreply.style.getQuoteButtons(elements, 'all');
 
-					} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
-						// Style only last quote button
-						quoteButtons = quickreply.style.getQuoteButtons(this._replyPosts, 'all');
-						lastQuoteButton = quickreply.style.getQuoteButtons(elements, 'last');
+					quickreply.style.setQuickQuoteButton(quoteButtons);
 
-						quickreply.style.removeQuickQuoteButton(quoteButtons);
-						quickreply.style.setQuickQuoteButton(lastQuoteButton);
-					}
+				} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
+					// Style only last quote button
+					quoteButtons = quickreply.style.getQuoteButtons(quickreply.$.qrPosts, 'all');
+					lastQuoteButton = quickreply.style.getQuoteButtons(elements, 'last');
+
+					quickreply.style.removeQuickQuoteButton(quoteButtons);
+					quickreply.style.setQuickQuoteButton(lastQuoteButton);
 				}
-
-				quickreply.style.getQuoteButtons(elements).click(function(e) {
-					addFullQuote(e, $(this));
-				});
 			}
 
-			function qrFullQuoteResponsive(e) {
+			quickreply.style.getQuoteButtons(elements).click(function(e) {
 				addFullQuote(e, $(this));
+			});
+		}
 
-				var $container = $(this).parents('.dropdown-container'),
-					$trigger = $container.find('.dropdown-trigger:first'),
-					data;
+		/**
+		 * Handles responsive quote buttons.
+		 *
+		 * @param {event} e jQuery Event object
+		 */
+		function handleResponsiveClick(e) {
+			addFullQuote(e, $(this));
 
-				if (!$trigger.length) {
-					data = $container.attr('data-dropdown-trigger');
-					$trigger = data ? $container.children(data) : $container.children('a:first');
-				}
+			var $container = $(this).parents('.dropdown-container'),
+				$trigger = $container.find('.dropdown-trigger:first'),
+				data;
 
-				$trigger.click();
+			if (!$trigger.length) {
+				data = $container.attr('data-dropdown-trigger');
+				$trigger = data ? $container.children(data) : $container.children('a:first');
 			}
 
-			self.init = function() {
-				$(window).on('load', function(e) {
-					qrFullQuote(e, self._replyPosts);
-					quickreply.style.responsiveQuotesOnClick(self._replyPosts, qrFullQuoteResponsive);
-				});
+			$trigger.click();
+		}
 
-				$('#qr_posts').on('qr_completed', function(e, elements) {
-					qrFullQuote(e, elements);
-					quickreply.style.responsiveQuotesOnClick(elements, qrFullQuoteResponsive);
-				});
-			};
+		/**
+		 * Initializes FullQuote functionality.
+		 */
+		self.init = function() {
+			$(window).on('load', function(e) {
+				setQuoteButtons(e, quickreply.$.qrPosts);
+				quickreply.style.responsiveQuotesOnClick(quickreply.$.qrPosts, handleResponsiveClick);
+			});
+
+			$('#qr_posts').on('qr_completed', function(e, elements) {
+				setQuoteButtons(e, elements);
+				quickreply.style.responsiveQuotesOnClick(elements, handleResponsiveClick);
+			});
 		};
+	}
+	quickreply.plugins.fullQuote = new FullQuote();
 
-		FullQuote.init();
+	if (quickreply.settings.fullQuote || quickreply.settings.quickQuoteButton) {
+		quickreply.plugins.fullQuote.init();
 	}
 
 	/*********************/
 	/* Quick Nick Plugin */
 	/*********************/
+	function QuickNick() {
+		QrHelper.apply(this, arguments);
+
+		var self = this,
+			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n';
+
+		/**
+		 * Whether QuickNick dropdown is enabled.
+		 *
+		 * @returns {boolean}
+		 */
+		function quickNickIsDropdown() {
+			return !!(quickreply.settings.quickNick && !quickreply.settings.quickNickUserType);
+		}
+
+		/**
+		 * Whether QuickNick string is enabled.
+		 *
+		 * @returns {boolean}
+		 */
+		function quickNickIsString() {
+			return !!(quickreply.settings.quickNickString || (
+				quickreply.settings.quickNick && quickreply.settings.quickNickUserType
+			));
+		}
+
+		/**
+		 * Generates new QuickNick dropdown for the specified profile link.
+		 *
+		 * @param {event}  evt  jQuery Event object
+		 * @param {jQuery} link jQuery element for the user profile link
+		 */
+		function addDropdown(evt, link) {
+			// Get cursor coordinates
+			if (!evt) {
+				evt = window.event;
+			}
+			evt.preventDefault();
+			var coordinates = self._getCoordinates(evt);
+
+			// Get nick and id
+			var viewprofileURL = link.attr('href');
+			var pmLink = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
+
+			var quickNickDropdown = quickreply.style.quickNickDropdown(
+				coordinates.x, coordinates.y, viewprofileURL, pmLink
+			);
+			self._setDropdown(quickNickDropdown);
+
+			$('a.qr_quicknick', quickNickDropdown).mousedown(function() {
+				self.insert(link);
+				self._removeDropdown();
+				return false;
+			});
+		}
+
+		/**
+		 * Applies new title to QuickNick dropdown triggers.
+		 *
+		 * @param {event}  e        jQuery Event object
+		 * @param {jQuery} elements jQuery container
+		 */
+		function quickNickHandlePosts(e, elements) {
+			elements.find(quickreply.editor.profileLinkSelector).each(function() {
+				$(this).attr('title', quickreply.language.QUICKNICK);
+			});
+		}
+
+		/**
+		 * Inserts the nickname of the specified user to quick reply textarea.
+		 *
+		 * @param {jQuery} link jQuery element for the user profile link
+		 */
+		self.insert = function(link) {
+			var nickname = link.text(),
+				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
+				qrColor = (quickreply.settings.colouredNick && color) ?
+					'=' + quickreply.functions.getHexColor(color) : '';
+
+			quickreply.style.showQuickReplyForm();
+
+			if (!quickreply.settings.allowBBCode) {
+				insert_text(nickname + comma, false);
+			} else if (!quickreply.settings.quickNickRef) {
+				insert_text('[b]' + nickname + '[/b]' + comma, false);
+			} else {
+				insert_text('[ref' + qrColor + ']' + nickname + '[/ref]' + comma, false);
+			}
+		};
+
+		/**
+		 * Initializes QuickNick functionality.
+		 */
+		self.init = function() {
+			if (quickNickIsDropdown()) {
+				$(document).ready(function(e) {
+					quickNickHandlePosts(e, quickreply.$.qrPosts);
+				});
+				quickreply.$.qrPosts.on('qr_loaded', quickNickHandlePosts);
+
+				/* Ajax Submit */
+				quickreply.$.qrPosts.on('click', quickreply.editor.profileLinkSelector, function(e) {
+					addDropdown(e, $(this));
+				});
+			}
+
+			if (quickNickIsString()) {
+				quickreply.$.qrPosts.on('click', '.qr_quicknick', function(e) {
+					e.preventDefault();
+					var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
+					self.insert(link);
+				});
+			}
+		};
+	}
+	quickreply.plugins.quickNick = new QuickNick();
+
 	/**
 	 * Inserts the nickname of the specified user to quick reply textarea.
 	 *
 	 * @param {jQuery} link jQuery element for the user profile link
+	 *
+	 * @see {@link QuickNick.insert} - call <code>quickreply.plugins.quickNick.insert</code> instead
+	 *
+	 * @deprecated 1.1.0 - to be removed in 2.0.0
 	 */
+	quickreply.functions.quickNick = quickreply.plugins.quickNick.insert;
+
 	if (quickreply.settings.quickNick || quickreply.settings.quickNickString) {
-		var QuickNick = new function() {
-			QrHelper.apply(this, arguments);
-
-			var self = this,
-				comma = (quickreply.settings.enableComma) ? ', ' : '\r\n';
-
-			function quickNickIsDropdown() {
-				return !!(quickreply.settings.quickNick && !quickreply.settings.quickNickUserType);
-			}
-
-			function quickNickIsString() {
-				return !!(
-					quickreply.settings.quickNickString || (
-						quickreply.settings.quickNick && quickreply.settings.quickNickUserType
-					)
-				);
-			}
-
-			function qrQuickNick(evt, link) {
-				// Get cursor coordinates
-				if (!evt) {
-					evt = window.event;
-				}
-				evt.preventDefault();
-				var coordinates = self._getCoordinates(evt);
-
-				// Get nick and id
-				var viewprofile_url = link.attr('href');
-				var qr_pm_link = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
-
-				var qrNickAlert = quickreply.style.quickNickDropdown(
-					coordinates.x, coordinates.y, viewprofile_url, qr_pm_link
-				);
-
-				function qrAlertRemove() {
-					qrNickAlert.remove();
-					$(document.body).unbind('mousedown', qrAlertRemove);
-				}
-
-				$('a.qr_quicknick', qrNickAlert).mousedown(function() {
-					insertQuickNick(link);
-					qrNickAlert.remove();
-					return false;
-				});
-
-				$('a', qrNickAlert).mousedown(function(e) {
-					e.preventDefault();
-					return false;
-				});
-
-				setTimeout(function() {
-					$(document.body).mousedown(qrAlertRemove);
-				}, 10);
-			}
-
-			function quickNickHandlePosts(e, elements) {
-				elements.find(quickreply.editor.profileLinkSelector).each(function() {
-					$(this).attr('title', quickreply.language.QUICKNICK);
-				});
-			}
-
-			function insertQuickNick(link) {
-				var nickname = link.text(),
-					color = (link.hasClass('username-coloured')) ? link.css('color') : false,
-					qrColor = (quickreply.settings.colouredNick && color) ? '=' + quickreply.functions.getHexColor(color) : '';
-
-				quickreply.style.showQuickReplyForm();
-
-				if (!quickreply.settings.allowBBCode) {
-					insert_text(nickname + comma, false);
-				} else if (!quickreply.settings.quickNickRef) {
-					insert_text('[b]' + nickname + '[/b]' + comma, false);
-				} else {
-					insert_text('[ref' + qrColor + ']' + nickname + '[/ref]' + comma, false);
-				}
-			}
-
-			self.init = function() {
-				if (quickNickIsDropdown()) {
-					$(document).ready(function(e) {
-						quickNickHandlePosts(e, self._replyPosts);
-					});
-					self._replyPosts.on('qr_loaded', quickNickHandlePosts);
-
-					/* Ajax Submit */
-					self._replyPosts.on('click', quickreply.editor.profileLinkSelector, function(e) {
-						qrQuickNick(e, $(this));
-					});
-				}
-
-				if (quickNickIsString()) {
-					self._replyPosts.on('click', '.qr_quicknick', function(e) {
-						e.preventDefault();
-						var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
-						insertQuickNick(link);
-					});
-				}
-			};
-		};
-
-		QuickNick.init();
+		quickreply.plugins.quickNick.init();
 
 		/**********************/
 		/* Live Search Plugin */

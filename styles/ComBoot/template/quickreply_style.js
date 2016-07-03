@@ -135,7 +135,7 @@
 		$(quickreply.editor.totalPostsContainer).children('a[href="#unread"]').click(function(event) {
 			event.preventDefault();
 			var unread_posts = $('.post-body.panel-info');
-			quickreply.functions.qr_soft_scroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
+			quickreply.functions.softScroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
 		});
 
 		$('.total-posts-container .page-jump-form :button').click(function() {
@@ -143,9 +143,9 @@
 			if (!quickreply.settings.saveReply) {
 				pageJump($input);
 			} else if (quickreply.plugins.seo) {
-				quickreply.functions.qr_seo_page_jump($input);
+				quickreply.functions.seoPageJump($input);
 			} else {
-				quickreply.functions.qr_page_jump($input);
+				quickreply.functions.pageJump($input);
 			}
 			$(quickreply.editor.totalPostsContainer).removeClass('open');
 		});
@@ -156,9 +156,9 @@
 				if (!quickreply.settings.saveReply) {
 					pageJump($(this));
 				} else if (quickreply.plugins.seo) {
-					quickreply.functions.qr_seo_page_jump($(this));
+					quickreply.functions.seoPageJump($(this));
 				} else {
-					quickreply.functions.qr_page_jump($(this));
+					quickreply.functions.pageJump($(this));
 				}
 				$(quickreply.editor.totalPostsContainer).removeClass('open');
 			}
@@ -291,7 +291,7 @@
 			pointerStyle = 'left: auto; right: 10px;';
 		} else {
 			dropdownStyle += 'left: ' + (pageX - 21) + 'px;';
-			pointerStyle = 'left: 10px; right: auto;';
+			pointerStyle = 'left: 21px; right: auto;'; // Handle "margin-left: -11px;"
 		}
 		appendClass = (appendClass) ? ' ' + appendClass : '';
 		return $('<div class="popover bottom qr_dropdown' + appendClass + '" style="' + dropdownStyle + '"><div class="arrow" style="' + pointerStyle + '"></div><ul class="popover-content dropdown-menu"><li>' + contentRows.join('</li><li>') + '</li></ul></div>').appendTo('body');
@@ -383,7 +383,6 @@
 		});
 	});
 
-
 	// Hide quick reply form after posting a reply.
 	$("#qr_postform").on("ajax_submit_success", function() {
 		var $this = $(quickreply.editor.mainForm).find('.panel-heading span.clickable');
@@ -393,5 +392,4 @@
 			$this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
 		}
 	});
-
 })(jQuery, window, document);

@@ -126,7 +126,7 @@
 		$('.action-bar .pagination a.mark[href="#unread"]').click(function(event) {
 			event.preventDefault();
 			var unread_posts = $('.unreadpost');
-			quickreply.functions.qr_soft_scroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
+			quickreply.functions.softScroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
 		});
 
 		$('.action-bar .pagination .page-jump-form :button').click(function() {
@@ -134,9 +134,9 @@
 			if (!quickreply.settings.saveReply) {
 				pageJump($input);
 			} else if (quickreply.plugins.seo) {
-				quickreply.functions.qr_seo_page_jump($input);
+				quickreply.functions.seoPageJump($input);
 			} else {
-				quickreply.functions.qr_page_jump($input);
+				quickreply.functions.pageJump($input);
 			}
 		});
 
@@ -146,9 +146,9 @@
 				if (!quickreply.settings.ajaxPagination) {
 					pageJump($(this));
 				} else if (quickreply.plugins.seo) {
-					quickreply.functions.qr_seo_page_jump($(this));
+					quickreply.functions.seoPageJump($(this));
 				} else {
-					quickreply.functions.qr_page_jump($(this));
+					quickreply.functions.pageJump($(this));
 				}
 			}
 		});
@@ -265,18 +265,24 @@
 	 * Generates an HTML element for a dropdown element.
 	 *
 	 * @param {Array}  contentRows    Array with content for the rows in a list
-	 * @param {string} dropdownStyle  Style of dropdown element
-	 * @param {string} [pointerStyle] Optional style of pointer element
+	 * @param {int}    pageX          X coordinate of the cursor
+	 * @param {int}    pageY          Y coordinate of the cursor
 	 * @param {string} [appendClass]  Optional dropdown class
 	 * @returns {jQuery}
 	 */
-	quickreply.style.createDropdown = function(contentRows, dropdownStyle, pointerStyle, appendClass) {
+	quickreply.style.createDropdown = function(contentRows, pageX, pageY, appendClass) {
 		if (!contentRows) {
 			return $('');
 		}
+		var dropdownStyle = 'top: ' + (pageY + 8) + 'px; ', pointerStyle = '';
+		if (pageX > 184) {
+			dropdownStyle += 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) + 'px;';
+			pointerStyle = 'left: auto; right: 10px;';
+		} else {
+			dropdownStyle += 'left: ' + (pageX - 20) + 'px;';
+		}
 		appendClass = (appendClass) ? ' ' + appendClass : '';
-		pointerStyle = (pointerStyle) ? ' style="' + pointerStyle + '"' : '';
-		return $('<div class="dropdown qr_dropdown' + appendClass + '" style="' + dropdownStyle + '"><div class="pointer"' + pointerStyle + '><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li>' + contentRows.join('</li><li>') + '</li></ul></div>').appendTo('body');
+		return $('<div class="dropdown qr_dropdown' + appendClass + '" style="' + dropdownStyle + '"><div class="pointer" style="' + pointerStyle + '"><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li>' + contentRows.join('</li><li>') + '</li></ul></div>').appendTo('body');
 	};
 
 	/**
@@ -287,20 +293,14 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.quickQuoteDropdown = function(pageX, pageY) {
-		var dropdownStyle = 'top: ' + (pageY + 8) + 'px; ', pointerStyle = '', listElements = [
+		var listElements = [
 			quickreply.functions.makeLink({
 				href: "#qr_postform",
 				text: quickreply.language.INSERT_TEXT
 			})
 		];
 
-		if (pageX > 184) {
-			dropdownStyle += 'margin-right: 0; left: auto; right: ' + ($('body').width() - pageX - 20) + 'px;';
-			pointerStyle = 'left: auto; right: 10px;';
-		} else {
-			dropdownStyle += 'left: ' + (pageX - 20) + 'px;';
-		}
-		return quickreply.style.createDropdown(listElements, dropdownStyle, pointerStyle, 'qr_quickquote');
+		return quickreply.style.createDropdown(listElements, pageX, pageY, 'qr_quickquote');
 	};
 
 	/**
@@ -313,7 +313,7 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.quickNickDropdown = function(pageX, pageY, viewProfileURL, qrPMLink) {
-		var dropdownStyle = 'top: ' + (pageY + 8) + 'px; ', pointerStyle = '', listElements = [
+		var listElements = [
 			quickreply.functions.makeLink({
 				href: "#qr_postform",
 				class: "qr_quicknick",
@@ -342,12 +342,6 @@
 			})
 		);
 
-		if (pageX > 184) {
-			dropdownStyle += 'left: ' + (pageX - 111) + 'px;';
-			pointerStyle = 'left: auto; right: 10px;';
-		} else {
-			dropdownStyle += 'left: ' + (pageX - 20) + 'px;';
-		}
-		return quickreply.style.createDropdown(listElements, dropdownStyle, pointerStyle);
+		return quickreply.style.createDropdown(listElements, pageX, pageY);
 	};
 })(jQuery, window, document);

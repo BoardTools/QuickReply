@@ -58,6 +58,7 @@ class v_1_1_0_alpha2 extends \phpbb\db\migration\migration
 			array('permission.permission_set', array('ROLE_FORUM_FULL', 'f_qr_full_quote')),
 			array('permission.permission_set', array('ROLE_FORUM_POLLS', 'f_qr_full_quote')),
 			array('permission.permission_set', array('ROLE_FORUM_STANDARD', 'f_qr_full_quote')),
+			array('permission.permission_set', array('ROLE_FORUM_NEW_MEMBER', 'f_qr_full_quote', 'role', false)),
 		);
 	}
 }

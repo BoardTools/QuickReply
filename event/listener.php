@@ -111,15 +111,7 @@ class listener implements EventSubscriberInterface
 			));
 		}
 
-		if (!$this->config['qr_quickquote_button'] &&
-			(
-				!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) ||
-				(
-					!$this->config['qr_last_quote'] &&
-					$topic_data['topic_last_post_id'] === $row['post_id']
-				)
-			)
-		)
+		if ($this->helper->plugins_helper->quote_button_disabled($topic_data, $row))
 		{
 			$post_row = array_merge($post_row, array(
 				'U_QUOTE'			=> false
