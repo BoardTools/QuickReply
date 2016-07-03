@@ -84,6 +84,15 @@ a span.imageset.icon_topic_latest:before {
 
 .qr_fixed_form .col-md-9 {
 	width: 100%;
+	transition: width 0.5s ease;
+}
+
+.qr_fixed_form.with_smileys .col-md-9 {
+	width: 75%;
+}
+
+#qr_postform.qr_fixed_form.with_smileys #message-box {
+	width: 100%;
 }
 
 #qr_text_action_box {

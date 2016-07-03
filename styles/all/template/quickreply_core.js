@@ -547,7 +547,8 @@
 	function QrForm() {
 		this.type = 'fixed';
 
-		var self = this;
+		var self = this,
+			smileyBoxDisplayed = false;
 
 		self.$ = $(quickreply.editor.mainForm);
 
@@ -602,6 +603,28 @@
 		}
 
 		/**
+		 * Opens smiley box.
+		 */
+		function openSmileyBox() {
+			self.$.addClass('with_smileys');
+			$('#smiley-box').stop().animate({
+				right: '10px'
+			}, 500);
+			smileyBoxDisplayed = true;
+		}
+
+		/**
+		 * Closes smiley box.
+		 */
+		function closeSmileyBox() {
+			$('#smiley-box').stop().animate({
+				right: '-1000px'
+			}, 500);
+			self.$.removeClass('with_smileys');
+			smileyBoxDisplayed = false;
+		}
+
+		/**
 		 * Applies compact style to quick reply form.
 		 *
 		 * @param {boolean} [skipBottomAnimation] Whether we do not need to animate the body
@@ -613,6 +636,7 @@
 			};
 			$('#qr_text_action_box, .qr_attach_button').hide();
 			hideColourPalette();
+			closeSmileyBox();
 			$(quickreply.editor.mainForm).addClass('qr_compact_form');
 			quickreply.style.formEditorElements(true).slideUp(animationOptions);
 		};
@@ -633,6 +657,7 @@
 
 			quickreply.style.setAdditionalElements();
 			$('#qr_text_action_box, #qr_captcha_container, .qr_attach_button').hide();
+			$('#qr_action_box').prependTo('#message-box');
 			setTimeout(setBodyPaddingBottom, 500);
 
 			// Add events.
@@ -674,37 +699,13 @@
 						self.setCompact();
 					}
 				}
-
-				var $smileyBox = $('#smiley-box');
-				if (!$parents.is($smileyBox)) {
-					if ($smileyBox.is(':visible')) {
-						var setLocation = (self.is('fullscreen')) ? {'right': '-1000px'} : {'left': '-1000px'};
-						$smileyBox.animate(setLocation, qrSlideInterval, function() {
-							$(this).hide();
-						});
-					}
-				}
 			});
 
-			$('.qr_smiley_button, #smiley-box a').click(function() {
-				var $smileyBox = $('#smiley-box');
-
-				function setSmileyBoxLocation(location, alternative) {
-					$smileyBox.css(location, '-1000px').css(alternative, 'auto');
-				}
-
-				if (!$smileyBox.is(':visible')) {
-					if (self.is('fullscreen')) {
-						setSmileyBoxLocation('right', 'left');
-						$smileyBox.show().animate({
-							'right': '70px'
-						}, qrSlideInterval);
-					} else {
-						setSmileyBoxLocation('left', 'right');
-						$smileyBox.show().animate({
-							'left': '45px'
-						}, qrSlideInterval);
-					}
+			$('.qr_smiley_button').click(function() {
+				if (!smileyBoxDisplayed) {
+					openSmileyBox();
+				} else {
+					closeSmileyBox();
 				}
 			});
 
@@ -742,11 +743,6 @@
 				.attr('title', quickreply.language.FULLSCREEN);
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
-			var $smileyBox = $('#smiley-box');
-			if ($smileyBox.is(':visible')) {
-				$smileyBox.hide().css('left', '-1000px');
-			}
-
 			self.$.trigger('fullscreen-exit');
 		};
 
@@ -764,11 +760,6 @@
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN_EXIT);
 			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
-
-			var $smileyBox = $('#smiley-box');
-			if ($smileyBox.is(':visible')) {
-				$smileyBox.hide().css('right', '-1000px');
-			}
 
 			$(document).on('keydown.quickreply.fullscreen', function(e) {
 				if (e.keyCode === 27) {
@@ -979,9 +970,15 @@
 					break;
 
 				case "new_posts":
+					quickreply.loading.setExplain(quickreply.language.loading.NEW_POSTS);
 					quickreply.ajaxReload.start(
-						res.NEXT_URL.replace(/&amp;/ig, '&') + '#unread', getReplyData(res.merged), {
+						res.url.replace(/&amp;/ig, '&'), getReplyData(res.merged), {
+							scroll: 'unread',
 							callback: function() {
+								quickreply.loading.proceed();
+								quickreply.functions.alert(
+									quickreply.language.INFORMATION, quickreply.language.POST_REVIEW
+								);
 								if (quickreply.settings.allowedGuest) {
 									quickreply.ajaxReload.start(document.location.href, {qr_captcha_refresh: 1});
 								}

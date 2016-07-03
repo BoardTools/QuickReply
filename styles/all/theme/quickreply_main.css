@@ -56,6 +56,11 @@
 	box-sizing: border-box;
 	padding-left: 35px;
 	width: 100%;
+	transition: width 0.5s ease;
+}
+
+#qr_postform.qr_fixed_form.with_smileys #message-box {
+	width: 80%;
 }
 
 #qr_postform.qr_fixed_form #message-box textarea {
@@ -72,7 +77,6 @@
 
 .qr_fixed_form #attach-panel,
 .qr_fixed_form #format-buttons,
-.qr_fixed_form #smiley-box,
 .qr_fixed_form #qr_captcha_container,
 .qr_fixed_form .quickreply-title,
 .qr_fixed_form .additional-element,
@@ -130,13 +134,8 @@
 
 .qr_fixed_form #smiley-box {
 	position: absolute;
-	left: -1000px;
+	right: -1000px;
 	z-index: 31;
-	width: 30%;
-	background-color: #fff;
-	border-radius: 5px;
-	border: 1px solid;
-	padding: 5px;
 }
 
 .qr_fixed_form #format-buttons {
@@ -148,6 +147,10 @@
 }
 
 /* Compact form style. */
+.qr_compact_form {
+	overflow: hidden !important;
+}
+
 #qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
 	height: 48px !important;
 }

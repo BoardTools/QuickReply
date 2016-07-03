@@ -358,15 +358,15 @@
 	};
 
 	// Style-specific functions.
-	function qr_set_position() {
+	function qrSetPosition() {
 		$(quickreply.editor.mainForm).css('bottom', $('#footer-nav').height());
 		if (quickreply.form.is('fullscreen')) {
 			$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
 		}
 	}
-	$(window).on('load resize', qr_set_position);
+	$(window).on('load resize', qrSetPosition);
 	$(quickreply.editor.mainForm).on('fullscreen', function() {
-		$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height() + 'px');
+		$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
 	}).on('fullscreen-exit', function() {
 		$(quickreply.editor.mainForm).css('padding-top', '0');
 	});
@@ -383,13 +383,15 @@
 		});
 	});
 
-	// Hide quick reply form after posting a reply.
-	$("#qr_postform").on("ajax_submit_success", function() {
-		var $this = $(quickreply.editor.mainForm).find('.panel-heading span.clickable');
-		if (!$this.hasClass('panel-collapsed')) {
-			$this.parents('.panel-collapsible').find('.panel-body, .panel-footer').slideUp();
-			$this.addClass('panel-collapsed');
-			$this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-		}
-	});
+	if (quickreply.settings.formType === 0) {
+		// Hide quick reply form after posting a reply.
+		$("#qr_postform").on("ajax_submit_success", function() {
+			var $this = $(quickreply.editor.mainForm).find('.panel-heading span.clickable');
+			if (!$this.hasClass('panel-collapsed')) {
+				$this.parents('.panel-collapsible').find('.panel-body, .panel-footer').slideUp();
+				$this.addClass('panel-collapsed');
+				$this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+			}
+		});
+	}
 })(jQuery, window, document);

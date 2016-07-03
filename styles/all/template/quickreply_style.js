@@ -57,7 +57,7 @@
 	 * Used in fixed form mode.
 	 */
 	quickreply.style.setAdditionalElements = function() {
-		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box, #qr_captcha_container')
+		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box, #qr_captcha_container, #smiley-box')
 			.addClass('additional-element').hide();
 	};
 

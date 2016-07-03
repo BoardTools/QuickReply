@@ -281,7 +281,6 @@ class ajax_helper
 		$post_id_next = (int) $this->db->sql_fetchfield('post_id');
 		$this->db->sql_freeresult($result);
 
-		$error_text = $this->user->lang['POST_REVIEW_EXPLAIN'];
 		$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next"); // #p$post_id_next
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 
@@ -289,9 +288,7 @@ class ajax_helper
 			'status'        => 'new_posts',
 			'error'         => true,
 			'merged'        => ($post_id_next === $current_post),
-			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
-			'MESSAGE_TEXT'  => $error_text,
-			'NEXT_URL'      => $url_next_post,
+			'url'           => $url_next_post,
 		));
 	}
 
