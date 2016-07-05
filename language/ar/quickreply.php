@@ -28,12 +28,12 @@ $lang = array_merge($lang, array(
 	'QR_QUICKNICK_TITLE'               => 'ادخال اسم العضو في الرد السريع',
 	'QR_REPLY_IN_PM'                   => 'الرد برسالة خاصة',
 	//begin mod Translit
-	'QR_TRANSLIT_TEXT'                 => 'ترجمة ',
+	'QR_TRANSLIT_TEXT'                 => 'ترجمة',
 	'QR_TRANSLIT_TEXT_TO_RU'           => 'إلى الروسية',
 	'QR_TRANSLIT_TEXT_TOOLTIP'         => 'أنقر هُنا لمُشاهدة الترجمة باللغة الروسية',
 	//end mod Translit
 	//begin mod CapsLock Transform
-	'QR_TRANSFORM_TEXT'                => 'تغيير حالة النص ',
+	'QR_TRANSFORM_TEXT'                => 'تغيير حالة النص',
 	'QR_TRANSFORM_TEXT_TOOLTIP'        => 'انقر على أحد الأزرار لتغيير حالة النص المُظلل (حرف كبير/صغير)',
 	'QR_TRANSFORM_TEXT_LOWER'          => '&#9660; abc',
 	'QR_TRANSFORM_TEXT_UPPER'          => '&#9650; ABC',

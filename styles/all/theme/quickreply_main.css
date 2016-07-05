@@ -39,6 +39,15 @@
 	display: none;
 }
 
+#qr_attach_notice {
+	display: none;
+	font-style: italic;
+	text-align: center;
+	padding: 5px 0;
+	font-size: 16px;
+	cursor: pointer;
+}
+
 /* Fixed form style. */
 .qr_fixed_form {
 	position: fixed;

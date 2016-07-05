@@ -64,7 +64,7 @@
 		var $messageBox = $('#message-box'),
 			$form_groups = $messageBox.closest('.form-group').siblings(),
 			$additional_tabs = $messageBox.closest('fieldset').siblings().not(quickreply.editor.attachPanel);
-		$('#register-and-translit').add($form_groups).add($additional_tabs).addClass('additional-element').hide();
+		$form_groups.add($additional_tabs).addClass('additional-element').hide();
 	};
 
 	/**
