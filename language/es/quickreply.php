@@ -33,7 +33,7 @@ $lang = array_merge($lang, array(
 	'QR_TRANSLIT_TEXT_TOOLTIP'         => 'Para visión instantánea en Ruso haga clic en el botón',
 	//end mod Translit
 	//begin mod CapsLock Transform
-	'QR_TRANSFORM_TEXT'                => 'Cambiar caso del texto:',
+	'QR_TRANSFORM_TEXT'                => 'Cambiar caso del texto',
 	'QR_TRANSFORM_TEXT_TOOLTIP'        => 'Presione un botón para cambiar el caso del texto seleccionado',
 	'QR_TRANSFORM_TEXT_LOWER'          => '&#9660; abc',
 	'QR_TRANSFORM_TEXT_UPPER'          => '&#9650; ABC',

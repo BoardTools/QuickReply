@@ -44,7 +44,7 @@ $lang = array_merge($lang, array(
 	'QR_TYPE_REPLY'                    => 'Type your reply here...',
 	'QR_WARN_BEFORE_UNLOAD'            => 'Your entered reply has not been submitted and may be lost!',
 	//begin mod Translit
-	'QR_TRANSLIT_TEXT'                 => 'Translit:',
+	'QR_TRANSLIT_TEXT'                 => 'Translit',
 	'QR_TRANSLIT_TEXT_TO_RU'           => 'to russian',
 	'QR_TRANSLIT_TEXT_TOOLTIP'         => 'For instant view in Russian click the button',
 	'QR_FOREIGN_LANG'                  => array('je','jo','ayu','ay','aj','oju','oje','oja','oj','uj','yi','ya','ja','ju','yu','ja',
@@ -61,7 +61,7 @@ $lang = array_merge($lang, array(
 												'Ф','Х','Ц','Э','Й','Х'),
 	//end mod Translit
 	//begin mod CapsLock Transform
-	'QR_TRANSFORM_TEXT'                => 'Change Text Case:',
+	'QR_TRANSFORM_TEXT'                => 'Change Text Case',
 	'QR_TRANSFORM_TEXT_TOOLTIP'        => 'Press a button to change the case of the highlighted text',
 	'QR_TRANSFORM_TEXT_LOWER'          => '&#9660; abc',
 	'QR_TRANSFORM_TEXT_UPPER'          => '&#9650; ABC',

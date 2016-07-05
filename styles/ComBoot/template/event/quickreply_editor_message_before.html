@@ -215,13 +215,13 @@
 					<!-- IF S_QR_CAPS_ENABLE or S_QR_SHOW_BUTTON_TRANSLIT-->
 					<div id="register-and-translit" class="btn-toolbar">
 						<!-- IF S_QR_CAPS_ENABLE -->
-						<abbr title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}</abbr>&nbsp;
+						<abbr title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}{L_COLON}</abbr>&nbsp;
 						<button type="button" class="btn btn-default" accesskey="t" name="uppercase" onclick="qr_updateCase(1)"  title="{L_QR_TRANSFORM_TEXT_UPPER_TOOLTIP}">{L_QR_TRANSFORM_TEXT_UPPER}</button>
 						<button type="button" class="btn btn-default" accesskey="t" name="lowercase" onclick="qr_updateCase(0)"  title="{L_QR_TRANSFORM_TEXT_LOWER_TOOLTIP}">{L_QR_TRANSFORM_TEXT_LOWER}</button>
 						<button type="button" class="btn btn-default" accesskey="t" name="inverscase" onclick="qr_updateCase(2)"  title="{L_QR_TRANSFORM_TEXT_INVERS_TOOLTIP}">{L_QR_TRANSFORM_TEXT_INVERS}</button>
 						<!-- ENDIF -->
 						<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
-						<abbr style="margin-left: 10px;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}</abbr>&nbsp;
+						<abbr style="margin-left: 10px;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}{L_COLON}</abbr>&nbsp;
 						<button type="button" class="btn btn-default" accesskey="t" name="uppercase" onclick="translit()"  title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT_TO_RU}</button>
 						<!-- ENDIF -->
 					</div>

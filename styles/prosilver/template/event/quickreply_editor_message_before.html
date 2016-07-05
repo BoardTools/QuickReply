@@ -173,13 +173,13 @@
 <!-- IF S_QR_CAPS_ENABLE or S_QR_SHOW_BUTTON_TRANSLIT-->
 <div id="register-and-translit">
 <!-- IF S_QR_CAPS_ENABLE -->
-	<abbr style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}</abbr>&nbsp;
+	<abbr style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSFORM_TEXT_TOOLTIP}">{L_QR_TRANSFORM_TEXT}{L_COLON}</abbr>&nbsp;
 	<input type="button" class="button2" accesskey="t" name="uppercase" value="{L_QR_TRANSFORM_TEXT_UPPER}" onclick="qr_updateCase(1)"  title="{L_QR_TRANSFORM_TEXT_UPPER_TOOLTIP}" />
     <input type="button" class="button2" accesskey="t" name="lowercase" value="{L_QR_TRANSFORM_TEXT_LOWER}" onclick="qr_updateCase(0)"  title="{L_QR_TRANSFORM_TEXT_LOWER_TOOLTIP}" />
 	<input type="button" class="button2" accesskey="t" name="inverscase" value="{L_QR_TRANSFORM_TEXT_INVERS}" onclick="qr_updateCase(2)"  title="{L_QR_TRANSFORM_TEXT_INVERS_TOOLTIP}" />
 <!-- ENDIF -->
 <!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
-	<abbr style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}</abbr>&nbsp;
+	<abbr style="border-bottom:1px dashed #777; cursor:help;" title="{L_QR_TRANSLIT_TEXT_TOOLTIP}">{L_QR_TRANSLIT_TEXT}{L_COLON}</abbr>&nbsp;
 	<input type="button" class="button2" accesskey="t" name="uppercase" value="{L_QR_TRANSLIT_TEXT_TO_RU}" onclick="translit()"  title="{L_QR_TRANSLIT_TEXT_TOOLTIP}" />
 <!-- ENDIF -->
 </div>
