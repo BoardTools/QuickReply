@@ -26,7 +26,7 @@ class v_1_1_0_alpha2 extends \phpbb\db\migration\migration
 		return array(
 			'add_columns' => array(
 				$this->table_prefix . 'forums' => array(
-					'qr_form_type'    => array('TINT:2', 0),
+					'qr_form_type'    => array('TINT:2', 1),
 				),
 			),
 		);

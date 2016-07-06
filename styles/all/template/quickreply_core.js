@@ -548,7 +548,12 @@
 		this.type = 'fixed';
 
 		var self = this,
-			smileyBoxDisplayed = false;
+			smileyBoxDisplayed = false,
+			hasAttachments = true,
+			formAnimationOptions = {
+				duration: qrSlideInterval,
+				progress: setBodyPaddingBottom
+			};
 
 		self.$ = $(quickreply.editor.mainForm);
 
@@ -571,12 +576,13 @@
 		 * @param {object|number} [animationOptions] Custom animation options
 		 */
 		function setAttachNotice(visibility, animationOptions) {
-			if ($('#file-list').children().length) {
-				var slideFunction = (visibility === 'toggle') ? 'slideToggle' : (
-					(visibility === 'hide') ? 'slideUp' : 'slideDown'
-				), options = (animationOptions) ? animationOptions : qrSlideInterval;
-				$('#qr_attach_notice').finish()[slideFunction](options);
+			if (!hasAttachments) {
+				return;
 			}
+			var slideFunction = (visibility === 'toggle') ? 'slideToggle' : (
+				(visibility === 'hide') ? 'slideUp' : 'slideDown'
+			), options = (animationOptions) ? animationOptions : qrSlideInterval;
+			$('#qr_attach_notice').finish()[slideFunction](options);
 		}
 
 		/**
@@ -584,15 +590,33 @@
 		 */
 		function initAttachNotice() {
 			$(document).ready(function() {
+				// Workaround for non-ajax form save feature.
 				phpbb.plupload.uploader.bind('PostInit', function() {
 					if ($('#file-list').children().length) {
+						hasAttachments = true;
 						$('#qr_attach_notice').show();
 					}
 				});
 
+				// Workaround for drag-and-drop feature.
+				phpbb.plupload.uploader.bind('FilesAdded', function() {
+					setAttachNotice('hide');
+					hasAttachments = true;
+					if (!$(quickreply.editor.attachPanel).is(':visible')) {
+						$(quickreply.editor.attachPanel).finish().slideDown(formAnimationOptions);
+					} else {
+						setTimeout(setBodyPaddingBottom, 500);
+					}
+				});
+
+				// Workaround for file deletions (attach box can be hidden
+				// if a user closes it before the file is deleted).
 				phpbb.plupload.uploader.bind('FilesRemoved', function() {
-					if (!$('#file-list').children().length) {
-						$('#qr_attach_notice').finish().slideUp(qrSlideInterval);
+					if (!phpbb.plupload.uploader.files.length) {
+						hasAttachments = false;
+						$('#qr_attach_notice').finish().slideUp(formAnimationOptions);
+					} else {
+						setTimeout(setBodyPaddingBottom, 500);
 					}
 				});
 			});
@@ -666,10 +690,7 @@
 		 * @param {boolean} [skipBottomAnimation] Whether we do not need to animate the body
 		 */
 		this.setCompact = function(skipBottomAnimation) {
-			var animationOptions = (skipBottomAnimation) ? qrSlideInterval : {
-				duration: qrSlideInterval,
-				progress: setBodyPaddingBottom
-			};
+			var animationOptions = (skipBottomAnimation) ? qrSlideInterval : formAnimationOptions;
 			$('#qr_text_action_box, .qr_attach_button').hide();
 			hideColourPalette();
 			closeSmileyBox();
@@ -687,10 +708,7 @@
 		 */
 		function addButtonTrigger(trigger, target, callback) {
 			$(trigger).click(function() {
-				$(target).finish().slideToggle({
-					duration: qrSlideInterval,
-					progress: setBodyPaddingBottom
-				});
+				$(target).finish().slideToggle(formAnimationOptions);
 				if (typeof callback === 'function') {
 					callback();
 				}
@@ -707,10 +725,8 @@
 			self.$.not('.qr_fullscreen_form')
 				.find('.qr_attach_button').delay(100).fadeIn().end()
 				.removeClass('qr_compact_form')
-				.find('#qr_text_action_box, #qr_captcha_container, .submit-buttons').finish().slideDown({
-				duration: qrSlideInterval,
-				progress: setBodyPaddingBottom
-			});
+				.find('#qr_text_action_box, #qr_captcha_container, .submit-buttons')
+				.finish().slideDown(formAnimationOptions);
 		};
 
 		/**

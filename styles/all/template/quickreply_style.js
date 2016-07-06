@@ -57,7 +57,9 @@
 	 * Used in fixed form mode.
 	 */
 	quickreply.style.setAdditionalElements = function() {
-		$('#message-box').siblings(':visible').not('.submit-buttons, #qr_action_box, #qr_text_action_box, #qr_captcha_container, #smiley-box')
+		$('#message-box').siblings(':visible')
+			.not('.submit-buttons, #qr_action_box, #qr_text_action_box')
+			.not('#qr_captcha_container, #smiley-box, #register-and-translit')
 			.addClass('additional-element').hide();
 	};
 
@@ -69,7 +71,14 @@
 	 */
 	quickreply.style.formEditorElements = function(selectStandard) {
 		var $qrForm = $(quickreply.editor.mainForm),
-			$elements = $qrForm.find('#attach-panel, #format-buttons, .quickreply-title, .additional-element');
+			elementsArray = [
+				'#attach-panel',
+				'#format-buttons',
+				'#register-and-translit',
+				'.quickreply-title',
+				'.additional-element'
+			],
+			$elements = $qrForm.find(elementsArray.join(', '));
 		return (selectStandard) ? $elements.add($qrForm.find('.submit-buttons, #qr_captcha_container')) : $elements;
 	};
 
@@ -207,7 +216,7 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.getQuoteButtons = function(elements, type) {
-		var container = (type == 'last') ? elements.find('.post:last-child') : elements,
+		var container = (type === 'last') ? elements.find('.post:last-child') : elements,
 			buttons = container.find('.post-buttons .quote-icon');
 		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons;
 	};

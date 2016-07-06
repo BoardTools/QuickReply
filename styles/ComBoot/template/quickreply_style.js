@@ -219,7 +219,7 @@
 	 */
 	quickreply.style.getQuoteButtons = function(elements, type) {
 		// There are no responsive quote buttons in this style.
-		var container = (type == 'last') ? elements.find('.post:last-child') : elements;
+		var container = (type === 'last') ? elements.find('.post:last-child') : elements;
 		return container.find('.topic-buttons .fa-quote-left').parent('a');
 	};
 
