@@ -31,7 +31,6 @@ $lang = array_merge($lang, array(
 	'QR_QUICKQUOTE_TITLE'              => 'Reply with quick quote',
 	'QR_LOADING'                       => 'Loading',
 	'QR_LOADING_NEW_FORM_TOKEN'        => 'The form token was outdated and has been updated.<br />Submitting the form again...',
-	'QR_LOADING_NEW_POST_ID'           => '',
 	'QR_LOADING_NEW_POSTS'             => 'At least one new post has been added to the topic.<br />Your reply has not been submitted because you will probably want to update it.<br />Fetching new posts...',
 	'QR_LOADING_PREVIEW'               => 'Fetching the preview...',
 	'QR_LOADING_SUBMITTED'             => 'Your post has been submitted successfully.<br />Fetching the result...',

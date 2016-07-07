@@ -277,16 +277,4 @@ class listener_helper
 	{
 		return ($lastclick < $post_data['topic_last_post_time']) && ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW);
 	}
-
-	/**
-	 * Checks whether the currently displayed last post on the page
-	 * is not the last post in the topic
-	 *
-	 * @param array $post_data Array with post data
-	 * @return bool
-	 */
-	public function post_is_not_last($post_data)
-	{
-		return $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'];
-	}
 }

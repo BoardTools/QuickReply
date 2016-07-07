@@ -157,12 +157,6 @@ class listener_ajax implements EventSubscriberInterface
 				$topic_id = (int) $post_data['topic_id'];
 				$this->ajax_helper->send_next_post_url($forum_id, $topic_id, $lastclick);
 			}
-			else if ($this->helper->post_is_not_last($post_data))
-			{
-				// @TODO remove this stuff for getting new ID - post review is checked above.
-				// Send new post number as a response.
-				$this->ajax_helper->send_last_post_id($post_data['topic_last_post_id']);
-			}
 			else if ($refresh_token)
 			{
 				// Send only the new form token as a response.

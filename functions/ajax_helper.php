@@ -308,19 +308,6 @@ class ajax_helper
 	}
 
 	/**
-	 * Sends the ID of last post in the topic
-	 *
-	 * @param int $post_id Post ID
-	 */
-	public function send_last_post_id($post_id)
-	{
-		self::send_json(array(
-			'status'  => 'post_update',
-			'post_id' => $post_id,
-		));
-	}
-
-	/**
 	 * Sends a JSON response
 	 *
 	 * @param array $data Array with JSON data

@@ -24,15 +24,6 @@
 		});
 	}
 
-	/**
-	 * Show the confirmation warning before unloading the page if the reply is still in the form.
-	 */
-	$(window).on('beforeunload.quickreply', function() {
-		if ($(quickreply.editor.textareaSelector).val()) {
-			return quickreply.language.WARN_BEFORE_UNLOAD;
-		}
-	});
-
 	/********************************/
 	/* Classes and global functions */
 	/********************************/
@@ -46,6 +37,15 @@
 
 	quickreply.ajax.init();
 	quickreply.form.init();
+
+	/**
+	 * Show the confirmation warning before unloading the page if the reply is still in the form.
+	 */
+	$(window).on('beforeunload.quickreply', function() {
+		if (quickreply.form.hasReply()) {
+			return quickreply.language.WARN_BEFORE_UNLOAD;
+		}
+	});
 
 	/* Work with browser's history. */
 	var qrStopHistory = false, qrReplaceHistory = false;
@@ -549,7 +549,7 @@
 
 		var self = this,
 			smileyBoxDisplayed = false,
-			hasAttachments = true,
+			hasAttachments = false,
 			formAnimationOptions = {
 				duration: qrSlideInterval,
 				progress: setBodyPaddingBottom
@@ -565,6 +565,15 @@
 		 */
 		this.is = function(type) {
 			return self.$.hasClass('qr_' + type + '_form');
+		};
+
+		/**
+		 * Returns whether the user entered a message or added attachments.
+		 *
+		 * @returns {boolean}
+		 */
+		this.hasReply = function() {
+			return !!($(quickreply.editor.textareaSelector).val() || $('#file-list').children().length);
 		};
 
 		/**
@@ -629,6 +638,9 @@
 			if (quickreply.settings.formType > 0) {
 				self.initFixed();
 			}
+
+			// Prevent topic_review false positive - we use our own function for checking new posts.
+			self.$.find('input[name=topic_cur_post_id]').val(0);
 		};
 
 		/**
@@ -640,6 +652,9 @@
 			var formSubmitButtons = self.$.children().children().children('.submit-buttons');
 			formSubmitButtons.children(':not(input[type="submit"])').remove();
 			formSubmitButtons.prepend(qrFields);
+
+			// Prevent topic_review false positive - we use our own function for checking new posts.
+			self.$.find('input[name=topic_cur_post_id]').val(0);
 		};
 
 		/**
@@ -1091,13 +1106,6 @@
 					quickreply.form.refresh();
 					break;
 
-				case "post_update":
-					// Send the message again with the updated ID of the last post.
-					$(quickreply.editor.mainForm)
-						.find('input[name="qr_cur_post_id"], input[name="topic_cur_post_id"]').val(res.post_id).end()
-						.find('input[name="post"]').click();
-					break;
-
 				case "outdated_form":
 					quickreply.loading.setExplain(quickreply.language.loading.NEW_FORM_TOKEN);
 
@@ -1341,6 +1349,7 @@
 		 * @param {string} url Requested URL
 		 */
 		function standardReload(url) {
+			$(window).off('beforeunload.quickreply');
 			$(quickreply.editor.mainForm).off('submit').attr('action', url).submit();
 		}
 
