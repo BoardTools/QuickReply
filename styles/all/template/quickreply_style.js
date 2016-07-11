@@ -325,7 +325,7 @@
 		var listElements = [
 			quickreply.functions.makeLink({
 				href: "#qr_postform",
-				class: "qr_quicknick",
+				className: "qr_quicknick",
 				title: quickreply.language.QUICKNICK_TITLE,
 				text: quickreply.language.QUICKNICK
 			})
@@ -335,7 +335,7 @@
 			listElements.push(
 				quickreply.functions.makeLink({
 					href: qrPMLink.attr('href'),
-					class: "qr_reply_in_pm",
+					className: "qr_reply_in_pm",
 					title: quickreply.language.REPLY_IN_PM,
 					text: quickreply.language.REPLY_IN_PM
 				})
@@ -345,7 +345,7 @@
 		listElements.push(
 			quickreply.functions.makeLink({
 				href: viewProfileURL,
-				class: "qr_profile",
+				className: "qr_profile",
 				title: quickreply.language.PROFILE,
 				text: quickreply.language.PROFILE
 			})

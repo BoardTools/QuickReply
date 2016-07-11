@@ -115,7 +115,7 @@
 		};
 
 		/**
-		 * Shows an alert with the specified message.
+		 * Shows an alert with the specified message and sets a timeout.
 		 *
 		 * @param {string} title Title of the alert.
 		 * @param {string} text  Text of the alert.
@@ -126,7 +126,7 @@
 				$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
 					alert.hide();
 				});
-			}, 3000);
+			}, 5000);
 		};
 
 		/**
@@ -493,6 +493,36 @@
 	}
 
 	function Loading() {
+		var self = this, waitTimer = null, stopTimer = null;
+
+		/**
+		 * Clears loading timeouts.
+		 */
+		function clearTimeouts() {
+			if (waitTimer) {
+				clearTimeout(waitTimer);
+				waitTimer = null;
+			}
+			if (stopTimer) {
+				clearTimeout(stopTimer);
+				stopTimer = null;
+			}
+		}
+
+		/**
+		 * Restarts loading timeouts.
+		 */
+		function setTimeouts() {
+			clearTimeouts();
+			waitTimer = setTimeout(function() {
+				self.setExplain(quickreply.language.loading.WAIT, true);
+			}, 10000);
+			stopTimer = setTimeout(function() {
+				self.stop(true);
+				quickreply.ajax.error($('#darkenwrapper').attr('data-ajax-error-text-timeout'));
+			}, 20000);
+		}
+
 		/**
 		 * Shows loading indicator.
 		 */
@@ -507,17 +537,22 @@
 				}
 				$loadingText.fadeIn(phpbb.alertTime);
 			}
+			setTimeouts();
 		};
 
 		/**
 		 * Sets loading explanation text to inform the user about current state.
 		 *
-		 * @param {string} text HTML string with informative text.
+		 * @param {string}  text           HTML string with informative text.
+		 * @param {boolean} [skipTimeouts] Whether we should not refresh the timeouts.
 		 */
-		this.setExplain = function(text) {
+		this.setExplain = function(text, skipTimeouts) {
 			$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
 				$(this).html(text).fadeIn(phpbb.alertTime);
 			});
+			if (!skipTimeouts) {
+				setTimeouts();
+			}
 		};
 
 		/**
@@ -534,6 +569,7 @@
 			if (!keepDark) {
 				$dark.fadeOut(phpbb.alertTime);
 			}
+			clearTimeouts();
 		};
 
 		/**
@@ -598,6 +634,10 @@
 		 * Binds events to show/hide attachments existence notice.
 		 */
 		function initAttachNotice() {
+			if (!phpbb.plupload.uploader) {
+				// Workaround for phpBB < 3.1.5
+				return;
+			}
 			$(document).ready(function() {
 				// Workaround for non-ajax form save feature.
 				phpbb.plupload.uploader.bind('PostInit', function() {
@@ -629,6 +669,20 @@
 					}
 				});
 			});
+		}
+
+		/**
+		 * Workaround for "Add files" button position calculation.
+		 */
+		function refreshUploader() {
+			if (phpbb.plupload.uploader) {
+				$('.qr_attach_button, #qr_attach_notice').one('click', function() {
+					phpbb.plupload.uploader.refresh();
+				});
+			} else {
+				// Workaround for phpBB < 3.1.5
+				$('.qr_attach_button, #qr_attach_notice').attr('data-subpanel', 'attach-panel');
+			}
 		}
 
 		/**
@@ -766,6 +820,7 @@
 			}
 
 			initAttachNotice();
+			refreshUploader();
 
 			$('#qr_text_action_box, #qr_captcha_container, .qr_attach_button').hide();
 			$('#qr_action_box').prependTo('#message-box');
@@ -790,9 +845,7 @@
 			// Hide active dropdowns when click event happens outside
 			$body.on('mousedown.quickreply.form', function(e) {
 				var $parents = $(e.target).parents();
-				if (!$parents.is(quickreply.editor.mainForm) &&
-					!$(quickreply.editor.textareaSelector).val() &&
-					!self.is('fullscreen')) {
+				if (!$parents.is(quickreply.editor.mainForm) && !$(quickreply.editor.textareaSelector).val() && !self.is('fullscreen')) {
 					self.setCompact();
 				}
 			});
@@ -998,7 +1051,7 @@
 		 * @param {string} [text] Optional error description.
 		 */
 		this.error = function(text) {
-			quickreply.functions.alert(
+			phpbb.alert(
 				quickreply.language.AJAX_ERROR_TITLE,
 				quickreply.language.AJAX_ERROR + ((text) ? '<br />' + text : '')
 			);

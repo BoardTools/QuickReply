@@ -42,7 +42,7 @@ $lang = array_merge($lang, array(
 												<br />NOTE: these settings work regardless of whether quick reply is enabled in a certain forum.',
 	//
 	'ACP_QR_AJAX_PAGINATION'               => 'Allow navigating topics without reloading the page',
-	'ACP_QR_AJAX_PAGINATION_EXPLAIN'       => 'Allow users to enable the setting “Do not refresh quick reply form when navigating the topic”.',
+	'ACP_QR_AJAX_PAGINATION_EXPLAIN'       => 'If this setting is enabled, Ajax pagination will be used instead of standard form submissions when users enable the option “Do not refresh quick reply form when navigating the topic”.',
 	'ACP_QR_AJAX_SUBMIT'                   => 'Allow Ajax posting',
 	'ACP_QR_AJAX_SUBMIT_EXPLAIN'           => 'Allow sending messages without reloading the page.
 												<br />When enabled, forum specific settings will be used to determine whether the Ajax posting
@@ -50,9 +50,9 @@ $lang = array_merge($lang, array(
 	'ACP_QR_ALLOW_FOR_GUESTS'              => 'Allow quick reply for guests if it is enabled',
 	'ACP_QR_ATTACH'                        => 'Allow attachments',
 	'ACP_QR_ATTACH_EXPLAIN'                => 'Allow attachments in the Quick Reply form.',
-	'ACP_QR_BBCODE'                        => 'Enable BBcode',
+	'ACP_QR_BBCODE'                        => 'Display BBcode buttons',
 	'ACP_QR_BBCODE_EXPLAIN'                => 'Enable BBCode buttons in the Quick Reply form.',
-	'ACP_QR_CAPSLOCK'                      => 'Enable text-to upper / lower case',
+	'ACP_QR_CAPSLOCK'                      => 'Enable text case transformations',
 	'ACP_QR_COLOUR_NICKNAME'               => 'Add colour when refer by username',
 	'ACP_QR_COMMA'                         => 'Add comma after username',
 	'ACP_QR_COMMA_EXPLAIN'                 => 'Automatically add a comma after the username when using “Refer by username”.',
@@ -65,8 +65,8 @@ $lang = array_merge($lang, array(
 	'ACP_QR_ENABLE_RE'                     => 'Enable “Re:”',
 	'ACP_QR_ENABLE_RE_EXPLAIN'             => 'Automatically add prefix “Re:” in the “Post subject”
 												in the Quick Reply and the Full Reply form.',
-	'ACP_QR_ENABLE_QUICK_REPLY'            => 'Enable Quick reply in all forums',
-	'ACP_QR_ENABLE_QUICK_REPLY_EXPLAIN'    => 'Allow use Quick reply in all forums right away.
+	'ACP_QR_ENABLE_QUICK_REPLY'            => 'Enable quick reply in all forums',
+	'ACP_QR_ENABLE_QUICK_REPLY_EXPLAIN'    => 'Allow quick reply in all forums right away.
 												<br /><em>If you select “Leave as is” forum settings will not be changed.</em>',
 	'ACP_QR_FORM_TYPE'                     => 'Quick reply form type',
 	'ACP_QR_FORM_TYPE_EXPLAIN'             => 'If “Fixed with post reloads” option is selected, ability to load posts to the current page
@@ -93,8 +93,8 @@ $lang = array_merge($lang, array(
 	'ACP_QR_LEGEND_QUICKQUOTE'             => 'Quick quote settings',
 	'ACP_QR_LEGEND_SPECIAL'                => 'Special features',
 	'ACP_QR_QUICKNICK'                     => 'Enable quick nick (in the dropdown menu)',
-	'ACP_QR_QUICKNICK_EXPLAIN'             => 'Allow insertion of the username in the form of a quick reply when you click on the link “Refer by username”.
-												<br />If enabled, the user can switch in the User Panel to a version of the link “Refer by username”
+	'ACP_QR_QUICKNICK_EXPLAIN'             => 'Allow insertion of the username in the quick reply form when you click on the link “Refer by username”.
+												<br />If enabled, the user can switch in the User Panel to the version of the link “Refer by username”
 												under avatar.',
 	'ACP_QR_QUICKNICK_STRING'              => 'Enable quick nick (under avatar)',
 	'ACP_QR_QUICKNICK_PM'                  => 'Include button «Reply in PM» into the dropdown of the function “Refer by username”',
@@ -114,7 +114,7 @@ $lang = array_merge($lang, array(
 	'ACP_QR_SHOW_BUTTON_TRANSLIT'          => 'Show button “Convert”',
 	'ACP_QR_SHOW_SUBJECTS'                 => 'Show posts subjects in topics',
 	'ACP_QR_SHOW_SUBJECTS_IN_SEARCH'       => 'Show posts subjects in search results',
-	'ACP_QR_SMILIES'                       => 'Enable Smilies',
+	'ACP_QR_SMILIES'                       => 'Display smilies',
 	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smiles in the Quick Reply form.',
 	'ACP_QR_SOURCE_POST'                   => 'Add a link to the quoted message when quoting',
 ));

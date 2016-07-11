@@ -85,7 +85,7 @@ quickreply.functions = {
 	 * Generates an HTML string for a link from an object with parameters.
 	 *
 	 * @param {object} parameters Object with HTML attributes
-	 *                            (href, id, class, title) and link text
+	 *                            (href, id, className, title) and link text
 	 * @returns {string}
 	 */
 	makeLink: function(parameters) {
@@ -97,8 +97,8 @@ quickreply.functions = {
 		if (parameters.id) {
 			link += ' id="' + parameters.id + '"';
 		}
-		if (parameters.class) {
-			link += ' class="' + parameters.class + '"';
+		if (parameters.className) {
+			link += ' class="' + parameters.className + '"';
 		}
 		if (parameters.title) {
 			link += ' title="' + parameters.title + '"';
@@ -124,7 +124,8 @@ quickreply.language = {
 		NEW_POSTS: '{LA_QR_LOADING_NEW_POSTS}',
 		PREVIEW: '{LA_QR_LOADING_PREVIEW}',
 		SUBMITTED: '{LA_QR_LOADING_SUBMITTED}',
-		SUBMITTING: '{LA_QR_LOADING_SUBMITTING}'
+		SUBMITTING: '{LA_QR_LOADING_SUBMITTING}',
+		WAIT: '{LA_QR_LOADING_WAIT}'
 	},
 	NO_FULL_QUOTE: '{LA_QR_NO_FULL_QUOTE}',
 	POST_REVIEW: '{LA_POST_REVIEW_EXPLAIN}',

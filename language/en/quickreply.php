@@ -35,6 +35,7 @@ $lang = array_merge($lang, array(
 	'QR_LOADING_PREVIEW'               => 'Fetching the preview...',
 	'QR_LOADING_SUBMITTED'             => 'Your post has been submitted successfully.<br />Fetching the result...',
 	'QR_LOADING_SUBMITTING'            => 'Submitting your reply...',
+	'QR_LOADING_WAIT'                  => 'Waiting for server response...',
 	'QR_MORE'                          => 'More actions',
 	'QR_NO_FULL_QUOTE'                 => 'Please select a part of the message to be able to quote it.',
 	'QR_PROFILE'                       => 'Go to profile',
