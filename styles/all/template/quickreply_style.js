@@ -1,4 +1,4 @@
-/* global quickreply */
+/* global quickreply, pageJump */
 /**
  * This file is made for prosilver-based styles.
  * Other styles may require some changes, copy this file

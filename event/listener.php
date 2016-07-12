@@ -63,15 +63,15 @@ class listener implements EventSubscriberInterface
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
 		return array(
-			'core.user_setup'                           => 'load_language_on_setup',
-			'core.viewtopic_modify_post_row'            => 'viewtopic_modify_post_row',
-			'core.viewtopic_modify_page_title'          => 'viewtopic_modify_data',
-			'core.modify_submit_post_data'              => 'change_subject_when_sending',
-			'core.posting_modify_template_vars'         => 'delete_re',
-			'core.submit_post_end'                      => 'on_submit',
-			'rxu.postsmerging.posts_merging_end'        => 'on_submit',
-			'core.search_get_posts_data'                => 'hide_posts_subjects_in_searchresults_sql',
-			'core.search_modify_tpl_ary'                => 'hide_posts_subjects_in_searchresults_tpl',
+			'core.user_setup'                    => 'load_language_on_setup',
+			'core.viewtopic_modify_post_row'     => 'viewtopic_modify_post_row',
+			'core.viewtopic_modify_page_title'   => 'viewtopic_modify_data',
+			'core.modify_submit_post_data'       => 'change_subject_when_sending',
+			'core.posting_modify_template_vars'  => 'delete_re',
+			'core.submit_post_end'               => 'on_submit',
+			'rxu.postsmerging.posts_merging_end' => 'on_submit',
+			'core.search_get_posts_data'         => 'hide_posts_subjects_in_searchresults_sql',
+			'core.search_modify_tpl_ary'         => 'hide_posts_subjects_in_searchresults_tpl',
 		);
 	}
 
@@ -111,10 +111,10 @@ class listener implements EventSubscriberInterface
 			));
 		}
 
-		if ($this->helper->plugins_helper->quote_button_disabled($topic_data, $row))
+		if ($this->helper->plugins_helper->quote_button_disabled($topic_data, $row['post_id']))
 		{
 			$post_row = array_merge($post_row, array(
-				'U_QUOTE'			=> false
+				'U_QUOTE' => false
 			));
 		}
 		$event['post_row'] = $post_row;
@@ -192,6 +192,12 @@ class listener implements EventSubscriberInterface
 			$page_data['SUBJECT'] = preg_replace('/^Re: /', '', $page_data['SUBJECT']);
 		}
 
+		// Disable full quote if the user does not have the required permission.
+		if ($this->helper->plugins_helper->check_full_quote_permission($event))
+		{
+			$post_data['post_text'] = $page_data['MESSAGE'] = '';
+		}
+
 		// Whether the user can change post subject or not
 		if ($this->helper->plugins_helper->cannot_change_subject($forum_id, $event['mode'], $post_data['topic_first_post_id'], $event['post_id']))
 		{
@@ -206,6 +212,7 @@ class listener implements EventSubscriberInterface
 			'S_QR_CE_ENABLE' => $this->helper->plugins_helper->qr_ctrlenter_enabled(),
 		));
 
+		$event['post_data'] = $post_data;
 		$event['page_data'] = $page_data;
 	}
 

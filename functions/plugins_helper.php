@@ -112,21 +112,44 @@ class plugins_helper
 	}
 
 	/**
+	 * Returns whether the full quote is disabled for the user.
+	 *
+	 * @param array $topic_data Array with topic data
+	 * @param int   $post_id    Current post ID
+	 * @return bool
+	 */
+	public function full_quote_disabled($topic_data, $post_id)
+	{
+		return (
+			!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) || (
+				!$this->config['qr_last_quote'] &&
+				$topic_data['topic_last_post_id'] === $post_id
+			)
+		);
+	}
+
+	/**
 	 * Returns whether the quote button should be hidden from the user.
 	 *
 	 * @param array $topic_data Array with topic data
-	 * @param array $row        Array with original post and user data
+	 * @param int   $post_id    Current post ID
 	 * @return bool
 	 */
-	public function quote_button_disabled($topic_data, $row)
+	public function quote_button_disabled($topic_data, $post_id)
 	{
-		return !$this->config['qr_quickquote_button'] && (
-			!$this->auth->acl_get('f_qr_full_quote', $topic_data['forum_id']) ||
-			(
-				!$this->config['qr_last_quote'] &&
-				$topic_data['topic_last_post_id'] === $row['post_id']
-			)
-		);
+		return !$this->config['qr_quickquote_button'] && $this->full_quote_disabled($topic_data, $post_id);
+	}
+
+	/**
+	 * Checks whether the user does not have the full quote permission.
+	 *
+	 * @param object $event The event object
+	 * @return bool
+	 */
+	public function check_full_quote_permission($event)
+	{
+		return ($event['mode'] == 'quote' && !$event['submit'] && !$event['preview'] && !$event['refresh'] &&
+			$this->full_quote_disabled($event['post_data'], $event['post_id']));
 	}
 
 	/**
