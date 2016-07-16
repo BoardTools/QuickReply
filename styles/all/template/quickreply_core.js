@@ -586,6 +586,7 @@
 		var self = this,
 			smileyBoxDisplayed = false,
 			hasAttachments = false,
+			formHeight = null,
 			formAnimationOptions = {
 				duration: qrSlideInterval,
 				progress: setBodyPaddingBottom
@@ -793,9 +794,11 @@
 			}
 			self.$.not('.qr_fullscreen_form')
 				.find('.qr_attach_button').delay(100).fadeIn().end()
-				.removeClass('qr_compact_form')
+				.removeClass('qr_compact_form').css('overflow', 'hidden')
 				.find('#qr_text_action_box, #qr_captcha_container, .submit-buttons')
-				.finish().slideDown(formAnimationOptions);
+				.finish().slideDown(formAnimationOptions).promise().done(function() {
+				self.$.css('overflow', '');
+			});
 		};
 
 		/**
@@ -879,8 +882,10 @@
 
 			$('.qr_fixed_form').animate({
 				'maxHeight': '50%',
-				'height': 'auto'
-			}, qrSlideInterval).removeClass('qr_fullscreen_form');
+				'height': formHeight
+			}, qrSlideInterval, function() {
+				$(this).css('height', 'auto');
+			}).removeClass('qr_fullscreen_form');
 
 			if (!self.is('compact')) {
 				quickreply.style.formEditorElements().slideUp(qrSlideInterval);
@@ -898,9 +903,12 @@
 		};
 
 		/**
-		 * Opens quick reply form in fullscreen mode.
+		 * Displays quick reply form in fullscreen mode.
 		 */
-		this.enterFullscreen = function() {
+		function setFullscreen() {
+			// Store current form height.
+			formHeight = self.$.height();
+
 			$body.css('overflow-y', 'hidden');
 			quickreply.style.formEditorElements(true).slideDown(qrSlideInterval);
 			setAttachNotice('hide');
@@ -928,6 +936,13 @@
 				});
 
 			self.$.trigger('fullscreen');
+		}
+
+		/**
+		 * Opens quick reply form in fullscreen mode.
+		 */
+		this.enterFullscreen = function() {
+			quickreply.style.formEditorElements().slideUp(formAnimationOptions).promise().done(setFullscreen);
 		};
 
 		/**

@@ -82,6 +82,10 @@ a span.imageset.icon_topic_latest:before {
 	display: none;
 }
 
+.qr_fixed_form #register-and-translit {
+	display: block;
+}
+
 .qr_fixed_form .col-md-9 {
 	width: 100%;
 	transition: width 0.5s ease;

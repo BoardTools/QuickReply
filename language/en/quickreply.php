@@ -63,7 +63,7 @@ $lang = array_merge($lang, array(
 	//end mod Translit
 	//begin mod CapsLock Transform
 	'QR_TRANSFORM_TEXT'                => 'Change Text Case',
-	'QR_TRANSFORM_TEXT_TOOLTIP'        => 'Press a button to change the case of the highlighted text',
+	'QR_TRANSFORM_TEXT_TOOLTIP'        => 'Press a button to change the case of the selected text',
 	'QR_TRANSFORM_TEXT_LOWER'          => '&#9660; abc',
 	'QR_TRANSFORM_TEXT_UPPER'          => '&#9650; ABC',
 	'QR_TRANSFORM_TEXT_INVERS'         => '&#9660;&#9650; aBC',
