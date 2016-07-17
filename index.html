@@ -1,0 +1,690 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<!-- © 2016 Igor Lavrov, handmade with inclusion of some useful plugins -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="Lavrov Igor">
+	<title>QuickReply Reloaded</title>
+	<link type="text/css" rel="stylesheet"
+	      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link type="text/css" rel="stylesheet" href="./css/comboot.css">
+	<link type="text/css" rel="stylesheet" href="./css/quickreply_main.css">
+	<link type="text/css" rel="stylesheet" href="./css/quickreply.css">
+	<link type="text/css" rel="stylesheet" href="./css/demo.css">
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+	        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	        crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="jumbotron">
+	<div class="container">
+		<h1><span><i class="fa fa-commenting"></i></span><span
+				data-ru="Быстрый ответ: перезагрузка (QuickReply Reloaded)">QuickReply Reloaded</span></h1>
+		<p data-ru="Профессиональное решение для ваших конференций">Professional solution for your boards</p>
+	</div>
+</div>
+
+<section class="bg-primary">
+	<div class="container container-primary">
+		<div class="row">
+			<p data-ru="Упростите процесс создания ответов в темах форумов!" class="text-center">Simplify the process of
+				creating replies in forum topics!</p>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-cogs fa-fw"></i></span><span data-ru="Работает на phpBB 3.1 или выше">Works on phpBB 3.1 or higher</span>
+			</h1>
+			<p data-ru="Расширение обновляется в соответствии с последними релизами phpBB, чтобы вы всегда были уверены в том, что все его функции работают на текущей версии phpBB.">
+				The extension is kept up-to-date with the latest phpBB releases so that you can be sure that all its
+				features work on the current version of phpBB forum software.</p>
+		</div>
+	</div>
+</section>
+<section class="bg-grey">
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-clock-o fa-fw"></i></span><span data-ru="Отвечайте в любое время">Reply at any time</span>
+			</h1>
+			<p data-ru="Если включён новый тип формы, вам не нужно прокручивать тему до конца страницы, чтобы набрать ответ. Форма быстрого ответа присутствует на экране всегда, когда вы просматриваете тему.">
+				If the new form type is enabled, you do not need to scroll the topic to the end of the page to enter a
+				reply. The quick reply form is right on your screen at any time when you view a topic.</p>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-forward fa-fw"></i></span><span
+					data-ru="Действительно быстрый">Surely quick</span></h1>
+			<p data-ru="Ajax-функции упростят отправку ответов. Используйте «Ctrl+Enter» для отправки ответа, когда вы закончите его набирать.">
+				Ajax features will make your posting experience better. Use “Ctrl+Enter” to send the reply when it is
+				ready.</p>
+		</div>
+	</div>
+</section>
+<section class="bg-grey">
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-smile-o fa-fw"></i></span><span data-ru="BBCodes, смайлики и вложения">BBCodes, smilies and attachments</span>
+			</h1>
+			<p data-ru="Кнопки BBCode, смайлики и блок вложений отображаются, как в полном ответе, но они эффектно скрываются, когда они вам не нужны при использовании нового типа формы.">
+				BBCode buttons, smilies and attachment block are displayed just like in full reply, but they are
+				effectively hidden when you do not need them in the new form type.</p>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-quote-right fa-fw"></i></span><span data-ru="Быстрая цитата">Quick quote</span>
+			</h1>
+			<p data-ru="Выделите часть сообщения для её цитирования. Цитируйте через всплывашку и/или с помощью кнопки, настройки можно поменять в Администраторском разделе.">
+				Select a part of the message to be able to quote it. Quote with a popup and/or with a button, setting
+				are customizable in the ACP.</p>
+		</div>
+	</div>
+</section>
+<section class="bg-grey">
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-at fa-fw"></i></span><span data-ru="Обращение по никнейму">Quick nick</span></h1>
+			<p data-ru="Включите специальные всплывашки, с помощью которых можно упоминать авторов сообщений. Упомянутые пользователи получат уведомления.">
+				Enable special quick nick popups to be able to mention post authors. Mentioned users will receive
+				notifications.</p>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-refresh fa-fw"></i></span><span
+					data-ru="Визуальные улучшения">Visual improvements</span></h1>
+			<p data-ru="Набранный ответ не будет потерян при переходе на предыдущую и следующую страницы, подробные сообщения о ходе загрузки отображаются, когда какое-либо запрошенное действие обрабатывается сервером. После загрузки новых сообщений страница плавно прокручивается, время прокрутки может быть настроено в Администраторском разделе или выключено в Личном разделе.">
+				Typed reply will not be lost when you go to previous and next pages, informative loading messages are
+				displayed when your actions are handled by the server. After new messages have been loaded the page is
+				scrolled softly, scroll time can be customized in the ACP or turned off in the UCP.</p>
+		</div>
+	</div>
+</section>
+<section class="bg-grey">
+	<div class="container container-primary">
+		<div class="row">
+			<h1><span><i class="fa fa-gift fa-fw"></i></span><span data-ru="Бонусные функции">Bonus features</span></h1>
+			<p data-ru="Отключите «Re:» в заголовках сообщений или полностью скройте их (заголовок первого сообщения всё равно будет показан). Вам даже не придётся включать быстрый ответ, если вы хотите использовать только эти функции!">
+				Disable “Re:” in post titles or hide them entirely (the title of the first post will still be displayed
+				however). You do not even need to enable quick reply if you want to use only these features!</p>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container container-primary text-center">
+		<div class="row">
+			<h1><span><i class="fa fa-code fa-fw"></i></span><span data-ru="Авторы расширения">Extension authors</span>
+			</h1>
+		</div>
+		<div class="row row-authors">
+			<div class="col-sm-6">
+				<img src="./img/Igor.jpg"/>
+				<div class="author-name" data-ru="Игорь">Igor</div>
+				<div class="author-surname" data-ru="Лавров">Lavrov</div>
+				<div class="author-description"><span
+						data-ru="Также является автором расширения">Also an author of</span> <a
+						href="https://www.phpbb.com/customise/db/extension/upload">Upload Extensions</a>.
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<img src="./img/Tatiana.jpg"/>
+				<div class="author-name" data-ru="Татьяна">Tatiana</div>
+				<div class="author-surname" data-ru="Шеховцова">Shekhovtsova</div>
+				<div class="author-description"><span
+						data-ru="Также является автором расширения">Also an author of</span> <a
+						href="https://www.phpbb.com/customise/db/extension/profile_side_switcher">Profile Side
+					Switcher</a>.
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<section class="bg-yellow">
+	<div class="container container-primary text-center">
+		<div class="row">
+			<h1><span><i class="fa fa-check fa-fw"></i></span><span
+					data-ru="Скачайте бесплатно">Download for free</span></h1>
+			<div class="description" data-ru="Вы можете скачать расширение из любого доступного источника.">You can
+				download the extension from one of the available sources.
+			</div>
+			<div id="sources-links">
+				<a href="https://www.phpbb.com/customise/db/extension/quickreply/" class="source source-phpbb"><i
+						class="fa fa-globe fa-fw"></i><span>phpbb.com</span><i class="fa fa-download fa-fw"></i></a><a
+					href="https://github.com/BoardTools/QuickReply" class="source source-github"><i
+					class="fa fa-github fa-fw"></i><span>github.com</span><i class="fa fa-download fa-fw"></i></a>
+			</div>
+			<div class="description"
+			     data-ru="Если вам понравилось расширение, вы можете показать своё одобрение и помочь в поддержке его функционала, сделав пожертвование.">
+				If you like this extension, you can show your appreciation and help in maintaining its functionality by
+				sending a donation.
+			</div>
+			<div class="donate-buttons text-center">
+				<iframe frameborder="0" allowtransparency="true" scrolling="no"
+				        src="https://money.yandex.ru/embed/small.xml?account=410013331189779&quickpay=small&any-card-payment-type=on&button-text=06&button-size=m&button-color=orange&targets=%D0%9F%D0%BE%D0%BC%D0%BE%D1%89%D1%8C+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D1%83&default-sum=500&successURL="
+				        width="284" height="54"></iframe>
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+					<input type="hidden" name="cmd" value="_s-xclick">
+					<input type="hidden" name="hosted_button_id" value="G67VYBT9HDPKS">
+					<input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" border="0"
+					       name="submit" alt="PayPal – The safer, easier way to pay online.">
+					<img alt="" border="0" src="https://www.paypalobjects.com/ru_RU/i/scr/pixel.gif" width="1"
+					     height="1">
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+<section>
+	<div class="container container-primary text-center">
+		<div class="row">
+			<h1><span><i class="fa fa-code-fork fa-fw"></i></span><span data-ru="Поддерживаемые версии">Supported versions</span>
+			</h1>
+		</div>
+		<div class="row">
+			<table class="table table-bordered table-versions">
+				<thead>
+				<tr>
+					<td data-ru="Версия расширения">Extension version</td>
+					<td data-ru="Версия phpBB">phpBB version</td>
+					<td data-ru="Скачать с GitHub">Download from GitHub</td>
+					<td data-ru="Статус разработки">Development status</td>
+				</tr>
+				</thead>
+				<tbody>
+				<tr class="version-dev">
+					<td>2.0.0</td>
+					<td>
+						<code>3.2.x</code>
+					</td>
+					<td>
+						<a href="https://github.com/BoardTools/QuickReply/archive/develop-2.0.zip">
+							<i class="fa fa-download fa-fw"></i>
+						</a>
+					</td>
+					<td><i class="fa fa-wrench fa-fw"></i><span data-ru="В разработке">In development</span></td>
+				</tr>
+				<tr class="version-dev">
+					<td>1.1.0</td>
+					<td>
+						<code>3.1.x</code>
+					</td>
+					<td>
+						<a href="https://github.com/BoardTools/QuickReply/archive/develop.zip">
+							<i class="fa fa-download fa-fw"></i>
+						</a>
+					</td>
+					<td><i class="fa fa-wrench fa-fw"></i><span data-ru="В разработке">In development</span></td>
+				</tr>
+				<tr class="version-complete">
+					<td>1.0.2</td>
+					<td>
+						<code>3.1.x</code>
+					</td>
+					<td>
+						<a href="https://github.com/BoardTools/QuickReply/archive/master.zip">
+							<i class="fa fa-download fa-fw"></i>
+						</a>
+					</td>
+					<td><i class="fa fa-check fa-fw"></i><span data-ru="Завершена">Complete</span></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section>
+<div class="copyright">
+	<div class="container">
+		<span data-ru="© 2016 Игорь Лавров и Татьяна Шеховцова">© 2016 Igor Lavrov and Tatiana Shekhovtsova</span>
+	</div>
+</div>
+
+<form class="qr_fixed_form" data-overlay="false" data-ajax="qr_ajax_submit" method="post" action="" id="qr_postform">
+	<div class="panel panel-default panel-collapsible" id="qr_ns_editor_div">
+		<div id="try-message">
+			<span data-ru="Протестируй его!">Try it!</span><i class="fa fa-share fa-rotate-90"></i>
+		</div>
+		<div class="panel-heading">
+			<h3 class="panel-title">Quick Reply</h3>
+		</div>
+		<div class="panel-body">
+			<fieldset>
+				<div class="form-horizontal">
+					<div style="display: none;" class="form-group additional-element">
+						<label class="control-label col-md-2" for="subject" data-ru="Заголовок:">Subject:</label>
+						<div class="col-md-10">
+							<input name="subject" id="subject-ns" size="45" maxlength="124" tabindex="2"
+							       value="Re: Test QuickReply" class="form-control" type="text">
+						</div>
+					</div>
+
+					<script type="text/javascript">
+						// <![CDATA[
+						var form_name = 'qr_postform';
+						var text_name = 'message';
+						var load_draft = false;
+						var upload = false;
+
+						// Define the bbCode tags
+						var bbcode = new Array();
+						var bbtags = new Array('[b]', '[/b]', '[i]', '[/i]', '[u]', '[/u]', '[quote]', '[/quote]', '[code]', '[/code]', '[list]', '[/list]', '[list=]', '[/list]', '[img]', '[/img]', '[url]', '[/url]', '[flash=]', '[/flash]', '[size=]', '[/size]');
+						var imageTag = false;
+
+						// Helpline messages
+						var help_line = {
+							b: 'Bold text: [b]text[/b]',
+							i: 'Italic text: [i]text[/i]',
+							u: 'Underline text: [u]text[/u]',
+							q: 'Quote text: [quote]text[/quote]',
+							c: 'Code display: [code]code[/code]',
+							l: 'List: [list][*]text[/list]',
+							o: 'Ordered list: e.g. [list=1][*]First point[/list] or [list=a][*]Point a[/list]',
+							p: 'Insert image: [img]http://image_url[/img]',
+							w: 'Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]',
+							a: 'Inline uploaded attachment: [attachment=]filename.ext[/attachment]',
+							s: 'Font colour: [color=red]text[/color] or [color=#FF0000]text[/color]',
+							f: 'Font size: [size=85]small text[/size]',
+							y: 'List: Add list element',
+							d: 'Flash: [flash=width,height]http://url[/flash]'
+						};
+
+						function qr_formatToggle(s) {
+							var t = '', sc = s.length, c;
+							for (i = 0; i < sc; i++) {
+								c = s.charAt(i);
+								if (c.toLowerCase() == c) {
+									c = c.toUpperCase();
+								} else if (c.toUpperCase() == c) {
+									c = c.toLowerCase();
+								}
+								t += c;
+							}
+							return t;
+						}
+						// param: reg = 0 - lowercase, reg = 1 - uppercase, reg = 2 - inverse
+						function qr_updateCase(reg) {
+							var buf = '', selection = null, start, end;
+							var txtarea = document.forms[form_name].elements[text_name];
+
+							if (document.selection) {
+								selection = document.selection.createRange();
+								buf = selection.text;
+							}
+							else if (typeof (txtarea.selectionStart) == "number") {
+								start = txtarea.selectionStart;
+								end = txtarea.selectionEnd;
+								if (start != end) {
+									buf = txtarea.value.substr(start, end - start);
+								} else {
+									buf = txtarea.value;
+								}
+							}
+							else {
+								buf = txtarea.value;
+							}
+
+							switch (parseInt(reg)) {
+								case 0:
+									buf = buf.toLowerCase();
+									break;
+								case 1:
+									buf = buf.toUpperCase();
+									break;
+								case 2:
+									buf = qr_formatToggle(buf);
+									break;
+							}
+
+							if (selection) {
+								selection.text = buf;
+							}
+							else if (start != end) {
+								txtarea.value = txtarea.value.substr(0, start) + buf + txtarea.value.substr(end);
+							}
+							else {
+								txtarea.value = buf;
+							}
+							txtarea.focus();
+						}
+						// ]]>
+					</script>
+					<div class="form-group">
+						<div class="col-md-9">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<div id="format-buttons" class="no-margin">
+										<div class="btn-toolbar" role="toolbar">
+											<div class="btn-group btn-group-sm">
+												<button title="Bold text: [b]text[/b]" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(0)" accesskey="b"
+												        name="addbbcode0" type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-bold fa-lg"></i>
+												</button>
+												<button title="Italic text: [i]text[/i]" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(2)" accesskey="i"
+												        name="addbbcode2" type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-italic fa-lg"></i>
+												</button>
+												<button title="Underline text: [u]text[/u]" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(4)" accesskey="u"
+												        name="addbbcode4" type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-underline fa-lg"></i>
+												</button>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<button title="Quote text: [quote]text[/quote]" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(6)" accesskey="q"
+												        name="addbbcode6" type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-quote-right fa-lg"></i>
+												</button>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<button title="List: [list][*]text[/list]" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(10)" accesskey="l"
+												        name="addbbcode10" type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-list-ul fa-lg"></i>
+												</button>
+												<button title="Ordered list: e.g. [list=1][*]First point[/list] or [list=a][*]Point a[/list]"
+												        data-container="body" data-toggle="tooltip"
+												        onclick="bbstyle(12)" accesskey="o" name="addbbcode12"
+												        type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-list-ol fa-lg"></i>
+												</button>
+												<button title="List item: [*]text" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(-1)" accesskey="y"
+												        name="addbblistitem" type="button"
+												        class="btn btn-default btn-xs">
+													<i class="fa fa-plus-circle fa-lg"></i>
+												</button>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<button title="Code display: [code]code[/code]" data-container="body"
+												        data-toggle="tooltip" onclick="bbstyle(8)" accesskey="c"
+												        name="addbbcode8" type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-code fa-lg"></i>
+												</button>
+												<button title="Insert image: [img]http://image_url[/img]"
+												        data-container="body" data-toggle="tooltip"
+												        onclick="bbstyle(14)" accesskey="p" name="addbbcode14"
+												        type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-picture-o fa-lg"></i>
+												</button>
+												<button title="Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]"
+												        data-container="body" data-toggle="tooltip"
+												        onclick="bbstyle(16)" accesskey="w" name="addbbcode16"
+												        type="button" class="btn btn-default btn-xs">
+													<i class="fa fa-link fa-lg"></i>
+												</button>
+											</div>
+										</div>
+										<div id="register-and-translit" class="btn-toolbar">
+											<abbr title="Press a button to change the case of the selected text"
+											      data-ru-title="Для изменения регистра выделите часть текста и нажмите нужную кнопку"
+											      data-ru="Изменение регистра текста:">Change Text Case:</abbr>&nbsp;
+											<button title="UPPER CASE" data-ru-title="ВЕРХНИЙ РЕГИСТР"
+											        data-container="body" data-toggle="tooltip" type="button"
+											        class="btn btn-default" accesskey="t" name="uppercase"
+											        onclick="qr_updateCase(1)">▲ ABC
+											</button>
+											<button title="lower case" data-ru-title="нижний регистр"
+											        data-container="body" data-toggle="tooltip" type="button"
+											        class="btn btn-default" accesskey="t" name="lowercase"
+											        onclick="qr_updateCase(0)">▼ abc
+											</button>
+											<button title="iNVERT cASE" data-ru-title="иНВЕРСИЯ рЕГИСТРА"
+											        data-container="body" data-toggle="tooltip" type="button"
+											        class="btn btn-default" accesskey="t" name="inverscase"
+											        onclick="qr_updateCase(2)">▼▲ aBC
+											</button>
+										</div>
+									</div>
+								</div>
+
+								<div id="qr_text_action_box">
+									<i class="qr_bbcode_button fa fa-fw fa-bold" title="BBCode"></i>
+									<i class="qr_smiley_button fa fa-fw fa-smile-o" title="Smilies"
+									   data-ru-title="Смайлики"></i>
+									<i class="qr_more_actions_button fa fa-fw fa-chevron-down" title="More actions"
+									   data-ru-title="Другие действия"></i>
+								</div>
+								<div class="panel-body no-padding">
+									<div id="message-box">
+										<div id="qr_action_box">
+											<i class="qr_fullscreen_button fa fa-fw fa-arrows-alt"
+											   title="Fullscreen editor" data-ru-title="Полноэкранный редактор"></i>
+											<i class="qr_attach_button fa fa-fw fa-paperclip" title="Attachments"
+											   data-ru-title="Вложения"></i>
+											<i class="qr_smiley_button fa fa-fw fa-smile-o" title="Smilies"
+											   data-ru-title="Смайлики"></i>
+										</div>
+										<textarea style="position: relative;" placeholder="Type your reply here..."
+										          name="message" id="qr_message" rows="15" cols="76" tabindex="4"
+										          onselect="storeCaret(this);" onclick="storeCaret(this);"
+										          onkeyup="storeCaret(this);" onfocus="initInsertions();"
+										          class="form-control no-auto-resize qr_fixed_textarea"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3" id="smiley-box">
+							<strong data-ru="Смайлики">Smilies</strong><br>
+							<a href="#" onclick="insert_text(':D', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_biggrin.gif"
+									alt=":D" title="Very Happy" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':)', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_smile.gif"
+									alt=":)" title="Smile" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(';)', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_wink.gif"
+									alt=";)" title="Wink" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':(', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_sad.gif"
+									alt=":(" title="Sad" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':o', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_surprised.gif"
+									alt=":o" title="Surprised" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':shock:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_eek.gif"
+									alt=":shock:" title="Shocked" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':?', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_confused.gif"
+									alt=":?" title="Confused" height="17" width="15"></a>
+							<a href="#" onclick="insert_text('8-)', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_cool.gif"
+									alt="8-)" title="Cool" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':lol:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_lol.gif"
+									alt=":lol:" title="Laughing" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':x', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_mad.gif"
+									alt=":x" title="Mad" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':P', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_razz.gif"
+									alt=":P" title="Razz" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':oops:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_redface.gif"
+									alt=":oops:" title="Embarrassed" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':cry:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_cry.gif"
+									alt=":cry:" title="Crying or Very Sad" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':evil:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_evil.gif"
+									alt=":evil:" title="Evil or Very Mad" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':twisted:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_twisted.gif"
+									alt=":twisted:" title="Twisted Evil" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':roll:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_rolleyes.gif"
+									alt=":roll:" title="Rolling Eyes" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':!:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_exclaim.gif"
+									alt=":!:" title="Exclamation" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':?:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_question.gif"
+									alt=":?:" title="Question" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':idea:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_idea.gif"
+									alt=":idea:" title="Idea" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':arrow:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_arrow.gif"
+									alt=":arrow:" title="Arrow" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':|', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_neutral.gif"
+									alt=":|" title="Neutral" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':mrgreen:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_mrgreen.gif"
+									alt=":mrgreen:" title="Mr. Green" height="17" width="15"></a>
+							<a href="#" onclick="insert_text(':geek:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_geek.gif"
+									alt=":geek:" title="Geek" height="17" width="17"></a>
+							<a href="#" onclick="insert_text(':ugeek:', true); return false;"><img
+									src="https://github.com/phpbb/phpbb/raw/3.1.x/phpBB/images/smilies/icon_e_ugeek.gif"
+									alt=":ugeek:" title="Uber Geek" height="18" width="17"></a>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			<div role="tabpanel" class="tab-pane" id="attach-tab">
+				<p data-ru="В этой демонтрации добавление вложений недоступно.">Attachments are disabled in this
+					demonstration.</p>
+
+				<div style="position: relative; display: block;" id="attach-panel-multi">
+					<button data-original-data-container="body" data-toggle="tooltip"
+					        style="position: relative; z-index: 1;" class="btn btn-primary disabled" value="Add files"
+					        id="add_files" data-ru="Добавить файлы">Add files
+					</button>
+				</div>
+
+				<div class="panel panel-default" id="file-list-container" style="display:none">
+				</div>
+			</div>
+		</div>
+		<div class="panel-footer">
+			<fieldset class="submit-buttons">
+				<input name="creation_time" value="0" type="hidden">
+				<input name="form_token" value="0" type="hidden">
+
+				<input name="topic_cur_post_id" value="0" type="hidden">
+				<input name="lastclick" value="0" type="hidden">
+				<input name="topic_id" value="0" type="hidden">
+				<input name="forum_id" value="0" type="hidden">
+				<input name="attach_sig" value="1" type="hidden">
+				<input name="qr" value="1" type="hidden">
+				<input name="qr_cur_post_id" value="1" type="hidden">
+
+				<button data-original-data-container="body" data-toggle="tooltip" accesskey="f" tabindex="7"
+				        name="preview" value="Preview" class="btn btn-primary" id="qr_full_editor"
+				        data-ru="Предпросмотр">Preview
+				</button>
+				<button data-original-data-container="body" data-toggle="tooltip" accesskey="s" tabindex="6" name="post"
+				        value="Submit" class="btn btn-success" data-ru="Отправить">Submit
+				</button>
+
+				<div id="qr-version"
+				     data-ru="Информация о демонстрации - Версия расширения QuickReply: 1.1.0, стиль демонстрации: ComBoot автора Florian Gareis">
+					Demo information - QuickReply version: 1.1.0, demo style: ComBoot by Florian Gareis
+				</div>
+			</fieldset>
+		</div>
+	</div>
+</form>
+
+<div id="page-footer">
+	<div id="darkenwrapper" data-ajax-error-title="AJAX error"
+	     data-ajax-error-text="Something went wrong when processing your request."
+	     data-ajax-error-text-abort="User aborted request."
+	     data-ajax-error-text-timeout="Your request timed out; please try again."
+	     data-ajax-error-text-parsererror="Something went wrong with the request and the server returned an invalid reply.">
+		<div id="darken">&nbsp;</div>
+	</div>
+	<div id="phpbb_alert" class="phpbb_alert alert alert-info" data-l-err="Error"
+	     data-l-timeout-processing-req="Request timed out.">
+		<a href="#" class="alert_close"><i class="fa fa-times-circle fa-fw" aria-hidden="true"></i></a>
+		<strong class="alert_title">&nbsp;</strong>
+		<p class="alert_text"></p>
+	</div>
+</div>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter38543555 = new Ya.Metrika({
+                    id:38543555,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    trackHash:true
+                });
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/38543555" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script src="./js/core.js"></script>
+<script src="./js/editor.js"></script>
+<script src="./js/quickreply_demo.js"></script>
+<script>
+	<!--
+	function toggleLanguage(from, to) {
+		$('[data-' + to + ']').each(function() {
+			var $this = $(this);
+			$this.attr('data-' + from, $this.text())
+					.text($this.attr('data-' + to));
+		});
+		$('[data-' + to + '-title]').each(function() {
+			var $this = $(this);
+			$this.attr('data-' + from + '-title', $this.attr('title'))
+					.attr('title', $this.attr('data-' + to + '-title'));
+		});
+		if (quickreply && quickreply.languageArray) {
+			quickreply.language = quickreply.languageArray[to];
+		}
+	}
+	if (location.hash === '#ru') {
+		toggleLanguage('en', 'ru');
+	}
+	$('body').one('click', function() {
+		$('#try-message').slideUp(700);
+	});
+	//-->
+</script>
+<script src="./js/quickreply_style.js"></script>
+<script src="./js/quickreply_core.js"></script>
+</body>
+</html>
