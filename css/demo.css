@@ -221,6 +221,7 @@ p {
 
 .donate-buttons > form {
 	margin-top: 3px;
+	margin-left: 15px;
 }
 
 .donate-buttons input[type=image] {
