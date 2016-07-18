@@ -675,10 +675,21 @@
 		if (quickreply && quickreply.languageArray) {
 			quickreply.language = quickreply.languageArray[to];
 		}
+		if (to === 'ru') {
+			$('.donate-buttons > form').hide();
+		} else {
+			$('.donate-buttons > form').show();
+		}
 	}
-	if (location.hash === '#ru') {
-		toggleLanguage('en', 'ru');
+
+	function checkHash() {
+		if (location.hash === '#ru') {
+			toggleLanguage('en', 'ru');
+		}
 	}
+	checkHash();
+	$(window).on('hashchange', checkHash);
+
 	$('body').one('click', function() {
 		$('#try-message').slideUp(700);
 	});

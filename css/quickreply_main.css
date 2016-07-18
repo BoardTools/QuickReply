@@ -157,10 +157,6 @@
 }
 
 /* Compact form style. */
-.qr_compact_form {
-	overflow: hidden !important;
-}
-
 #qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
 	height: 48px !important;
 }
