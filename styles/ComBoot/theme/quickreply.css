@@ -82,17 +82,24 @@ a span.imageset.icon_topic_latest:before {
 	display: none;
 }
 
-.qr_fixed_form #register-and-translit {
+.qr_fixed_form #register-and-translit,
+.qr_fixed_form > #preview > .panel-heading {
 	display: block;
 }
 
 .qr_fixed_form .col-md-9 {
 	width: 100%;
 	transition: width 0.5s ease;
+	float: left;
 }
 
 .qr_fixed_form.with_smileys .col-md-9 {
 	width: 75%;
+}
+
+.qr_fixed_form #smiley-box {
+	width: 25%;
+	float: left;
 }
 
 #qr_postform.qr_fixed_form.with_smileys #message-box {

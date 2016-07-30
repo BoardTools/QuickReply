@@ -34,6 +34,7 @@
 	quickreply.ajax = new Ajax();
 	quickreply.ajaxReload = new AjaxReload();
 	quickreply.form = new QrForm();
+	quickreply.preview = new Preview();
 
 	quickreply.ajax.init();
 	quickreply.form.init();
@@ -104,11 +105,13 @@
 		/**
 		 * Scrolls the page to the target element.
 		 *
-		 * @param {jQuery} target
+		 * @param {jQuery}        target      Element that we need to scroll to
+		 * @param {string|jQuery} [container] Container element that needs scrolling (default: 'html,body')
 		 */
-		quickreply.functions.softScroll = function(target) {
+		quickreply.functions.softScroll = function(target, container) {
 			if (target.length) {
-				$('html,body').animate({
+				container = container || 'html,body';
+				$(container).animate({
 					scrollTop: target.offset().top
 				}, qrSlideInterval);
 			}
@@ -489,6 +492,7 @@
 	function QrJqueryElements() {
 		this.qrPosts = $('#qr_posts');
 		this.mainForm = $(quickreply.editor.mainForm);
+		this.messageBox = $('#message-box');
 		this.textarea = $(quickreply.editor.textareaSelector);
 	}
 
@@ -732,13 +736,19 @@
 			}
 		}
 
+		function fixSmileyHeight() {
+			$('#smiley-box').css('height', quickreply.$.messageBox.height());
+		}
+
 		/**
 		 * Opens smiley box.
 		 */
 		function openSmileyBox() {
 			self.$.addClass('with_smileys');
-			$('#smiley-box').stop().animate({
-				right: '10px'
+			$(quickreply.$.textarea).on('mousemove.quickreply.smilies', fixSmileyHeight);
+			self.$.on('fullscreen.quickreply.smilies', fixSmileyHeight);
+			$('#smiley-box').css('height', quickreply.$.messageBox.height()).stop().animate({
+				right: '0'
 			}, 500);
 			smileyBoxDisplayed = true;
 		}
@@ -751,6 +761,8 @@
 				right: '-1000px'
 			}, 500);
 			self.$.removeClass('with_smileys');
+			$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+			self.$.off('fullscreen.quickreply.smilies');
 			smileyBoxDisplayed = false;
 		}
 
@@ -848,7 +860,9 @@
 			// Hide active dropdowns when click event happens outside
 			$body.on('mousedown.quickreply.form', function(e) {
 				var $parents = $(e.target).parents();
-				if (!$parents.is(quickreply.editor.mainForm) && !$(quickreply.editor.textareaSelector).val() && !self.is('fullscreen')) {
+				if (!$parents.is(quickreply.editor.mainForm) &&
+					!$(quickreply.editor.textareaSelector).val() &&
+					!self.is('fullscreen')) {
 					self.setCompact();
 				}
 			});
@@ -875,7 +889,7 @@
 		 */
 		this.exitFullscreen = function() {
 			$(document).off('keydown.quickreply.fullscreen');
-			self.$.find('.submit-buttons input[type="submit"]').off('click.quickreply.fullscreen');
+			self.$.off('ajax_submit_success.quickreply.fullscreen');
 
 			$body.css('overflow-y', '');
 			hideColourPalette();
@@ -899,6 +913,7 @@
 				.attr('title', quickreply.language.FULLSCREEN);
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
+			$('#preview').insertBefore(self.$);
 			self.$.trigger('fullscreen-exit');
 		};
 
@@ -914,10 +929,6 @@
 			setAttachNotice('hide');
 			$('#qr_text_action_box, .qr_attach_button').hide();
 
-			$('.qr_fixed_form').animate({
-				'maxHeight': '100%',
-				'height': '100%'
-			}, qrSlideInterval).addClass('qr_fullscreen_form');
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN_EXIT);
 			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
@@ -930,12 +941,16 @@
 				}
 			});
 
-			self.$.find('.submit-buttons input[type="submit"]')
-				.on('click.quickreply.fullscreen', function() {
-					self.exitFullscreen();
-				});
+			self.$.on('ajax_submit_success.quickreply.fullscreen', self.exitFullscreen);
 
-			self.$.trigger('fullscreen');
+			self.$.trigger('fullscreen-before');
+			$('.qr_fixed_form').addClass('qr_fullscreen_form').animate({
+				'maxHeight': '100%',
+				'height': '100%'
+			}, qrSlideInterval, function() {
+				$('#preview').prependTo(self.$);
+				self.$.trigger('fullscreen');
+			});
 		}
 
 		/**
@@ -970,6 +985,11 @@
 				quickreply.ajaxReload.start(document.location.href, {qr_captcha_refresh: 1});
 			}
 		};
+	}
+
+	// @todo
+	function Preview() {
+
 	}
 
 	function Ajax() {
@@ -1165,7 +1185,8 @@
 					});
 					quickreply.loading.stop();
 					if (quickreply.settings.enableScroll) {
-						quickreply.functions.softScroll($preview);
+						var $container = (quickreply.form.is('fullscreen')) ? quickreply.editor.mainForm : false;
+						quickreply.functions.softScroll($preview, $container);
 					}
 					$('#qr_postform').trigger('ajax_submit_preview', [$preview]);
 					break;

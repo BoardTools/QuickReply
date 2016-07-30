@@ -32,7 +32,7 @@
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post-body panel panel-info" style="display: none; margin-top: 50px;"><div class="panel-heading"><h3></h3></div><div class="panel-body"><div class="content"></div></div></div>');
+		$(quickreply.editor.mainForm).before('<div id="preview" class="post-body panel panel-info" style="display: none;"><div class="panel-heading"><h3></h3></div><div class="panel-body"><div class="content"></div></div></div>');
 	};
 
 	/**
@@ -361,14 +361,14 @@
 	function qrSetPosition() {
 		$(quickreply.editor.mainForm).css('bottom', $('#footer-nav').height());
 		if (quickreply.form.is('fullscreen')) {
-			$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
+			$(quickreply.editor.mainForm).css('padding-top', 0).css('height', '').css('top', $('#header-nav').height());
 		}
 	}
 	$(window).on('load resize', qrSetPosition);
-	$(quickreply.editor.mainForm).on('fullscreen', function() {
+	$(quickreply.editor.mainForm).on('fullscreen-before', function() {
 		$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
-	}).on('fullscreen-exit', function() {
-		$(quickreply.editor.mainForm).css('padding-top', '0');
+	}).on('fullscreen', qrSetPosition).on('fullscreen-exit', function() {
+		$(quickreply.editor.mainForm).css('top', 'auto');
 	});
 
 	// Special handling for events.

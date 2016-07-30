@@ -24,7 +24,7 @@
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post profile_hidden bg2" style="display: none; margin-top: 50px;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
+		$(quickreply.editor.mainForm).before('<div id="preview" class="post profile_hidden bg2" style="display: none;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
 	};
 
 	/**

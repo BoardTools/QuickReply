@@ -81,7 +81,11 @@
 #qr_postform.qr_fixed_form #message-box textarea.qr_fixed_textarea {
 	height: 115px !important;
 	min-height: 0;
-	transition: height 0.7s ease;
+	transition: height 0.5s ease;
+}
+
+#qr_postform.qr_fixed_form #smiley-box {
+	max-height: 115px;
 }
 
 .qr_fixed_form #attach-panel,
@@ -137,15 +141,12 @@
 	top: 38px;
 }
 
-.qr_smilies_dropdown {
-	position: fixed;
-	z-index: 31;
-}
-
 .qr_fixed_form #smiley-box {
 	position: absolute;
 	right: -1000px;
 	z-index: 31;
+	overflow-y: auto;
+	width: 20%;
 }
 
 .qr_fixed_form #format-buttons {
@@ -158,7 +159,7 @@
 
 /* Compact form style. */
 .qr_compact_form {
-	overflow: hidden !important;
+	overflow-y: hidden;
 }
 
 #qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
@@ -175,9 +176,19 @@
 }
 
 /* Fullscreen form style. */
+.qr_fullscreen_form.qr_compact_form {
+	overflow-y: auto;
+}
+
 #qr_postform.qr_fullscreen_form textarea {
+	min-height: 115px;
 	max-height: 50%;
-	transition: height 0.7s ease;
+	transition: height 0.5s ease;
+}
+
+#qr_postform.qr_fixed_form.qr_fullscreen_form #smiley-box {
+	max-height: none;
+	margin: 0;
 }
 
 #qr_postform.qr_fixed_form.qr_fullscreen_form #message-box {
