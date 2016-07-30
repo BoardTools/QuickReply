@@ -27,5 +27,5 @@ $lang = array_merge($lang, array(
 		3	=> '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
 	),
 
-	'NOTIFICATION_TYPE_QUICKNICK'	=> 'К Вам обратились по никнейму в сообщении',
+	'NOTIFICATION_TYPE_QUICKNICK'	=> 'К вам обратились по никнейму в сообщении',
 ));
