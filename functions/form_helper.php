@@ -228,6 +228,11 @@ class form_helper
 		$attachment_data = $arr_attach[0];
 		$filename_data = $arr_attach[1];
 
+		if (!function_exists('posting_gen_inline_attachments'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+		}
+
 		posting_gen_inline_attachments($attachment_data);
 
 		$max_files = $this->get_max_files($forum_id);
