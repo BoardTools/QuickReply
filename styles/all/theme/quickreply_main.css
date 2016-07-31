@@ -69,6 +69,10 @@
 	transition: width 0.5s ease;
 }
 
+#qr_postform.qr_extended_form #message-box {
+	transition: width 0s;
+}
+
 #qr_postform.qr_fixed_form.with_smileys #message-box {
 	width: 80%;
 }
@@ -84,6 +88,10 @@
 	height: 115px !important;
 	min-height: 0;
 	transition: height 0.5s ease;
+}
+
+#qr_postform.qr_extended_form #message-box textarea.qr_fixed_textarea {
+	transition: height 0s;
 }
 
 #qr_postform.qr_fixed_form #smiley-box {

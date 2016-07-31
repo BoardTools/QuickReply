@@ -915,9 +915,11 @@
 			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
 
 			$('#qr_text_action_box, #qr_action_box').hide();
-			$('#smiley-box').css('left', '').css('right', '').css('height', '');
 
-			quickreply.style.formEditorElements(true).show();
+			closeSmileyBox();
+			$('#smiley-box').finish().css('left', '').css('right', '').css('height', '');
+
+			quickreply.style.formEditorElements(true).finish().show();
 			setAttachNotice('hide');
 		}
 
@@ -932,8 +934,7 @@
 
 			var placeholderHeight = self.$.height();
 
-			self.$.finish().hide()
-				.addClass('qr_fixed_form').removeClass('qr_extended_form');
+			self.$.finish().hide().addClass('qr_fixed_form');
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 			$('<div id="qr_form_placeholder" />').css('height', placeholderHeight).insertAfter(self.$);
@@ -948,7 +949,7 @@
 				self.setCompact(true);
 			}
 
-			self.$.show();
+			self.$.removeClass('qr_extended_form').show();
 		}
 
 		/**
