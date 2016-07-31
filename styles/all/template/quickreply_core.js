@@ -639,11 +639,12 @@
 		 * Binds events to show/hide attachments existence notice.
 		 */
 		function initAttachNotice() {
-			if (!phpbb.plupload.uploader) {
-				// Workaround for phpBB < 3.1.5
-				return;
-			}
 			$(document).ready(function() {
+				if (!phpbb.plupload.uploader) {
+					// Workaround for phpBB < 3.1.5
+					return;
+				}
+
 				// Workaround for non-ajax form save feature.
 				phpbb.plupload.uploader.bind('PostInit', function() {
 					if ($('#file-list').children().length) {
@@ -720,7 +721,7 @@
 		 * Sets padding-bottom for body element equal to quick reply form height.
 		 */
 		function setBodyPaddingBottom() {
-			$body.css('padding-bottom', self.$.height() + 'px');
+			// $body.css('padding-bottom', self.$.height() + 'px');
 		}
 
 		/**
@@ -736,6 +737,9 @@
 			}
 		}
 
+		/**
+		 * Sets the height of smiley box equal to the height of message box.
+		 */
 		function fixSmileyHeight() {
 			$('#smiley-box').css('height', quickreply.$.messageBox.height());
 		}
@@ -771,13 +775,20 @@
 		 *
 		 * @param {boolean} [skipBottomAnimation] Whether we do not need to animate the body
 		 */
-		this.setCompact = function(skipBottomAnimation) {
+		this.setCompact = function(skipBottomAnimation, immediate) {
 			var animationOptions = (skipBottomAnimation) ? qrSlideInterval : formAnimationOptions;
 			$('#qr_text_action_box, .qr_attach_button').hide();
 			hideColourPalette();
 			closeSmileyBox();
 			self.$.addClass('qr_compact_form');
-			quickreply.style.formEditorElements(true).finish().slideUp(animationOptions);
+
+			var editorElements = quickreply.style.formEditorElements(true).finish();
+			if (immediate) {
+				editorElements.hide();
+			} else {
+				editorElements.slideUp(animationOptions);
+			}
+
 			setAttachNotice('', animationOptions);
 		};
 
@@ -822,7 +833,7 @@
 			quickreply.style.showQuickReplyForm();
 
 			// Switch off Quick Reply Toggle Plugin
-			$("#reprap").remove();
+			$("#reprap").hide();
 
 			self.$.finish().addClass('qr_fixed_form qr_compact_form');
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
@@ -862,7 +873,8 @@
 				var $parents = $(e.target).parents();
 				if (!$parents.is(quickreply.editor.mainForm) &&
 					!$(quickreply.editor.textareaSelector).val() &&
-					!self.is('fullscreen')) {
+					!self.is('fullscreen') &&
+					!self.is('extended')) {
 					self.setCompact();
 				}
 			});
@@ -882,7 +894,79 @@
 					self.enterFullscreen();
 				}
 			});
+
+			$(window).scroll(checkExtended);
+			$(document).ready(checkExtended);
 		};
+
+		/**
+		 * Initializes or exits extended standard form mode if needed.
+		 */
+		function checkExtended() {
+			if (self.is('fullscreen')) {
+				return;
+			}
+
+			var $window = $(window),
+				$previous = self.$.prevAll(":visible:first"),
+				scrollBottom = $window.scrollTop() + $window.height(),
+				formOffset = $previous.offset().top + $previous.height();
+
+			if (scrollBottom - self.$.height() >= formOffset && !self.is('extended')) {
+				setExtended();
+			} else if (scrollBottom - 48 < formOffset && self.is('extended')) {
+				exitExtended();
+			}
+		}
+
+		/**
+		 * Sets extended standard form mode.
+		 */
+		function setExtended() {
+			// Switch on Quick Reply Toggle Plugin if it is installed
+			$("#reprap").show();
+
+			$('#qr_form_placeholder').remove();
+
+			self.$.finish().removeClass('qr_fixed_form qr_compact_form').addClass('qr_extended_form');
+			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
+
+			$('#qr_text_action_box, #qr_action_box').hide();
+			$('#smiley-box').css('left', '').css('right', '').css('height', '');
+
+			quickreply.style.formEditorElements(true).show();
+			setAttachNotice('hide');
+		}
+
+		/**
+		 * Exits extended standard form mode and sets fixed form mode.
+		 */
+		function exitExtended() {
+			// Switch off Quick Reply Toggle Plugin
+			$("#reprap").show();
+
+			quickreply.style.showQuickReplyForm();
+
+			var placeholderHeight = self.$.height();
+
+			self.$.finish().hide()
+				.addClass('qr_fixed_form').removeClass('qr_extended_form');
+			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
+
+			$('<div id="qr_form_placeholder" />').css('height', placeholderHeight).insertAfter(self.$);
+
+			$('#qr_action_box').show();
+
+			if ($(quickreply.editor.textareaSelector).val() || quickreply.$.textarea.is(':focus')) {
+				quickreply.style.formEditorElements().hide();
+				$('#qr_text_action_box, #qr_captcha_container, .submit-buttons, .qr_attach_button').show();
+				setAttachNotice();
+			} else {
+				self.setCompact(true, true);
+			}
+
+			self.$.show();
+		}
 
 		/**
 		 * Exits fullscreen mode and returns quick reply form to the previous mode.
@@ -891,7 +975,7 @@
 			$(document).off('keydown.quickreply.fullscreen');
 			self.$.off('ajax_submit_success.quickreply.fullscreen');
 
-			$body.css('overflow-y', '');
+			$body.add('html').css('overflow-y', '');
 			hideColourPalette();
 
 			$('.qr_fixed_form').animate({
@@ -924,7 +1008,7 @@
 			// Store current form height.
 			formHeight = self.$.height();
 
-			$body.css('overflow-y', 'hidden');
+			$body.add('html').css('overflow-y', 'hidden');
 			quickreply.style.formEditorElements(true).slideDown(qrSlideInterval);
 			setAttachNotice('hide');
 			$('#qr_text_action_box, .qr_attach_button').hide();
