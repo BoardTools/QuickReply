@@ -64,7 +64,7 @@
 		var $messageBox = $('#message-box'),
 			$form_groups = $messageBox.closest('.form-group').siblings(),
 			$additional_tabs = $messageBox.closest('fieldset').siblings().not(quickreply.editor.attachPanel);
-		$form_groups.add($additional_tabs).addClass('additional-element').hide();
+		$form_groups.add($additional_tabs).not('#abbc3_buttons').addClass('additional-element').hide();
 	};
 
 	/**
@@ -75,7 +75,7 @@
 	 */
 	quickreply.style.formEditorElements = function(selectSubmitButtons) {
 		var $qrForm = $(quickreply.editor.mainForm),
-			$elements = $qrForm.find('#attach-tab, #format-buttons, .additional-element');
+			$elements = $qrForm.find('#attach-tab, #format-buttons, #abbc3_buttons, .additional-element');
 		return (selectSubmitButtons) ? $elements.add($qrForm.find('.submit-buttons')) : $elements;
 	};
 

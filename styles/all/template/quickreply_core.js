@@ -492,7 +492,7 @@
 	function QrJqueryElements() {
 		this.qrPosts = $('#qr_posts');
 		this.mainForm = $(quickreply.editor.mainForm);
-		this.messageBox = $('#message-box');
+		this.messageBox = this.mainForm.find('#message-box');
 		this.textarea = $(quickreply.editor.textareaSelector);
 	}
 
@@ -831,9 +831,11 @@
 			// Switch off Quick Reply Toggle Plugin
 			$("#reprap").hide();
 
+			self.$.finish();
+
 			$('<div id="qr_form_placeholder" />').css('height', self.$.height()).insertAfter(self.$);
 
-			self.$.finish().addClass('qr_fixed_form qr_compact_form');
+			self.$.addClass('qr_fixed_form qr_compact_form');
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 			quickreply.style.setAdditionalElements();
@@ -853,12 +855,14 @@
 			if (quickreply.plugins.abbc3) {
 				addButtonTrigger(
 					'.qr_bbcode_button',
-					'#abbc3_buttons, #register-and-translit:not(#format-buttons #register-and-translit)',
+					[
+						'#abbc3_buttons',
+						'#format-buttons:has(#register-and-translit)',
+						'#register-and-translit:not(#format-buttons #register-and-translit)'
+					].join(', '),
 					hideColourPalette
 				);
-				if ($('#format-buttons #register-and-translit').length) {
-					$('#format-buttons').children(':not(#register-and-translit)').hide().end().show();
-				}
+				$('#format-buttons').children(':not(#register-and-translit)').hide();
 			} else {
 				addButtonTrigger(
 					'.qr_bbcode_button',
@@ -1547,7 +1551,7 @@
 		/**
 		 * Special handler for pagination.
 		 * Determines whether we can perform the Ajax request.
-		 * 
+		 *
 		 * @param {string} url Page URL to load
 		 */
 		this.loadPage = function(url) {
