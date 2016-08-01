@@ -124,12 +124,12 @@
 			$('.action-bar .pagination a:not(.dropdown-trigger, .mark)').click(function(event) {
 				event.preventDefault();
 				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
-				quickreply.functions.qr_ajax_reload($(this).attr('href'));
+				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});
 
 			$('.action-bar .pagination a.mark:not([href="#unread"])').click(function(event) {
 				event.preventDefault();
-				quickreply.functions.qr_ajax_reload($(this).attr('href'));
+				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});
 		}
 

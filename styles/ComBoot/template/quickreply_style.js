@@ -123,12 +123,12 @@
 			$('nav .pagination a:not([href="#"])').click(function(event) {
 				event.preventDefault();
 				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
-				quickreply.functions.qr_ajax_reload($(this).attr('href'));
+				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});
 
 			$(quickreply.editor.totalPostsContainer).children('a:not([href="#unread"])').click(function(event) {
 				event.preventDefault();
-				quickreply.functions.qr_ajax_reload($(this).attr('href'));
+				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});
 		}
 

@@ -174,9 +174,9 @@
 					startName = item.attr('data-start-name');
 
 				if (baseUrl.indexOf('?') === -1) {
-					quickreply.ajaxReload.start(baseUrl + '?' + startName + '=' + ((page - 1) * perPage));
+					quickreply.ajaxReload.loadPage(baseUrl + '?' + startName + '=' + ((page - 1) * perPage));
 				} else {
-					quickreply.ajaxReload.start(baseUrl.replace(/&amp;/g, '&') +
+					quickreply.ajaxReload.loadPage(baseUrl.replace(/&amp;/g, '&') +
 						'&' + startName + '=' + ((page - 1) * perPage));
 				}
 			}
@@ -209,24 +209,24 @@
 
 					if (start_name !== 'start' || base_url.indexOf('?') >= 0 ||
 						(phpEXtest = base_url.match("/\." + phpbb_seo.phpEX + "$/i"))) {
-						quickreply.ajaxReload.start(base_url.replace(/&amp;/g, '&') +
+						quickreply.ajaxReload.loadPage(base_url.replace(/&amp;/g, '&') +
 							(phpEXtest ? '?' : '&') + start_name + '=' + phpbb_seo.page + anchor);
 					} else {
 						var ext = base_url.match(/\.[a-z0-9]+$/i);
 
 						if (ext) {
 							// location.ext => location-xx.ext
-							quickreply.ajaxReload.start(base_url.replace(/\.[a-z0-9]+$/i, '') +
+							quickreply.ajaxReload.loadPage(base_url.replace(/\.[a-z0-9]+$/i, '') +
 								phpbb_seo.delim_start + phpbb_seo.page + ext + anchor);
 						} else {
 							// location and location/ to location/pagexx.html
 							var slash = base_url.match(/\/$/) ? '' : '/';
-							quickreply.ajaxReload.start(base_url + slash +
+							quickreply.ajaxReload.loadPage(base_url + slash +
 								phpbb_seo.static_pagination + phpbb_seo.page + phpbb_seo.ext_pagination + anchor);
 						}
 					}
 				} else {
-					quickreply.ajaxReload.start(base_url + anchor);
+					quickreply.ajaxReload.loadPage(base_url + anchor);
 				}
 			}
 		};
@@ -830,6 +830,8 @@
 
 			// Switch off Quick Reply Toggle Plugin
 			$("#reprap").hide();
+
+			$('<div id="qr_form_placeholder" />').css('height', self.$.height()).insertAfter(self.$);
 
 			self.$.finish().addClass('qr_fixed_form qr_compact_form');
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
@@ -1543,6 +1545,20 @@
 		}
 
 		/**
+		 * Special handler for pagination.
+		 * Determines whether we can perform the Ajax request.
+		 * 
+		 * @param {string} url Page URL to load
+		 */
+		this.loadPage = function(url) {
+			if (!quickreply.settings.ajaxPagination) {
+				standardReload(url);
+				return;
+			}
+			self.start(url);
+		};
+
+		/**
 		 * The function for handling Ajax requests.
 		 *
 		 * @param {string}   url                      Requested URL
@@ -1553,11 +1569,6 @@
 		 *                                            'unread' - if we need to scroll to the first unread post
 		 */
 		this.start = function(url, requestData, requestParams) {
-			if (!quickreply.settings.ajaxPagination) {
-				standardReload(url);
-				return;
-			}
-
 			quickreply.loading.start();
 
 			setDefaults();
