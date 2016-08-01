@@ -949,7 +949,7 @@
 				self.setCompact(true);
 			}
 
-			self.$.removeClass('qr_extended_form').show();
+			self.$.show().removeClass('qr_extended_form');
 		}
 
 		/**
