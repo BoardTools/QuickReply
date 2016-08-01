@@ -48,6 +48,23 @@
 	cursor: pointer;
 }
 
+#qr_postform textarea::-webkit-input-placeholder {
+	opacity: 0.55;
+}
+
+#qr_postform textarea::-moz-placeholder {
+	opacity: 0.55;
+}
+
+#qr_postform textarea:-moz-placeholder {
+	opacity: 0.55;
+}
+
+#qr_postform textarea:-ms-input-placeholder {
+	opacity: 0.55;
+}
+
+
 /* Fixed form style. */
 .qr_fixed_form {
 	position: fixed;
