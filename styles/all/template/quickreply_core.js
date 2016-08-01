@@ -1067,6 +1067,7 @@
 				phpbb.plupload.clearParams();
 
 				setAttachNotice('hide');
+				hasAttachments = false;
 			}
 
 			if (quickreply.settings.allowedGuest) {
