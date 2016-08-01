@@ -848,11 +848,22 @@
 			$('#qr_action_box').prependTo('#message-box');
 
 			// Add events.
-			addButtonTrigger(
-				'.qr_bbcode_button',
-				'#format-buttons, #register-and-translit:not(#format-buttons #register-and-translit)',
-				hideColourPalette
-			);
+			if (quickreply.plugins.abbc3) {
+				addButtonTrigger(
+					'.qr_bbcode_button',
+					'#abbc3_buttons, #register-and-translit:not(#format-buttons #register-and-translit)',
+					hideColourPalette
+				);
+				if ($('#format-buttons #register-and-translit').length) {
+					$('#format-buttons').children(':not(#register-and-translit)').hide().end().show();
+				}
+			} else {
+				addButtonTrigger(
+					'.qr_bbcode_button',
+					'#format-buttons, #register-and-translit:not(#format-buttons #register-and-translit)',
+					hideColourPalette
+				);
+			}
 			addButtonTrigger('.qr_attach_button, #qr_attach_notice', quickreply.editor.attachPanel, function() {
 				setAttachNotice('toggle');
 				self.setFixed();

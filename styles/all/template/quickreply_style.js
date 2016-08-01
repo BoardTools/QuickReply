@@ -71,9 +71,10 @@
 	 */
 	quickreply.style.formEditorElements = function(selectStandard) {
 		var $qrForm = $(quickreply.editor.mainForm),
+			formatButtons = (quickreply.plugins.abbc3) ? '#abbc3_buttons' : '#format-buttons',
 			elementsArray = [
 				'#attach-panel',
-				'#format-buttons',
+				formatButtons,
 				'#register-and-translit',
 				'.quickreply-title',
 				'.additional-element'
