@@ -590,7 +590,8 @@
 		var self = this,
 			smileyBoxDisplayed = false,
 			hasAttachments = false,
-			formHeight = null;
+			formHeight = null,
+			formWidth = null;
 
 		self.$ = $(quickreply.editor.mainForm);
 
@@ -809,6 +810,17 @@
 		};
 
 		/**
+		 * Sets the form width equal to the width of page-body container.
+		 */
+		function setFormWidth() {
+			var $pageBody = $('#page-body');
+			if (!$pageBody.length || self.is('extended')) {
+				return;
+			}
+			self.$.css('width', $pageBody.width());
+		}
+
+		/**
 		 * Initializes fixed form mode.
 		 */
 		this.initFixed = function() {
@@ -880,6 +892,9 @@
 
 			$(window).scroll(checkExtended);
 			$(document).ready(checkExtended);
+
+			$(window).resize(setFormWidth);
+			$(document).ready(setFormWidth);
 		};
 
 		/**
@@ -911,7 +926,7 @@
 
 			$('#qr_form_placeholder').remove();
 
-			self.$.finish().removeClass('qr_fixed_form qr_compact_form').addClass('qr_extended_form');
+			self.$.finish().removeClass('qr_fixed_form qr_compact_form').addClass('qr_extended_form').css('width', '');
 			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
 
 			$('#qr_text_action_box, #qr_action_box').hide();
@@ -934,7 +949,7 @@
 
 			var placeholderHeight = self.$.height();
 
-			self.$.finish().hide().addClass('qr_fixed_form');
+			self.$.finish().hide().addClass('qr_fixed_form').removeClass('qr_extended_form');
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 			$('<div id="qr_form_placeholder" />').css('height', placeholderHeight).insertAfter(self.$);
@@ -949,7 +964,9 @@
 				self.setCompact(true);
 			}
 
-			self.$.show().removeClass('qr_extended_form');
+			setFormWidth();
+
+			self.$.show();
 		}
 
 		/**
@@ -964,7 +981,8 @@
 
 			$('.qr_fixed_form').animate({
 				'maxHeight': '50%',
-				'height': formHeight
+				'height': formHeight,
+				'width': formWidth
 			}, qrSlideInterval, function() {
 				$(this).css('height', 'auto');
 			}).removeClass('qr_fullscreen_form');
@@ -989,8 +1007,9 @@
 		 * Displays quick reply form in fullscreen mode.
 		 */
 		function setFullscreen() {
-			// Store current form height.
+			// Store current form height and width.
 			formHeight = self.$.height();
+			formWidth = self.$.width();
 
 			$body.add('html').css('overflow-y', 'hidden');
 			quickreply.style.formEditorElements(true).slideDown(qrSlideInterval);
@@ -1014,7 +1033,8 @@
 			self.$.trigger('fullscreen-before');
 			$('.qr_fixed_form').addClass('qr_fullscreen_form').animate({
 				'maxHeight': '100%',
-				'height': '100%'
+				'height': '100%',
+				'width': '100%'
 			}, qrSlideInterval, function() {
 				$('#preview').prependTo(self.$);
 				self.$.trigger('fullscreen');
