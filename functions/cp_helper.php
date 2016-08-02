@@ -39,6 +39,8 @@ class cp_helper
 			'S_QR_SOFT_SCROLL'         => $data['qr_soft_scroll'],
 			'S_QUICKNICK_CHANGE_TYPE'  => $this->config['qr_quicknick'] && !$this->config['qr_quicknick_string'],
 			'S_QR_QUICKNICK_USERTYPE'  => $data['qr_quicknick_string'],
+			'S_QR_ENABLE_WARNING'      => $data['qr_enable_warning'],
+			'S_QR_FIX_EMPTY_FORM'      => $data['qr_fix_empty_form'],
 		);
 	}
 
@@ -49,6 +51,8 @@ class cp_helper
 			'qr_enable_scroll'    => $this->request->variable('qr_enable_scroll', (int) $user_row['qr_enable_scroll']),
 			'qr_soft_scroll'      => $this->request->variable('qr_soft_scroll', (int) $user_row['qr_soft_scroll']),
 			'qr_quicknick_string' => $this->request->variable('qr_quicknick_string', (int) $user_row['qr_quicknick_string']),
+			'qr_enable_warning'   => $this->request->variable('qr_enable_warning', (int) $user_row['qr_enable_warning']),
+			'qr_fix_empty_form'   => $this->request->variable('qr_fix_empty_form', (int) $user_row['qr_fix_empty_form']),
 		);
 	}
 
@@ -59,6 +63,8 @@ class cp_helper
 			'qr_enable_scroll'    => $data['qr_enable_scroll'],
 			'qr_soft_scroll'      => $data['qr_soft_scroll'],
 			'qr_quicknick_string' => $data['qr_quicknick_string'],
+			'qr_enable_warning'   => $data['qr_enable_warning'],
+			'qr_fix_empty_form'   => $data['qr_fix_empty_form'],
 		);
 	}
 

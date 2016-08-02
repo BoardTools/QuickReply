@@ -40,11 +40,11 @@ class quickreply_module extends acp_module_helper
 			'vars'  => array(
 				'legend1'                 => 'ACP_QR_LEGEND_GENERAL',
 				'allow_quick_reply'       => array('lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'forum_qr_enable'         => array('lang' => 'ACP_QR_ENABLE_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
+				'forum_qr_enable'         => array('lang' => 'ACP_QR_ENABLE_QUICK_REPLY', 'lang_explain2' => 'ACP_QR_LEAVE_AS_IS_EXPLAIN', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
 				'qr_allow_for_guests'     => array('lang' => 'ACP_QR_ALLOW_FOR_GUESTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				//
 				'legend2'                 => 'ACP_QR_LEGEND_DISPLAY',
-				'forum_qr_form_type'      => array('lang' => 'ACP_QR_FORM_TYPE', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_qr_form_type', 'explain' => true),
+				'forum_qr_form_type'      => array('lang' => 'ACP_QR_FORM_TYPE', 'lang_explain' => 'ACP_QR_LEAVE_AS_IS_EXPLAIN', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_qr_form_type', 'explain' => true),
 				'qr_ctrlenter'            => array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_attach'               => array('lang' => 'ACP_QR_ATTACH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_bbcode'               => array('lang' => 'ACP_QR_BBCODE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
@@ -56,7 +56,7 @@ class quickreply_module extends acp_module_helper
 				'qr_ajax_pagination'      => array('lang' => 'ACP_QR_AJAX_PAGINATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_scroll_time'          => array('lang' => 'ACP_QR_SCROLL_TIME', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true),
 				'qr_ajax_submit'          => array('lang' => 'ACP_QR_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'forum_qr_ajax_submit'    => array('lang' => 'ACP_QR_ENABLE_AJAX_SUBMIT', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
+				'forum_qr_ajax_submit'    => array('lang' => 'ACP_QR_ENABLE_AJAX_SUBMIT', 'lang_explain2' => 'ACP_QR_LEAVE_AS_IS_EXPLAIN', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_only_radio', 'explain' => true),
 				//
 				'legend4'                 => 'ACP_SUBMIT_CHANGES',
 			),
@@ -100,7 +100,6 @@ class quickreply_module extends acp_module_helper
 			-1 => 'ACP_QR_LEAVE_AS_IS',
 			0  => 'ACP_QR_FORM_TYPE_STANDARD',
 			1  => 'ACP_QR_FORM_TYPE_FIXED',
-			2  => 'ACP_QR_FORM_TYPE_SCROLL',
 		);
 
 		return '<select id="qr_form_type" name="config[forum_qr_form_type]">' .

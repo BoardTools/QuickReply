@@ -285,10 +285,10 @@ class ajax_helper
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 
 		self::send_json(array(
-			'status'        => 'new_posts',
-			'error'         => true,
-			'merged'        => ($post_id_next === $current_post),
-			'url'           => $url_next_post,
+			'status' => 'new_posts',
+			'error'  => true,
+			'merged' => ($post_id_next === $current_post),
+			'url'    => $url_next_post,
 		));
 	}
 
@@ -325,6 +325,8 @@ class ajax_helper
 			'L_FULL_EDITOR'        => ($ajax_submit) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
 			'S_QR_AJAX_SUBMIT'     => $ajax_submit,
 			'S_QR_FORM_TYPE'       => $topic_data['qr_form_type'],
+			'S_QR_FIX_EMPTY_FORM'  => $this->user->data['qr_fix_empty_form'],
+			'S_QR_ENABLE_WARNING'  => $this->user->data['qr_enable_warning'],
 			//
 			'S_QR_AJAX_PAGINATION' => $this->config['qr_ajax_pagination'] && $this->user->data['ajax_pagination'],
 			//

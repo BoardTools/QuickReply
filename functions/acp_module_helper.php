@@ -196,13 +196,15 @@ abstract class acp_module_helper
 		{
 			return '';
 		}
-		else if (isset($vars['lang_explain']))
+
+		$explain2 = (isset($vars['lang_explain2'])) ? '<br />' . $this->get_title($vars, 'lang_explain2') : '';
+		if (isset($vars['lang_explain']))
 		{
-			return $this->get_title($vars, 'lang_explain');
+			return $this->get_title($vars, 'lang_explain') . $explain2;
 		}
 		else
 		{
-			return $this->get_title($vars, 'lang', '_EXPLAIN');
+			return $this->get_title($vars, 'lang', '_EXPLAIN') . $explain2;
 		}
 	}
 

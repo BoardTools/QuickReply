@@ -60,21 +60,20 @@ $lang = array_merge($lang, array(
 	'ACP_QR_CTRLENTER_EXPLAIN'             => 'Allow sending a message by clicking “Ctrl+Enter”
 												in the Quick Reply and the Full Reply form.',
 	'ACP_QR_ENABLE_AJAX_SUBMIT'            => 'Enable Ajax posting in all forums',
-	'ACP_QR_ENABLE_AJAX_SUBMIT_EXPLAIN'    => 'Allow Ajax posting in all forums right away.
-												<br /><em>If you select “Leave as is” forum settings will not be changed.</em>',
+	'ACP_QR_ENABLE_AJAX_SUBMIT_EXPLAIN'    => 'Allow Ajax posting in all forums right away.',
 	'ACP_QR_ENABLE_RE'                     => 'Enable “Re:”',
 	'ACP_QR_ENABLE_RE_EXPLAIN'             => 'Automatically add prefix “Re:” in the “Post subject”
 												in the Quick Reply and the Full Reply form.',
 	'ACP_QR_ENABLE_QUICK_REPLY'            => 'Enable quick reply in all forums',
-	'ACP_QR_ENABLE_QUICK_REPLY_EXPLAIN'    => 'Allow quick reply in all forums right away.
-												<br /><em>If you select “Leave as is” forum settings will not be changed.</em>',
+	'ACP_QR_ENABLE_QUICK_REPLY_EXPLAIN'    => 'Allow quick reply in all forums right away.',
 	'ACP_QR_FORM_TYPE'                     => 'Quick reply form type',
 	'ACP_QR_FORM_TYPE_EXPLAIN'             => 'If “Fixed with post reloads” option is selected, ability to load posts to the current page
-												using “show next/previous posts” buttons will supplement the standard pagination.
-												<br /><em>If you select “Leave as is” forum settings will not be changed.</em>',
+												using “show next/previous posts” buttons will supplement the standard pagination.', // reserved
 	'ACP_QR_FORM_TYPE_FIXED'               => 'Fixed',
-	'ACP_QR_FORM_TYPE_SCROLL'              => 'Fixed with post reloads',
+	'ACP_QR_FORM_TYPE_SCROLL'              => 'Fixed with post reloads', // reserved
 	'ACP_QR_FORM_TYPE_STANDARD'            => 'Standard',
+	'ACP_QR_FORUM_AJAX_SUBMIT'             => 'Enable Ajax posting',
+	'ACP_QR_FORUM_AJAX_SUBMIT_EXPLAIN'     => 'Allow sending messages without reloading the page.',
 	'ACP_QR_FULL_QUOTE'                    => 'Insert full quotes into the quick reply form',
 	'ACP_QR_FULL_QUOTE_EXPLAIN'            => 'Replace the standard behaviour of the “Reply with quote” button.',
 	'ACP_QR_HIDE_SUBJECT_BOX'              => 'Hide subject box if subject modification is disabled',
@@ -86,6 +85,7 @@ $lang = array_merge($lang, array(
 												if this setting is disabled together with the setting for quick quote.
 												This setting overrides user permission for full quotes.</em>',
 	'ACP_QR_LEAVE_AS_IS'                   => 'Leave as is',
+	'ACP_QR_LEAVE_AS_IS_EXPLAIN'           => '<em>If you select “Leave as is”, forum settings will not be changed.</em>',
 	'ACP_QR_LEGEND_AJAX'                   => 'Ajax settings',
 	'ACP_QR_LEGEND_DISPLAY'                => 'Display settings',
 	'ACP_QR_LEGEND_GENERAL'                => 'General settings',

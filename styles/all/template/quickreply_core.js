@@ -42,11 +42,13 @@
 	/**
 	 * Show the confirmation warning before unloading the page if the reply is still in the form.
 	 */
-	$(window).on('beforeunload.quickreply', function() {
-		if (quickreply.form.hasReply()) {
-			return quickreply.language.WARN_BEFORE_UNLOAD;
-		}
-	});
+	if (quickreply.settings.enableWarning) {
+		$(window).on('beforeunload.quickreply', function() {
+			if (quickreply.form.hasReply()) {
+				return quickreply.language.WARN_BEFORE_UNLOAD;
+			}
+		});
+	}
 
 	/* Work with browser's history. */
 	var qrStopHistory = false, qrReplaceHistory = false;
@@ -850,6 +852,10 @@
 
 			$('#qr_text_action_box, #qr_captcha_container, .qr_attach_button').hide();
 			$('#qr_action_box').prependTo('#message-box');
+
+			if (!quickreply.settings.fixEmptyForm) {
+				self.$.addClass('qr_no_compact');
+			}
 
 			// Add events.
 			if (quickreply.plugins.abbc3) {

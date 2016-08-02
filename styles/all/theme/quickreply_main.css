@@ -193,6 +193,10 @@
 	overflow-y: hidden;
 }
 
+.qr_compact_form.qr_no_compact {
+	display: none !important;
+}
+
 #qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
 	height: 48px !important;
 }
