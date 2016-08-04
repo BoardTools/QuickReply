@@ -1,4 +1,4 @@
-/* global phpbb, phpbb_seo, quickreply */
+/* global phpbb, phpbb_seo, quickreply, plupload */
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
@@ -36,6 +36,7 @@
 	quickreply.form = new QrForm();
 	quickreply.preview = new Preview();
 
+	quickreply.loading.init();
 	quickreply.ajax.init();
 	quickreply.form.init();
 
@@ -48,6 +49,12 @@
 				return quickreply.language.WARN_BEFORE_UNLOAD;
 			}
 		});
+
+		if (!quickreply.settings.ajaxSubmit) {
+			quickreply.$.mainForm.submit(function() {
+				$(window).off('beforeunload.quickreply');
+			});
+		}
 	}
 
 	/* Work with browser's history. */
@@ -521,7 +528,7 @@
 		function setTimeouts() {
 			clearTimeouts();
 			waitTimer = setTimeout(function() {
-				self.setExplain(quickreply.language.loading.WAIT, true);
+				self.setExplain(quickreply.language.loading.WAIT, false, true);
 			}, 10000);
 			stopTimer = setTimeout(function() {
 				self.stop(true);
@@ -549,14 +556,21 @@
 		/**
 		 * Sets loading explanation text to inform the user about current state.
 		 *
-		 * @param {string}  text           HTML string with informative text.
-		 * @param {boolean} [skipTimeouts] Whether we should not refresh the timeouts.
+		 * @param {string}  text               HTML string with informative text
+		 * @param {boolean} [showCancelButton] Whether we should display cancel button instead of setting new timeouts
+		 * @param {boolean} [skipTimeouts]     Whether we should not refresh the timeouts
 		 */
-		this.setExplain = function(text, skipTimeouts) {
+		this.setExplain = function(text, showCancelButton, skipTimeouts) {
+			$('#qr_loading_cancel').fadeOut(phpbb.alertTime);
 			$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
 				$(this).html(text).fadeIn(phpbb.alertTime);
+				if (showCancelButton) {
+					$('#qr_loading_cancel').fadeIn(phpbb.alertTime);
+				}
 			});
-			if (!skipTimeouts) {
+			if (showCancelButton) {
+				clearTimeouts();
+			} else if (!skipTimeouts) {
 				setTimeouts();
 			}
 		};
@@ -564,13 +578,14 @@
 		/**
 		 * Hides loading indicator.
 		 *
-		 * @param {boolean} [keepDark] Whether we should not hide the dark.
+		 * @param {boolean} [keepDark] Whether we should not hide the dark
 		 */
 		this.stop = function(keepDark) {
 			var $dark = $('#darkenwrapper'), $loadingText = $('#qr_loading_text');
 			$loadingText.fadeOut(phpbb.alertTime);
 			$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
 				$(this).html('');
+				$('#qr_loading_cancel').hide();
 			});
 			if (!keepDark) {
 				$dark.fadeOut(phpbb.alertTime);
@@ -583,6 +598,27 @@
 		 */
 		this.proceed = function() {
 			$('#darkenwrapper').stop().fadeIn(phpbb.alertTime);
+		};
+
+		/**
+		 * Initializes loading container.
+		 */
+		this.init = function() {
+			$('#page-footer').append('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
+				quickreply.language.loading.text + '</span><div id="qr_loading_explain"></div>' +
+				'<div id="qr_loading_cancel"><span>' + quickreply.language.CANCEL_SUBMISSION + '</span></div></div>');
+
+			$('#qr_loading_cancel').on('click', function() {
+				quickreply.$.mainForm.off('ajax_submit_ready').trigger('ajax_submit_cancel');
+				self.stop();
+			});
+
+			$(document).ajaxError(function() {
+				var $loadingText = $('#qr_loading_text');
+				if ($loadingText.is(':visible')) {
+					$loadingText.fadeOut(phpbb.alertTime);
+				}
+			});
 		};
 	}
 
@@ -913,7 +949,7 @@
 				}
 			});
 
-			$(window).scroll(checkExtended);
+			$(window).on('scroll resize', checkExtended);
 			$(document).ready(checkExtended);
 
 			$(window).resize(setFormWidth);
@@ -1072,6 +1108,46 @@
 		};
 
 		/**
+		 * Checks whether some attachments are being uploaded.
+		 * Workaround function for phpBB < 3.1.5.
+		 */
+		function attachmentsChecker() {
+			if (!$('.file-progress:visible').length) {
+				self.$.trigger('ajax_submit_ready');
+			}
+		}
+
+		/**
+		 * Checks whether some attachments are being uploaded.
+		 * Sets an event trigger when the upload is completed.
+		 *
+		 * @returns {boolean}
+		 */
+		this.checkAttachments = function() {
+			self.$.off('ajax_submit_ready ajax_submit_cancel');
+
+			if (phpbb.plupload.uploader) {
+				if (phpbb.plupload.uploader.state !== plupload.STOPPED) {
+					phpbb.plupload.uploader.bind('UploadComplete', function() {
+						self.$.trigger('ajax_submit_ready');
+					});
+					return false;
+				}
+			} else {
+				// Workaround for phpBB < 3.1.5
+				if ($('.file-progress:visible').length) {
+					var attachInterval = setInterval(attachmentsChecker, 500);
+					self.$.on('ajax_submit_ready ajax_submit_cancel', function() {
+						clearInterval(attachInterval);
+					});
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+		/**
 		 * Clears quick reply form (e.g. after submission).
 		 */
 		this.refresh = function() {
@@ -1110,16 +1186,13 @@
 		 */
 		this.init = function() {
 			if (quickreply.settings.ajaxSubmit) {
-				$(quickreply.editor.mainForm).attr('data-ajax', 'qr_ajax_submit');
 				quickreply.style.initPreview();
 
-				$(quickreply.editor.mainForm).submit(function() {
-					var action = $(this).attr('action'), url_hash = action.indexOf('#');
-					if (url_hash > -1) {
-						$(this).attr('action', action.substr(0, url_hash));
+				quickreply.$.mainForm.attr('data-ajax', 'qr_ajax_submit').submit(function() {
+					var action = $(this).attr('action'), urlHash = action.indexOf('#');
+					if (urlHash > -1) {
+						$(this).attr('action', action.substr(0, urlHash));
 					}
-
-					quickreply.loading.start();
 
 					var $clickedButton = $(this).find('input[type="submit"][data-clicked]');
 
@@ -1139,17 +1212,20 @@
 						}
 					}
 				}).attr('data-overlay', false);
+
+				quickreply.$.mainForm.find(':submit').click(function(e) {
+					quickreply.loading.start();
+
+					if (!quickreply.form.checkAttachments()) {
+						e.preventDefault();
+
+						quickreply.loading.setExplain(quickreply.language.loading.ATTACHMENTS, true);
+						quickreply.$.mainForm.on('ajax_submit_ready', function() {
+							quickreply.$.mainForm.submit();
+						});
+					}
+				});
 			}
-
-			$('#page-footer').append('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
-				quickreply.language.loading.text + '</span><div id="qr_loading_explain"></div></div>');
-
-			$(document).ajaxError(function() {
-				var $loadingText = $('#qr_loading_text');
-				if ($loadingText.is(':visible')) {
-					$loadingText.fadeOut(phpbb.alertTime);
-				}
-			});
 		};
 
 		/**
@@ -1242,7 +1318,16 @@
 		/**
 		 * The callback function for handling results of Ajax submission.
 		 *
-		 * @param {object} res Response object
+		 * @param {object}  res                  Response object
+		 * @param {string}  [res.qr_fields]      HTML string with updated fields
+		 * @param {string}  [res.status]         Result status type
+		 * @param {boolean} [res.merged]         Whether the submitted post has been merged
+		 * @param {string}  [res.url]            URL for the next request
+		 * @param {string}  [res.PREVIEW_TITLE]  HTML string for preview title
+		 * @param {string}  [res.PREVIEW_TEXT]   HTML string for preview text
+		 * @param {string}  [res.PREVIEW_ATTACH] HTML string for preview attachments container
+		 * @param {string}  [res.MESSAGE_TITLE]  Information notice
+		 * @param {boolean} [res.error]          Whether there were any errors
 		 */
 		this.submitCallback = function(res) {
 			if (res.qr_fields) {
@@ -1414,6 +1499,9 @@
 			}
 		}
 
+		/**
+		 * Sets default values to parameters.
+		 */
 		function setDefaults() {
 			dataObject = {
 				qr_cur_post_id: $(quickreply.editor.mainForm).find('input[name="qr_cur_post_id"]').val(),
@@ -1426,6 +1514,9 @@
 			requestMethod = 'GET';
 		}
 
+		/**
+		 * Cleans request URL.
+		 */
 		function parseURL() {
 			if (self.url.indexOf('?') < 0) {
 				self.url = self.url.replace(/&/, '?');
@@ -1439,6 +1530,9 @@
 			}
 		}
 
+		/**
+		 * Special handler for SEO URLs.
+		 */
 		function handleSEO() {
 			if (quickreply.plugins.seo) {
 				if (params.scroll === 'unread') {
@@ -1454,6 +1548,9 @@
 			}
 		}
 
+		/**
+		 * Error response handler.
+		 */
 		function resultError() {
 			if (qrStopHistory) {
 				qrStopHistory = false;
@@ -1461,6 +1558,16 @@
 			quickreply.ajax.error();
 		}
 
+		/**
+		 * Success response handler.
+		 *
+		 * @param {object}  res                     The result of the response
+		 * @param {string}  [res.result]            Parsed HTML result
+		 * @param {boolean} [res.insert]            Whether we need to insert the result, overwrite otherwise
+		 * @param {boolean} [res.captcha_refreshed] Whether the CAPTCHA data has been updated
+		 * @param {string}  [res.captcha_result]    Parsed HTML for CAPTCHA container
+		 * @param {string}  [res.MESSAGE_TEXT]      Information notice
+		 */
 		function resultSuccess(res) {
 			if (res.result) {
 				if (res.insert) {

@@ -35,8 +35,21 @@
 	font-style: italic;
 }
 
-#qr_loading_explain {
+#qr_loading_explain, #qr_loading_cancel {
 	display: none;
+}
+
+#qr_loading_text #qr_loading_cancel span {
+	padding: 5px 15px;
+	margin-top: 15px;
+	font-size: 16px;
+	border: 1px solid #FFF;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+#qr_loading_cancel span:hover {
+	background-color: rgba(255, 255, 255, 0.5);
 }
 
 #qr_attach_notice {
