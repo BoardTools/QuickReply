@@ -35,8 +35,21 @@
 	font-style: italic;
 }
 
-#qr_loading_explain {
+#qr_loading_explain, #qr_loading_cancel {
 	display: none;
+}
+
+#qr_loading_text #qr_loading_cancel span {
+	padding: 5px 15px;
+	margin-top: 15px;
+	font-size: 16px;
+	border: 1px solid #FFF;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+#qr_loading_cancel span:hover {
+	background-color: rgba(255, 255, 255, 0.5);
 }
 
 #qr_attach_notice {
@@ -47,6 +60,23 @@
 	font-size: 16px;
 	cursor: pointer;
 }
+
+#qr_postform textarea::-webkit-input-placeholder {
+	opacity: 0.55;
+}
+
+#qr_postform textarea::-moz-placeholder {
+	opacity: 0.55;
+}
+
+#qr_postform textarea:-moz-placeholder {
+	opacity: 0.55;
+}
+
+#qr_postform textarea:-ms-input-placeholder {
+	opacity: 0.55;
+}
+
 
 /* Fixed form style. */
 .qr_fixed_form {
@@ -59,6 +89,8 @@
 	max-height: 50%;
 	overflow-y: auto;
 	overflow-x: hidden;
+	box-shadow: 0 -8px 15px -10px #CCC;
+	margin: 0 auto;
 }
 
 #qr_postform.qr_fixed_form #message-box {
@@ -66,6 +98,10 @@
 	padding-left: 35px;
 	width: 100%;
 	transition: width 0.5s ease;
+}
+
+#qr_postform.qr_extended_form #message-box {
+	transition: width 0s;
 }
 
 #qr_postform.qr_fixed_form.with_smileys #message-box {
@@ -76,22 +112,29 @@
 	padding-right: 45px;
 	width: 100%;
 	box-sizing: border-box;
+	overflow-y: scroll;
 }
 
 #qr_postform.qr_fixed_form #message-box textarea.qr_fixed_textarea {
 	height: 115px !important;
 	min-height: 0;
-	transition: height 0.7s ease;
+	transition: height 0.5s ease;
+}
+
+#qr_postform.qr_extended_form #message-box textarea.qr_fixed_textarea {
+	transition: height 0s;
 }
 
 .qr_fixed_form #attach-panel,
 .qr_fixed_form #format-buttons,
+.qr_fixed_form #abbc3_buttons,
 .qr_fixed_form #register-and-translit,
 .qr_fixed_form #qr_captcha_container,
 .qr_fixed_form .quickreply-title,
 .qr_fixed_form .additional-element,
 .qr_fixed_form .submit-buttons {
 	display: none;
+	min-height: 0;
 }
 
 #qr_text_action_box {
@@ -137,18 +180,17 @@
 	top: 38px;
 }
 
-.qr_smilies_dropdown {
-	position: fixed;
-	z-index: 31;
-}
-
 .qr_fixed_form #smiley-box {
 	position: absolute;
 	right: -1000px;
 	z-index: 31;
+	overflow-y: auto;
+	width: 20%;
+	max-height: 115px;
 }
 
-.qr_fixed_form #format-buttons {
+.qr_fixed_form #format-buttons,
+.qr_fixed_form #abbc3_buttons {
 	margin-top: 0;
 }
 
@@ -156,7 +198,29 @@
 	margin-bottom: 0;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+	.qr_fixed_form #smiley-box {
+		display: none;
+		position: static;
+		right: auto !important;
+		width: 100%;
+		max-height: none;
+	}
+
+	#qr_postform.qr_fixed_form.with_smileys #message-box {
+		width: 100%;
+	}
+}
+
 /* Compact form style. */
+.qr_compact_form {
+	overflow-y: hidden;
+}
+
+.qr_compact_form.qr_no_compact {
+	display: none !important;
+}
+
 #qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
 	height: 48px !important;
 }
@@ -171,9 +235,19 @@
 }
 
 /* Fullscreen form style. */
+.qr_fullscreen_form.qr_compact_form {
+	overflow-y: auto;
+}
+
 #qr_postform.qr_fullscreen_form textarea {
+	min-height: 115px;
 	max-height: 50%;
-	transition: height 0.7s ease;
+	transition: height 0.5s ease;
+}
+
+#qr_postform.qr_fixed_form.qr_fullscreen_form #smiley-box {
+	max-height: none;
+	margin: 0;
 }
 
 #qr_postform.qr_fixed_form.qr_fullscreen_form #message-box {

@@ -1,4 +1,4 @@
-/* global phpbb, phpbb_seo, quickreply */
+/* global phpbb, phpbb_seo, quickreply, plupload */
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
@@ -16,8 +16,6 @@
 	}
 
 	if (quickreply.settings.attachBox) {
-		quickreply.style.setTextareaId();
-
 		/* Fix for external links. */
 		$('#file-list').on('click', 'a[href]', function() {
 			$(this).attr('target', '__blank');
@@ -34,18 +32,28 @@
 	quickreply.ajax = new Ajax();
 	quickreply.ajaxReload = new AjaxReload();
 	quickreply.form = new QrForm();
+	quickreply.preview = new Preview();
 
+	quickreply.loading.init();
 	quickreply.ajax.init();
 	quickreply.form.init();
 
 	/**
 	 * Show the confirmation warning before unloading the page if the reply is still in the form.
 	 */
-	$(window).on('beforeunload.quickreply', function() {
-		if (quickreply.form.hasReply()) {
-			return quickreply.language.WARN_BEFORE_UNLOAD;
+	if (quickreply.settings.enableWarning) {
+		$(window).on('beforeunload.quickreply', function() {
+			if (quickreply.form.hasReply()) {
+				return quickreply.language.WARN_BEFORE_UNLOAD;
+			}
+		});
+
+		if (!quickreply.settings.ajaxSubmit) {
+			quickreply.$.mainForm.submit(function() {
+				$(window).off('beforeunload.quickreply');
+			});
 		}
-	});
+	}
 
 	/* Work with browser's history. */
 	var qrStopHistory = false, qrReplaceHistory = false;
@@ -104,11 +112,13 @@
 		/**
 		 * Scrolls the page to the target element.
 		 *
-		 * @param {jQuery} target
+		 * @param {jQuery}        target      Element that we need to scroll to
+		 * @param {string|jQuery} [container] Container element that needs scrolling (default: 'html,body')
 		 */
-		quickreply.functions.softScroll = function(target) {
+		quickreply.functions.softScroll = function(target, container) {
 			if (target.length) {
-				$('html,body').animate({
+				container = container || 'html,body';
+				$(container).animate({
 					scrollTop: target.offset().top
 				}, qrSlideInterval);
 			}
@@ -171,9 +181,9 @@
 					startName = item.attr('data-start-name');
 
 				if (baseUrl.indexOf('?') === -1) {
-					quickreply.ajaxReload.start(baseUrl + '?' + startName + '=' + ((page - 1) * perPage));
+					quickreply.ajaxReload.loadPage(baseUrl + '?' + startName + '=' + ((page - 1) * perPage));
 				} else {
-					quickreply.ajaxReload.start(baseUrl.replace(/&amp;/g, '&') +
+					quickreply.ajaxReload.loadPage(baseUrl.replace(/&amp;/g, '&') +
 						'&' + startName + '=' + ((page - 1) * perPage));
 				}
 			}
@@ -206,24 +216,24 @@
 
 					if (start_name !== 'start' || base_url.indexOf('?') >= 0 ||
 						(phpEXtest = base_url.match("/\." + phpbb_seo.phpEX + "$/i"))) {
-						quickreply.ajaxReload.start(base_url.replace(/&amp;/g, '&') +
+						quickreply.ajaxReload.loadPage(base_url.replace(/&amp;/g, '&') +
 							(phpEXtest ? '?' : '&') + start_name + '=' + phpbb_seo.page + anchor);
 					} else {
 						var ext = base_url.match(/\.[a-z0-9]+$/i);
 
 						if (ext) {
 							// location.ext => location-xx.ext
-							quickreply.ajaxReload.start(base_url.replace(/\.[a-z0-9]+$/i, '') +
+							quickreply.ajaxReload.loadPage(base_url.replace(/\.[a-z0-9]+$/i, '') +
 								phpbb_seo.delim_start + phpbb_seo.page + ext + anchor);
 						} else {
 							// location and location/ to location/pagexx.html
 							var slash = base_url.match(/\/$/) ? '' : '/';
-							quickreply.ajaxReload.start(base_url + slash +
+							quickreply.ajaxReload.loadPage(base_url + slash +
 								phpbb_seo.static_pagination + phpbb_seo.page + phpbb_seo.ext_pagination + anchor);
 						}
 					}
 				} else {
-					quickreply.ajaxReload.start(base_url + anchor);
+					quickreply.ajaxReload.loadPage(base_url + anchor);
 				}
 			}
 		};
@@ -489,6 +499,7 @@
 	function QrJqueryElements() {
 		this.qrPosts = $('#qr_posts');
 		this.mainForm = $(quickreply.editor.mainForm);
+		this.messageBox = this.mainForm.find('#message-box');
 		this.textarea = $(quickreply.editor.textareaSelector);
 	}
 
@@ -515,7 +526,7 @@
 		function setTimeouts() {
 			clearTimeouts();
 			waitTimer = setTimeout(function() {
-				self.setExplain(quickreply.language.loading.WAIT, true);
+				self.setExplain(quickreply.language.loading.WAIT, false, true);
 			}, 10000);
 			stopTimer = setTimeout(function() {
 				self.stop(true);
@@ -543,14 +554,21 @@
 		/**
 		 * Sets loading explanation text to inform the user about current state.
 		 *
-		 * @param {string}  text           HTML string with informative text.
-		 * @param {boolean} [skipTimeouts] Whether we should not refresh the timeouts.
+		 * @param {string}  text               HTML string with informative text
+		 * @param {boolean} [showCancelButton] Whether we should display cancel button instead of setting new timeouts
+		 * @param {boolean} [skipTimeouts]     Whether we should not refresh the timeouts
 		 */
-		this.setExplain = function(text, skipTimeouts) {
+		this.setExplain = function(text, showCancelButton, skipTimeouts) {
+			$('#qr_loading_cancel').fadeOut(phpbb.alertTime);
 			$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
 				$(this).html(text).fadeIn(phpbb.alertTime);
+				if (showCancelButton) {
+					$('#qr_loading_cancel').fadeIn(phpbb.alertTime);
+				}
 			});
-			if (!skipTimeouts) {
+			if (showCancelButton) {
+				clearTimeouts();
+			} else if (!skipTimeouts) {
 				setTimeouts();
 			}
 		};
@@ -558,13 +576,14 @@
 		/**
 		 * Hides loading indicator.
 		 *
-		 * @param {boolean} [keepDark] Whether we should not hide the dark.
+		 * @param {boolean} [keepDark] Whether we should not hide the dark
 		 */
 		this.stop = function(keepDark) {
 			var $dark = $('#darkenwrapper'), $loadingText = $('#qr_loading_text');
 			$loadingText.fadeOut(phpbb.alertTime);
 			$('#qr_loading_explain').fadeOut(phpbb.alertTime, function() {
 				$(this).html('');
+				$('#qr_loading_cancel').hide();
 			});
 			if (!keepDark) {
 				$dark.fadeOut(phpbb.alertTime);
@@ -578,6 +597,27 @@
 		this.proceed = function() {
 			$('#darkenwrapper').stop().fadeIn(phpbb.alertTime);
 		};
+
+		/**
+		 * Initializes loading container.
+		 */
+		this.init = function() {
+			$('#page-footer').append('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
+				quickreply.language.loading.text + '</span><div id="qr_loading_explain"></div>' +
+				'<div id="qr_loading_cancel"><span>' + quickreply.language.CANCEL_SUBMISSION + '</span></div></div>');
+
+			$('#qr_loading_cancel').on('click', function() {
+				quickreply.$.mainForm.off('ajax_submit_ready').trigger('ajax_submit_cancel');
+				self.stop();
+			});
+
+			$(document).ajaxError(function() {
+				var $loadingText = $('#qr_loading_text');
+				if ($loadingText.is(':visible')) {
+					$loadingText.fadeOut(phpbb.alertTime);
+				}
+			});
+		};
 	}
 
 	function QrForm() {
@@ -587,10 +627,7 @@
 			smileyBoxDisplayed = false,
 			hasAttachments = false,
 			formHeight = null,
-			formAnimationOptions = {
-				duration: qrSlideInterval,
-				progress: setBodyPaddingBottom
-			};
+			formWidth = null;
 
 		self.$ = $(quickreply.editor.mainForm);
 
@@ -614,6 +651,15 @@
 		};
 
 		/**
+		 * Returns whether plupload uploader object is available.
+		 *
+		 * @returns {boolean}
+		 */
+		function uploaderIsAvailable() {
+			return phpbb.plupload && phpbb.plupload.uploader;
+		}
+
+		/**
 		 * Shows/hides attachments existence notice with animation.
 		 *
 		 * @param {string}        [visibility]       By default the notice will be shown,
@@ -635,11 +681,12 @@
 		 * Binds events to show/hide attachments existence notice.
 		 */
 		function initAttachNotice() {
-			if (!phpbb.plupload.uploader) {
-				// Workaround for phpBB < 3.1.5
-				return;
-			}
 			$(document).ready(function() {
+				if (!uploaderIsAvailable()) {
+					// Workaround for phpBB < 3.1.5
+					return;
+				}
+
 				// Workaround for non-ajax form save feature.
 				phpbb.plupload.uploader.bind('PostInit', function() {
 					if ($('#file-list').children().length) {
@@ -653,9 +700,7 @@
 					setAttachNotice('hide');
 					hasAttachments = true;
 					if (!$(quickreply.editor.attachPanel).is(':visible')) {
-						$(quickreply.editor.attachPanel).finish().slideDown(formAnimationOptions);
-					} else {
-						setTimeout(setBodyPaddingBottom, 500);
+						$(quickreply.editor.attachPanel).finish().slideDown(qrSlideInterval);
 					}
 				});
 
@@ -664,9 +709,7 @@
 				phpbb.plupload.uploader.bind('FilesRemoved', function() {
 					if (!phpbb.plupload.uploader.files.length) {
 						hasAttachments = false;
-						$('#qr_attach_notice').finish().slideUp(formAnimationOptions);
-					} else {
-						setTimeout(setBodyPaddingBottom, 500);
+						$('#qr_attach_notice').finish().slideUp(qrSlideInterval);
 					}
 				});
 			});
@@ -676,7 +719,7 @@
 		 * Workaround for "Add files" button position calculation.
 		 */
 		function refreshUploader() {
-			if (phpbb.plupload.uploader) {
+			if (uploaderIsAvailable()) {
 				$('.qr_attach_button, #qr_attach_notice').one('click', function() {
 					phpbb.plupload.uploader.refresh();
 				});
@@ -690,6 +733,8 @@
 		 * Prepares quick reply form.
 		 */
 		this.init = function() {
+			quickreply.style.setTextareaId();
+
 			if (quickreply.settings.formType > 0) {
 				self.initFixed();
 			}
@@ -713,13 +758,6 @@
 		};
 
 		/**
-		 * Sets padding-bottom for body element equal to quick reply form height.
-		 */
-		function setBodyPaddingBottom() {
-			$body.css('padding-bottom', self.$.height() + 'px');
-		}
-
-		/**
 		 * Hides colour palette if it is visible.
 		 */
 		function hideColourPalette() {
@@ -733,13 +771,25 @@
 		}
 
 		/**
+		 * Sets the height of smiley box equal to the height of message box.
+		 */
+		function fixSmileyHeight() {
+			$('#smiley-box').css('height', quickreply.$.messageBox.height());
+		}
+
+		/**
 		 * Opens smiley box.
 		 */
 		function openSmileyBox() {
+			setSmileyBox();
+			if (isMobile()) {
+				$('#smiley-box').slideDown(qrSlideInterval);
+			} else {
+				$('#smiley-box').stop().animate({
+					right: '0'
+				}, 500);
+			}
 			self.$.addClass('with_smileys');
-			$('#smiley-box').stop().animate({
-				right: '10px'
-			}, 500);
 			smileyBoxDisplayed = true;
 		}
 
@@ -747,26 +797,54 @@
 		 * Closes smiley box.
 		 */
 		function closeSmileyBox() {
-			$('#smiley-box').stop().animate({
-				right: '-1000px'
-			}, 500);
+			if (isMobile()) {
+				$('#smiley-box').slideUp(qrSlideInterval);
+			} else {
+				$('#smiley-box').stop().animate({
+					right: '-1000px'
+				}, 500);
+				self.$.off('fullscreen.quickreply.smilies');
+				$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+			}
 			self.$.removeClass('with_smileys');
 			smileyBoxDisplayed = false;
 		}
 
 		/**
+		 * Recalculates smiley box position (i.e. after window resize).
+		 */
+		function setSmileyBox() {
+			if (isMobile()) {
+				$('#smiley-box').css('height', '')[(smileyBoxDisplayed) ? 'show' : 'hide']();
+				self.$.off('fullscreen.quickreply.smilies');
+				$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+			} else {
+				fixSmileyHeight();
+				$('#smiley-box').css('display', '').css('right', (smileyBoxDisplayed) ? '0' : '-1000px');
+				self.$.on('fullscreen.quickreply.smilies', fixSmileyHeight);
+				$(quickreply.$.textarea).on('mousemove.quickreply.smilies', fixSmileyHeight);
+			}
+		}
+
+		/**
 		 * Applies compact style to quick reply form.
 		 *
-		 * @param {boolean} [skipBottomAnimation] Whether we do not need to animate the body
+		 * @param {boolean} [immediate] Whether we need to skip animation
 		 */
-		this.setCompact = function(skipBottomAnimation) {
-			var animationOptions = (skipBottomAnimation) ? qrSlideInterval : formAnimationOptions;
+		this.setCompact = function(immediate) {
 			$('#qr_text_action_box, .qr_attach_button').hide();
 			hideColourPalette();
 			closeSmileyBox();
 			self.$.addClass('qr_compact_form');
-			quickreply.style.formEditorElements(true).finish().slideUp(animationOptions);
-			setAttachNotice('', animationOptions);
+
+			var editorElements = quickreply.style.formEditorElements(true).finish();
+			if (immediate) {
+				editorElements.hide();
+			} else {
+				editorElements.slideUp(qrSlideInterval);
+			}
+
+			setAttachNotice('', qrSlideInterval);
 		};
 
 		/**
@@ -778,7 +856,7 @@
 		 */
 		function addButtonTrigger(trigger, target, callback) {
 			$(trigger).click(function() {
-				$(target).finish().slideToggle(formAnimationOptions);
+				$(target).finish().slideToggle(qrSlideInterval);
 				if (typeof callback === 'function') {
 					callback();
 				}
@@ -796,10 +874,30 @@
 				.find('.qr_attach_button').delay(100).fadeIn().end()
 				.removeClass('qr_compact_form').css('overflow', 'hidden')
 				.find('#qr_text_action_box, #qr_captcha_container, .submit-buttons')
-				.finish().slideDown(formAnimationOptions).promise().done(function() {
+				.finish().slideDown(qrSlideInterval).promise().done(function() {
 				self.$.css('overflow', '');
 			});
 		};
+
+		/**
+		 * Sets the form width equal to the width of page-body container.
+		 */
+		function setFormWidth() {
+			var $pageBody = $('#page-body');
+			if (!$pageBody.length || self.is('extended') || self.is('fullscreen')) {
+				return;
+			}
+			self.$.css('width', $pageBody.width());
+		}
+
+		/**
+		 * Returns whether the page is displayed in mobile view.
+		 *
+		 * @returns {boolean}
+		 */
+		function isMobile() {
+			return $(window).width() <= 700;
+		}
 
 		/**
 		 * Initializes fixed form mode.
@@ -810,9 +908,13 @@
 			quickreply.style.showQuickReplyForm();
 
 			// Switch off Quick Reply Toggle Plugin
-			$("#reprap").remove();
+			$("#reprap").hide();
 
-			self.$.finish().addClass('qr_fixed_form qr_compact_form');
+			self.$.finish();
+
+			$('<div id="qr_form_placeholder" />').css('height', self.$.height()).insertAfter(self.$);
+
+			self.$.addClass('qr_fixed_form qr_compact_form');
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 			quickreply.style.setAdditionalElements();
@@ -822,19 +924,37 @@
 				$('.qr_more_actions_button').hide();
 			}
 
-			initAttachNotice();
-			refreshUploader();
+			if (quickreply.settings.attachBox) {
+				initAttachNotice();
+				refreshUploader();
+			}
 
 			$('#qr_text_action_box, #qr_captcha_container, .qr_attach_button').hide();
 			$('#qr_action_box').prependTo('#message-box');
-			setTimeout(setBodyPaddingBottom, 500);
+
+			if (!quickreply.settings.fixEmptyForm) {
+				self.$.addClass('qr_no_compact');
+			}
 
 			// Add events.
-			addButtonTrigger(
-				'.qr_bbcode_button',
-				'#format-buttons, #register-and-translit:not(#format-buttons #register-and-translit)',
-				hideColourPalette
-			);
+			if (quickreply.plugins.abbc3) {
+				addButtonTrigger(
+					'.qr_bbcode_button',
+					[
+						'#abbc3_buttons',
+						'#format-buttons:has(#register-and-translit)',
+						'#register-and-translit:not(#format-buttons #register-and-translit)'
+					].join(', '),
+					hideColourPalette
+				);
+				$('#format-buttons').children(':not(#register-and-translit)').hide();
+			} else {
+				addButtonTrigger(
+					'.qr_bbcode_button',
+					'#format-buttons, #register-and-translit:not(#format-buttons #register-and-translit)',
+					hideColourPalette
+				);
+			}
 			addButtonTrigger('.qr_attach_button, #qr_attach_notice', quickreply.editor.attachPanel, function() {
 				setAttachNotice('toggle');
 				self.setFixed();
@@ -848,7 +968,10 @@
 			// Hide active dropdowns when click event happens outside
 			$body.on('mousedown.quickreply.form', function(e) {
 				var $parents = $(e.target).parents();
-				if (!$parents.is(quickreply.editor.mainForm) && !$(quickreply.editor.textareaSelector).val() && !self.is('fullscreen')) {
+				if (!$parents.is(quickreply.editor.mainForm) &&
+					!$(quickreply.editor.textareaSelector).val() &&
+					!self.is('fullscreen') &&
+					!self.is('extended')) {
 					self.setCompact();
 				}
 			});
@@ -868,23 +991,105 @@
 					self.enterFullscreen();
 				}
 			});
+
+			$(window).on('scroll resize', checkExtended);
+			$(document).ready(checkExtended);
+
+			$(window).resize(setFormWidth);
+			$(document).ready(setFormWidth);
+
+			$(window).resize(setSmileyBox);
 		};
+
+		/**
+		 * Initializes or exits extended standard form mode if needed.
+		 */
+		function checkExtended() {
+			if (self.is('fullscreen')) {
+				return;
+			}
+
+			var $window = $(window),
+				$previous = self.$.prevAll(":visible:first"),
+				scrollBottom = $window.scrollTop() + $window.height(),
+				formOffset = $previous.offset().top + $previous.height();
+
+			if (scrollBottom - self.$.height() >= formOffset && !self.is('extended')) {
+				setExtended();
+			} else if (scrollBottom - 48 < formOffset && self.is('extended')) {
+				exitExtended();
+			}
+		}
+
+		/**
+		 * Sets extended standard form mode.
+		 */
+		function setExtended() {
+			// Switch on Quick Reply Toggle Plugin if it is installed
+			$("#reprap").show();
+
+			$('#qr_form_placeholder').remove();
+
+			self.$.finish().removeClass('qr_fixed_form qr_compact_form').addClass('qr_extended_form').css('width', '');
+			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
+
+			$('#qr_text_action_box, #qr_action_box').hide();
+
+			closeSmileyBox();
+			$('#smiley-box').finish().css('left', '').css('right', '').css('height', '');
+
+			quickreply.style.formEditorElements(true).finish().show();
+			setAttachNotice('hide');
+		}
+
+		/**
+		 * Exits extended standard form mode and sets fixed form mode.
+		 */
+		function exitExtended() {
+			// Switch off Quick Reply Toggle Plugin
+			$("#reprap").show();
+
+			quickreply.style.showQuickReplyForm();
+
+			var placeholderHeight = self.$.height();
+
+			self.$.finish().hide().addClass('qr_fixed_form').removeClass('qr_extended_form');
+			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
+
+			$('<div id="qr_form_placeholder" />').css('height', placeholderHeight).insertAfter(self.$);
+
+			$('#qr_action_box').show();
+
+			if ($(quickreply.editor.textareaSelector).val() || quickreply.$.textarea.is(':focus')) {
+				quickreply.style.formEditorElements().hide();
+				$('#qr_text_action_box, #qr_captcha_container, .submit-buttons, .qr_attach_button').show();
+				setAttachNotice();
+			} else {
+				self.setCompact(true);
+			}
+
+			setFormWidth();
+
+			self.$.show();
+		}
 
 		/**
 		 * Exits fullscreen mode and returns quick reply form to the previous mode.
 		 */
 		this.exitFullscreen = function() {
 			$(document).off('keydown.quickreply.fullscreen');
-			self.$.find('.submit-buttons input[type="submit"]').off('click.quickreply.fullscreen');
+			self.$.off('ajax_submit_success.quickreply.fullscreen');
 
-			$body.css('overflow-y', '');
+			$body.add('html').css('overflow-y', '');
 			hideColourPalette();
 
 			$('.qr_fixed_form').animate({
 				'maxHeight': '50%',
-				'height': formHeight
+				'height': formHeight,
+				'width': formWidth
 			}, qrSlideInterval, function() {
 				$(this).css('height', 'auto');
+				setFormWidth();
 			}).removeClass('qr_fullscreen_form');
 
 			if (!self.is('compact')) {
@@ -892,13 +1097,14 @@
 				$('#qr_text_action_box, .qr_attach_button').show();
 				setAttachNotice();
 			} else {
-				self.setCompact(true);
+				self.setCompact();
 			}
 
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN);
 			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
+			$('#preview').insertBefore(self.$);
 			self.$.trigger('fullscreen-exit');
 		};
 
@@ -906,18 +1112,15 @@
 		 * Displays quick reply form in fullscreen mode.
 		 */
 		function setFullscreen() {
-			// Store current form height.
+			// Store current form height and width.
 			formHeight = self.$.height();
+			formWidth = self.$.width();
 
-			$body.css('overflow-y', 'hidden');
+			$body.add('html').css('overflow-y', 'hidden');
 			quickreply.style.formEditorElements(true).slideDown(qrSlideInterval);
 			setAttachNotice('hide');
 			$('#qr_text_action_box, .qr_attach_button').hide();
 
-			$('.qr_fixed_form').animate({
-				'maxHeight': '100%',
-				'height': '100%'
-			}, qrSlideInterval).addClass('qr_fullscreen_form');
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN_EXIT);
 			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
@@ -930,19 +1133,68 @@
 				}
 			});
 
-			self.$.find('.submit-buttons input[type="submit"]')
-				.on('click.quickreply.fullscreen', function() {
-					self.exitFullscreen();
-				});
+			self.$.on('ajax_submit_success.quickreply.fullscreen', self.exitFullscreen);
 
-			self.$.trigger('fullscreen');
+			self.$.trigger('fullscreen-before');
+			$('.qr_fixed_form').addClass('qr_fullscreen_form').animate({
+				'maxHeight': '100%',
+				'height': '100%',
+				'width': '100%'
+			}, qrSlideInterval, function() {
+				$('#preview').prependTo(self.$);
+				self.$.trigger('fullscreen');
+			});
 		}
 
 		/**
 		 * Opens quick reply form in fullscreen mode.
 		 */
 		this.enterFullscreen = function() {
-			quickreply.style.formEditorElements().slideUp(formAnimationOptions).promise().done(setFullscreen);
+			quickreply.style.formEditorElements().slideUp(qrSlideInterval).promise().done(setFullscreen);
+		};
+
+		/**
+		 * Checks whether some attachments are being uploaded.
+		 * Workaround function for phpBB < 3.1.5.
+		 */
+		function attachmentsChecker() {
+			if (!$('.file-progress:visible').length) {
+				self.$.trigger('ajax_submit_ready');
+			}
+		}
+
+		/**
+		 * Checks whether some attachments are being uploaded.
+		 * Sets an event trigger when the upload is completed.
+		 *
+		 * @returns {boolean}
+		 */
+		this.checkAttachments = function() {
+			if (!quickreply.settings.attachBox) {
+				return false;
+			}
+
+			self.$.off('ajax_submit_ready ajax_submit_cancel');
+
+			if (uploaderIsAvailable()) {
+				if (phpbb.plupload.uploader.state !== plupload.STOPPED) {
+					phpbb.plupload.uploader.bind('UploadComplete', function() {
+						self.$.trigger('ajax_submit_ready');
+					});
+					return true;
+				}
+			} else {
+				// Workaround for phpBB < 3.1.5
+				if ($('.file-progress:visible').length) {
+					var attachInterval = setInterval(attachmentsChecker, 500);
+					self.$.on('ajax_submit_ready ajax_submit_cancel', function() {
+						clearInterval(attachInterval);
+					});
+					return true;
+				}
+			}
+
+			return false;
 		};
 
 		/**
@@ -964,6 +1216,7 @@
 				phpbb.plupload.clearParams();
 
 				setAttachNotice('hide');
+				hasAttachments = false;
 			}
 
 			if (quickreply.settings.allowedGuest) {
@@ -972,22 +1225,24 @@
 		};
 	}
 
+	// @todo
+	function Preview() {
+
+	}
+
 	function Ajax() {
 		/**
 		 * Initializes some parts of Ajax functionality.
 		 */
 		this.init = function() {
 			if (quickreply.settings.ajaxSubmit) {
-				$(quickreply.editor.mainForm).attr('data-ajax', 'qr_ajax_submit');
 				quickreply.style.initPreview();
 
-				$(quickreply.editor.mainForm).submit(function() {
-					var action = $(this).attr('action'), url_hash = action.indexOf('#');
-					if (url_hash > -1) {
-						$(this).attr('action', action.substr(0, url_hash));
+				quickreply.$.mainForm.attr('data-ajax', 'qr_ajax_submit').submit(function() {
+					var action = $(this).attr('action'), urlHash = action.indexOf('#');
+					if (urlHash > -1) {
+						$(this).attr('action', action.substr(0, urlHash));
 					}
-
-					quickreply.loading.start();
 
 					var $clickedButton = $(this).find('input[type="submit"][data-clicked]');
 
@@ -1007,17 +1262,20 @@
 						}
 					}
 				}).attr('data-overlay', false);
+
+				quickreply.$.mainForm.find(':submit').click(function(e) {
+					quickreply.loading.start();
+
+					if (quickreply.form.checkAttachments()) {
+						e.preventDefault();
+
+						quickreply.loading.setExplain(quickreply.language.loading.ATTACHMENTS, true);
+						quickreply.$.mainForm.on('ajax_submit_ready', function() {
+							quickreply.$.mainForm.submit();
+						});
+					}
+				});
 			}
-
-			$('#page-footer').append('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
-				quickreply.language.loading.text + '</span><div id="qr_loading_explain"></div></div>');
-
-			$(document).ajaxError(function() {
-				var $loadingText = $('#qr_loading_text');
-				if ($loadingText.is(':visible')) {
-					$loadingText.fadeOut(phpbb.alertTime);
-				}
-			});
 		};
 
 		/**
@@ -1110,7 +1368,16 @@
 		/**
 		 * The callback function for handling results of Ajax submission.
 		 *
-		 * @param {object} res Response object
+		 * @param {object}  res                  Response object
+		 * @param {string}  [res.qr_fields]      HTML string with updated fields
+		 * @param {string}  [res.status]         Result status type
+		 * @param {boolean} [res.merged]         Whether the submitted post has been merged
+		 * @param {string}  [res.url]            URL for the next request
+		 * @param {string}  [res.PREVIEW_TITLE]  HTML string for preview title
+		 * @param {string}  [res.PREVIEW_TEXT]   HTML string for preview text
+		 * @param {string}  [res.PREVIEW_ATTACH] HTML string for preview attachments container
+		 * @param {string}  [res.MESSAGE_TITLE]  Information notice
+		 * @param {boolean} [res.error]          Whether there were any errors
 		 */
 		this.submitCallback = function(res) {
 			if (res.qr_fields) {
@@ -1165,7 +1432,8 @@
 					});
 					quickreply.loading.stop();
 					if (quickreply.settings.enableScroll) {
-						quickreply.functions.softScroll($preview);
+						var $container = (quickreply.form.is('fullscreen')) ? quickreply.editor.mainForm : false;
+						quickreply.functions.softScroll($preview, $container);
 					}
 					$('#qr_postform').trigger('ajax_submit_preview', [$preview]);
 					break;
@@ -1281,6 +1549,9 @@
 			}
 		}
 
+		/**
+		 * Sets default values to parameters.
+		 */
 		function setDefaults() {
 			dataObject = {
 				qr_cur_post_id: $(quickreply.editor.mainForm).find('input[name="qr_cur_post_id"]').val(),
@@ -1293,6 +1564,9 @@
 			requestMethod = 'GET';
 		}
 
+		/**
+		 * Cleans request URL.
+		 */
 		function parseURL() {
 			if (self.url.indexOf('?') < 0) {
 				self.url = self.url.replace(/&/, '?');
@@ -1306,6 +1580,9 @@
 			}
 		}
 
+		/**
+		 * Special handler for SEO URLs.
+		 */
 		function handleSEO() {
 			if (quickreply.plugins.seo) {
 				if (params.scroll === 'unread') {
@@ -1321,6 +1598,9 @@
 			}
 		}
 
+		/**
+		 * Error response handler.
+		 */
 		function resultError() {
 			if (qrStopHistory) {
 				qrStopHistory = false;
@@ -1328,6 +1608,16 @@
 			quickreply.ajax.error();
 		}
 
+		/**
+		 * Success response handler.
+		 *
+		 * @param {object}  res                     The result of the response
+		 * @param {string}  [res.result]            Parsed HTML result
+		 * @param {boolean} [res.insert]            Whether we need to insert the result, overwrite otherwise
+		 * @param {boolean} [res.captcha_refreshed] Whether the CAPTCHA data has been updated
+		 * @param {string}  [res.captcha_result]    Parsed HTML for CAPTCHA container
+		 * @param {string}  [res.MESSAGE_TEXT]      Information notice
+		 */
 		function resultSuccess(res) {
 			if (res.result) {
 				if (res.insert) {
@@ -1422,6 +1712,20 @@
 		}
 
 		/**
+		 * Special handler for pagination.
+		 * Determines whether we can perform the Ajax request.
+		 *
+		 * @param {string} url Page URL to load
+		 */
+		this.loadPage = function(url) {
+			if (!quickreply.settings.ajaxPagination) {
+				standardReload(url);
+				return;
+			}
+			self.start(url);
+		};
+
+		/**
 		 * The function for handling Ajax requests.
 		 *
 		 * @param {string}   url                      Requested URL
@@ -1432,11 +1736,6 @@
 		 *                                            'unread' - if we need to scroll to the first unread post
 		 */
 		this.start = function(url, requestData, requestParams) {
-			if (!quickreply.settings.ajaxPagination) {
-				standardReload(url);
-				return;
-			}
-
 			quickreply.loading.start();
 
 			setDefaults();
