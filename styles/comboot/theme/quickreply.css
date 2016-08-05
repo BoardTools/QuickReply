@@ -74,8 +74,6 @@ a span.imageset.icon_topic_latest:before {
 	border-top-left-radius: 4px;
 }
 
-/* Compact form style. */
-
 /* Fixed form style. */
 .qr_fixed_form #attach-tab,
 .qr_fixed_form > .panel > .panel-heading {
@@ -128,3 +126,17 @@ a span.imageset.icon_topic_latest:before {
 .qr_fixed_form #attach-tab {
 	margin-top: 15px;
 }
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+	.qr_fixed_form #smiley-box {
+		width: 100%;
+	}
+
+	.qr_fixed_form.with_smileys .col-md-9 {
+		width: 100%;
+	}
+}
+
+/* Compact form style. */
+
+/* Fullscreen form style. */

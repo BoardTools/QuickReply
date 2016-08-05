@@ -16,8 +16,6 @@
 	}
 
 	if (quickreply.settings.attachBox) {
-		quickreply.style.setTextareaId();
-
 		/* Fix for external links. */
 		$('#file-list').on('click', 'a[href]', function() {
 			$(this).attr('target', '__blank');
@@ -735,6 +733,8 @@
 		 * Prepares quick reply form.
 		 */
 		this.init = function() {
+			quickreply.style.setTextareaId();
+
 			if (quickreply.settings.formType > 0) {
 				self.initFixed();
 			}
@@ -1173,7 +1173,7 @@
 			if (!quickreply.settings.attachBox) {
 				return false;
 			}
-			
+
 			self.$.off('ajax_submit_ready ajax_submit_cancel');
 
 			if (uploaderIsAvailable()) {
