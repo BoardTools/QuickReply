@@ -814,6 +814,9 @@
 		 * Recalculates smiley box position (i.e. after window resize).
 		 */
 		function setSmileyBox() {
+			if (self.is('extended')) {
+				return;
+			}
 			if (isMobile()) {
 				$('#smiley-box').css('height', '')[(smileyBoxDisplayed) ? 'show' : 'hide']();
 				self.$.off('fullscreen.quickreply.smilies');
@@ -1036,7 +1039,7 @@
 			$('#qr_text_action_box, #qr_action_box').hide();
 
 			closeSmileyBox();
-			$('#smiley-box').finish().css('left', '').css('right', '').css('height', '');
+			$('#smiley-box').finish().css('left', '').css('right', '').css('height', '').css('display', '');
 
 			quickreply.style.formEditorElements(true).finish().show();
 			setAttachNotice('hide');
