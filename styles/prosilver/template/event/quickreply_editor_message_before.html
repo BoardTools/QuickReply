@@ -185,6 +185,19 @@
 </div>
 <!-- ENDIF -->
 <!-- EVENT ext_quickreply_transform_text_buttons_after -->
+	<div id="smiley-box">
+		<!-- EVENT ext_quickreply_smiley_box_prepend -->
+		<!-- IF S_SMILIES_ALLOWED and .smiley -->
+			<strong>{L_SMILIES}</strong><br />
+			<!-- BEGIN smiley -->
+				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+			<!-- END smiley -->
+		<!-- ENDIF -->
+		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
+			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
+		<!-- ENDIF -->
+		<!-- EVENT ext_quickreply_smiley_box_append -->
+	</div>
 <!-- IF S_QR_FORM_TYPE > 0 -->
 <div id="qr_action_box">
 	<i class="qr_fullscreen_button fa fa-fw fa-arrows-alt" title="{L_QR_FULLSCREEN}"></i>
@@ -205,16 +218,3 @@
 	<i class="qr_more_actions_button fa fa-fw fa-chevron-down" title="{L_QR_MORE}"></i>
 </div>
 <!-- ENDIF -->
-	<div id="smiley-box">
-		<!-- EVENT ext_quickreply_smiley_box_prepend -->
-		<!-- IF S_SMILIES_ALLOWED and .smiley -->
-			<strong>{L_SMILIES}</strong><br />
-			<!-- BEGIN smiley -->
-				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
-			<!-- END smiley -->
-		<!-- ENDIF -->
-		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
-			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
-		<!-- ENDIF -->
-		<!-- EVENT ext_quickreply_smiley_box_append -->
-	</div>

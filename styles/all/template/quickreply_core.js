@@ -653,6 +653,15 @@
 		};
 
 		/**
+		 * Returns whether plupload uploader object is available.
+		 *
+		 * @returns {boolean}
+		 */
+		function uploaderIsAvailable() {
+			return phpbb.plupload && phpbb.plupload.uploader;
+		}
+
+		/**
 		 * Shows/hides attachments existence notice with animation.
 		 *
 		 * @param {string}        [visibility]       By default the notice will be shown,
@@ -675,7 +684,7 @@
 		 */
 		function initAttachNotice() {
 			$(document).ready(function() {
-				if (!phpbb.plupload.uploader) {
+				if (!uploaderIsAvailable()) {
 					// Workaround for phpBB < 3.1.5
 					return;
 				}
@@ -712,7 +721,7 @@
 		 * Workaround for "Add files" button position calculation.
 		 */
 		function refreshUploader() {
-			if (phpbb.plupload.uploader) {
+			if (uploaderIsAvailable()) {
 				$('.qr_attach_button, #qr_attach_notice').one('click', function() {
 					phpbb.plupload.uploader.refresh();
 				});
@@ -772,12 +781,15 @@
 		 * Opens smiley box.
 		 */
 		function openSmileyBox() {
+			setSmileyBox();
+			if (isMobile()) {
+				$('#smiley-box').slideDown(qrSlideInterval);
+			} else {
+				$('#smiley-box').stop().animate({
+					right: '0'
+				}, 500);
+			}
 			self.$.addClass('with_smileys');
-			$(quickreply.$.textarea).on('mousemove.quickreply.smilies', fixSmileyHeight);
-			self.$.on('fullscreen.quickreply.smilies', fixSmileyHeight);
-			$('#smiley-box').css('height', quickreply.$.messageBox.height()).stop().animate({
-				right: '0'
-			}, 500);
 			smileyBoxDisplayed = true;
 		}
 
@@ -785,13 +797,33 @@
 		 * Closes smiley box.
 		 */
 		function closeSmileyBox() {
-			$('#smiley-box').stop().animate({
-				right: '-1000px'
-			}, 500);
+			if (isMobile()) {
+				$('#smiley-box').slideUp(qrSlideInterval);
+			} else {
+				$('#smiley-box').stop().animate({
+					right: '-1000px'
+				}, 500);
+				self.$.off('fullscreen.quickreply.smilies');
+				$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+			}
 			self.$.removeClass('with_smileys');
-			$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
-			self.$.off('fullscreen.quickreply.smilies');
 			smileyBoxDisplayed = false;
+		}
+
+		/**
+		 * Recalculates smiley box position (i.e. after window resize).
+		 */
+		function setSmileyBox() {
+			if (isMobile()) {
+				$('#smiley-box').css('height', '')[(smileyBoxDisplayed) ? 'show' : 'hide']();
+				self.$.off('fullscreen.quickreply.smilies');
+				$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+			} else {
+				fixSmileyHeight();
+				$('#smiley-box').css('display', '').css('right', (smileyBoxDisplayed) ? '0' : '-1000px');
+				self.$.on('fullscreen.quickreply.smilies', fixSmileyHeight);
+				$(quickreply.$.textarea).on('mousemove.quickreply.smilies', fixSmileyHeight);
+			}
 		}
 
 		/**
@@ -852,10 +884,19 @@
 		 */
 		function setFormWidth() {
 			var $pageBody = $('#page-body');
-			if (!$pageBody.length || self.is('extended')) {
+			if (!$pageBody.length || self.is('extended') || self.is('fullscreen')) {
 				return;
 			}
 			self.$.css('width', $pageBody.width());
+		}
+
+		/**
+		 * Returns whether the page is displayed in mobile view.
+		 *
+		 * @returns {boolean}
+		 */
+		function isMobile() {
+			return $(window).width() <= 700;
 		}
 
 		/**
@@ -883,8 +924,10 @@
 				$('.qr_more_actions_button').hide();
 			}
 
-			initAttachNotice();
-			refreshUploader();
+			if (quickreply.settings.attachBox) {
+				initAttachNotice();
+				refreshUploader();
+			}
 
 			$('#qr_text_action_box, #qr_captcha_container, .qr_attach_button').hide();
 			$('#qr_action_box').prependTo('#message-box');
@@ -954,6 +997,8 @@
 
 			$(window).resize(setFormWidth);
 			$(document).ready(setFormWidth);
+
+			$(window).resize(setSmileyBox);
 		};
 
 		/**
@@ -1044,6 +1089,7 @@
 				'width': formWidth
 			}, qrSlideInterval, function() {
 				$(this).css('height', 'auto');
+				setFormWidth();
 			}).removeClass('qr_fullscreen_form');
 
 			if (!self.is('compact')) {
@@ -1126,7 +1172,7 @@
 		this.checkAttachments = function() {
 			self.$.off('ajax_submit_ready ajax_submit_cancel');
 
-			if (phpbb.plupload.uploader) {
+			if (uploaderIsAvailable()) {
 				if (phpbb.plupload.uploader.state !== plupload.STOPPED) {
 					phpbb.plupload.uploader.bind('UploadComplete', function() {
 						self.$.trigger('ajax_submit_ready');

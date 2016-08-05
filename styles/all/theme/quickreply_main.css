@@ -125,10 +125,6 @@
 	transition: height 0s;
 }
 
-#qr_postform.qr_fixed_form #smiley-box {
-	max-height: 115px;
-}
-
 .qr_fixed_form #attach-panel,
 .qr_fixed_form #format-buttons,
 .qr_fixed_form #abbc3_buttons,
@@ -190,6 +186,7 @@
 	z-index: 31;
 	overflow-y: auto;
 	width: 20%;
+	max-height: 115px;
 }
 
 .qr_fixed_form #format-buttons,
@@ -199,6 +196,20 @@
 
 .qr_fixed_form > div {
 	margin-bottom: 0;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+	.qr_fixed_form #smiley-box {
+		display: none;
+		position: static;
+		right: auto !important;
+		width: 100%;
+		max-height: none;
+	}
+
+	#qr_postform.qr_fixed_form.with_smileys #message-box {
+		width: 100%;
+	}
 }
 
 /* Compact form style. */

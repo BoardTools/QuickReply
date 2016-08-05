@@ -87,11 +87,11 @@ class form_helper
 		if ($show_attach_box)
 		{
 			$this->handle_attachments($forum_id, $topic_id, $show_attach_box);
+		}
 
-			if ($bbcode_status || $smilies_status)
-			{
-				$this->user->add_lang('posting');
-			}
+		if ($bbcode_status || $smilies_status || $show_attach_box)
+		{
+			$this->user->add_lang('posting');
 		}
 	}
 
@@ -224,9 +224,9 @@ class form_helper
 	 */
 	public function handle_attachments($forum_id, $topic_id, $show_attach_box)
 	{
-		$arr_attach = $this->qr_parse_attachments();
-		$attachment_data = $arr_attach[0];
-		$filename_data = $arr_attach[1];
+		$message_parser = $this->get_message_parser();
+		$attachment_data = $message_parser->attachment_data;
+		$filename_data = $message_parser->filename_data;
 
 		if (!function_exists('posting_gen_inline_attachments'))
 		{
@@ -248,7 +248,7 @@ class form_helper
 		);
 	}
 
-	public function qr_parse_attachments()
+	public function get_message_parser()
 	{
 		if (!class_exists('parse_message'))
 		{
@@ -260,10 +260,7 @@ class form_helper
 
 		$message_parser->get_submitted_attachment_data($this->user->data['user_id']);
 
-		$attachment_data = $message_parser->attachment_data;
-		$filename_data = $message_parser->filename_data;
-
-		return array($attachment_data, $filename_data);
+		return $message_parser;
 	}
 
 	public function get_max_files($forum_id)

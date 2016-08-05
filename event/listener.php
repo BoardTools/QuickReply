@@ -127,8 +127,6 @@ class listener implements EventSubscriberInterface
 	 */
 	public function viewtopic_modify_data($event)
 	{
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
-
 		$forum_id = $event['forum_id'];
 		$topic_data = $event['topic_data'];
 		$post_list = $event['post_list'];
