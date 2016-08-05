@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "Extended possibilities to use the QuickReply feature.",
     "homepage": "https://github.com/BoardTools/QuickReply",
-    "version": "1.0.2-dev",
+    "version": "1.0.2",
     "license": "GPL-2.0",
     "authors": [
         {
