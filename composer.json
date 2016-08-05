@@ -2,8 +2,8 @@
     "name": "boardtools/quickreply",
     "type": "phpbb-extension",
     "description": "Extended possibilities to use the QuickReply feature.",
-    "homepage": "https://github.com/BoardTools/QuickReply",
-    "version": "1.1.0-alpha2",
+    "homepage": "http://boardtools.github.io/QuickReply/",
+    "version": "1.1.0-beta1",
     "license": "GPL-2.0",
     "authors": [
         {
