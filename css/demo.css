@@ -195,6 +195,14 @@ p {
 	margin-left: 5px;
 }
 
+.qr_extended_form #try-message {
+	background-color: #f5f5f5;
+}
+
+.qr_extended_form .panel {
+	margin-bottom: 0;
+}
+
 #qr-version {
 	padding: 5px 15px;
 	color: #5e5e5e;

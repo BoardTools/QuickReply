@@ -61,6 +61,10 @@
 	cursor: pointer;
 }
 
+#qr_postform.no_transition * {
+	transition-duration: 0s !important;
+}
+
 #qr_postform textarea::-webkit-input-placeholder {
 	opacity: 0.55;
 }

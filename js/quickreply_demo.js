@@ -20,6 +20,8 @@ quickreply.settings = {
 	enableBBCode: true,
 	enableComma: true,
 	enableScroll: true,
+	enableWarning: false,
+	fixEmptyForm: true,
 	formType: 1,
 	fullQuote: true,
 	fullQuoteAllowed: true,
@@ -157,4 +159,6 @@ $(document).ready(function() {
 		e.preventDefault();
 		phpbb.alert(quickreply.language.INFORMATION, quickreply.language.demo.NOT_AVAILABLE);
 	});
+
+	$('<div id="header-nav"></div><div id="footer-nav"></div>').css('height', '0').appendTo('body');
 });

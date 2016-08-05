@@ -1053,14 +1053,14 @@
 
 			var placeholderHeight = self.$.height();
 
-			self.$.finish().hide().addClass('qr_fixed_form').removeClass('qr_extended_form');
-			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
+			quickreply.$.textarea.addClass('qr_fixed_textarea');
+			self.$.finish().addClass('no_transition qr_fixed_form').removeClass('qr_extended_form');
 
 			$('<div id="qr_form_placeholder" />').css('height', placeholderHeight).insertAfter(self.$);
 
 			$('#qr_action_box').show();
 
-			if ($(quickreply.editor.textareaSelector).val() || quickreply.$.textarea.is(':focus')) {
+			if (quickreply.$.textarea.val() || quickreply.$.textarea.is(':focus')) {
 				quickreply.style.formEditorElements().hide();
 				$('#qr_text_action_box, #qr_captcha_container, .submit-buttons, .qr_attach_button').show();
 				setAttachNotice();
@@ -1069,8 +1069,9 @@
 			}
 
 			setFormWidth();
-
-			self.$.show();
+			setTimeout(function() {
+				self.$.removeClass('no_transition');
+			}, 0);
 		}
 
 		/**
