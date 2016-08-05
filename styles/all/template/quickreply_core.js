@@ -1170,6 +1170,10 @@
 		 * @returns {boolean}
 		 */
 		this.checkAttachments = function() {
+			if (!quickreply.settings.attachBox) {
+				return false;
+			}
+			
 			self.$.off('ajax_submit_ready ajax_submit_cancel');
 
 			if (uploaderIsAvailable()) {
@@ -1177,7 +1181,7 @@
 					phpbb.plupload.uploader.bind('UploadComplete', function() {
 						self.$.trigger('ajax_submit_ready');
 					});
-					return false;
+					return true;
 				}
 			} else {
 				// Workaround for phpBB < 3.1.5
@@ -1186,11 +1190,11 @@
 					self.$.on('ajax_submit_ready ajax_submit_cancel', function() {
 						clearInterval(attachInterval);
 					});
-					return false;
+					return true;
 				}
 			}
 
-			return true;
+			return false;
 		};
 
 		/**
@@ -1262,7 +1266,7 @@
 				quickreply.$.mainForm.find(':submit').click(function(e) {
 					quickreply.loading.start();
 
-					if (!quickreply.form.checkAttachments()) {
+					if (quickreply.form.checkAttachments()) {
 						e.preventDefault();
 
 						quickreply.loading.setExplain(quickreply.language.loading.ATTACHMENTS, true);
