@@ -1243,6 +1243,8 @@
 				quickreply.style.initPreview();
 
 				quickreply.$.mainForm.attr('data-ajax', 'qr_ajax_submit').submit(function() {
+					quickreply.loading.start();
+
 					var action = $(this).attr('action'), urlHash = action.indexOf('#');
 					if (urlHash > -1) {
 						$(this).attr('action', action.substr(0, urlHash));
@@ -1268,12 +1270,12 @@
 				}).attr('data-overlay', false);
 
 				quickreply.$.mainForm.find(':submit').click(function(e) {
-					quickreply.loading.start();
-
 					if (quickreply.form.checkAttachments()) {
 						e.preventDefault();
 
+						quickreply.loading.start();
 						quickreply.loading.setExplain(quickreply.language.loading.ATTACHMENTS, true);
+
 						quickreply.$.mainForm.on('ajax_submit_ready', function() {
 							quickreply.$.mainForm.submit();
 						});
