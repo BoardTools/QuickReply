@@ -1,8 +1,17 @@
 {
     "unstable": {
+        "1.1": {
+            "current": "1.1.0-beta1",
+            "announcement": "https://github.com/BoardTools/QuickReply/releases/tag/v1.1.0-beta1",
+            "download": "https://github.com/BoardTools/QuickReply/archive/develop.zip",
+            "eol": null,
+            "security": false
+        }
+    },
+    "stable": {
         "1.0": {
-            "current": "1.0.1-RC1",
-            "announcement": "https://www.phpbb.com/community/viewtopic.php?p=14303246#p14303246",
+            "current": "1.0.2",
+            "announcement": "https://github.com/BoardTools/QuickReply/releases/tag/v1.0.2",
             "download": "https://github.com/BoardTools/QuickReply/archive/master.zip",
             "eol": null,
             "security": false
