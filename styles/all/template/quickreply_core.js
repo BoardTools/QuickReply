@@ -1325,7 +1325,7 @@
 		/**
 		 * Shows an alert with an error message.
 		 *
-		 * @param {string} [text] Optional error description.
+		 * @param {string} [text] Optional error description
 		 */
 		this.error = function(text) {
 			phpbb.alert(
@@ -1335,34 +1335,33 @@
 		};
 
 		/**
-		 * Removes last post and related content from the page.
+		 * Removes the post and related content from the page.
+		 *
+		 * @param {jQuery} $post jQuery selector for the post
 		 */
-		function removeLastPost() {
-			var mergedPost = quickreply.$.qrPosts.find(quickreply.editor.postSelector).last(),
-				mergedPostId = mergedPost.attr('id');
-			mergedPost.remove();
-			quickreply.$.qrPosts.find('.divider').last().remove();
-			$('#decoded_' + mergedPostId + ', #qr_author_' + mergedPostId).remove();
+		function removePost($post) {
+			$post.closest('.post-container').remove();
 		}
 
 		/**
 		 * Returns the requestData object for Ajax callback function.
 		 * Used when new messages have been added to the topic.
 		 *
-		 * @param {boolean} merged Whether the post has been merged.
+		 * @param {boolean} merged Whether the post has been merged
 		 * @returns {object}
 		 */
 		function getReplyData(merged) {
 			var replySetData = {qr_no_refresh: 1};
 			if (merged) {
+				var $mergedPost = quickreply.$.qrPosts.find(quickreply.editor.postSelector).last();
 				$.extend(replySetData, {qr_get_current: 1});
 				if (quickreply.settings.softScroll) {
-					$('#qr_posts').find(quickreply.editor.postSelector).last().slideUp(qrSlideInterval, function() {
-						removeLastPost();
+					$mergedPost.slideUp(qrSlideInterval, function() {
+						removePost($(this));
 					});
 				} else {
-					$('#qr_posts').one('qr_insert_before', function() {
-						removeLastPost();
+					quickreply.$.qrPosts.one('qr_insert_before', function() {
+						removePost($mergedPost);
 					});
 				}
 			}
@@ -1484,8 +1483,8 @@
 		/**
 		 * Parses the modified page and processes the results.
 		 *
-		 * @param {jQuery}   elements   Newly added elements.
-		 * @param {function} [callback] Callback function (receives the element for scrolling).
+		 * @param {jQuery}   elements   Newly added elements
+		 * @param {function} [callback] Callback function (receives the element for scrolling)
 		 */
 		function showResponse(elements, callback) {
 			var submitButtons = $('#qr_submit_buttons');
