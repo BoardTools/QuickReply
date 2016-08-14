@@ -647,7 +647,8 @@
 		 * @returns {boolean}
 		 */
 		this.hasReply = function() {
-			return !!($(quickreply.editor.textareaSelector).val() || $('#file-list').children().length);
+			return !!($(quickreply.editor.textareaSelector).val() ||
+			$('#file-list').children().not('#attach-row-tpl').length);
 		};
 
 		/**
