@@ -102,7 +102,7 @@ class plugins_helper
 	 * @param int    $post_id             ID of the current post
 	 * @return bool
 	 */
-	public function cannot_change_subject($forum_id, $mode, $topic_first_post_id, $post_id)
+	public function cannot_change_subject($forum_id, $mode, &$topic_first_post_id, $post_id)
 	{
 		return (
 			!$this->auth->acl_get('f_qr_change_subject', $forum_id)
