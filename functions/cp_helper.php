@@ -84,4 +84,12 @@ class cp_helper
 			'qr_form_type'   => $this->request->variable('qr_form_type', 0),
 		);
 	}
+
+	public function qr_new_forums_data()
+	{
+		return array(
+			'qr_ajax_submit' => false,
+			'qr_form_type'   => 0,
+		);
+	}
 }
