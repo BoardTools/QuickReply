@@ -21,7 +21,6 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'QR_BBPOST'                        => 'Gönderinin Kaynağı',
 	'QR_INSERT_TEXT'                   => 'Hızlı Cevap formuna Alıntı ekle',
 	'QR_PROFILE'                       => 'Profile git',
 	'QR_QUICKNICK'                     => 'Kullanıcı adından bahset',

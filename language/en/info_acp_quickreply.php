@@ -56,9 +56,6 @@ $lang = array_merge($lang, array(
 	'ACP_QR_COLOUR_NICKNAME'               => 'Add colour when refer by username',
 	'ACP_QR_COMMA'                         => 'Add comma after username',
 	'ACP_QR_COMMA_EXPLAIN'                 => 'Automatically add a comma after the username when using “Refer by username”.',
-	'ACP_QR_CTRLENTER'                     => 'Enable sending with “Ctrl+Enter”',
-	'ACP_QR_CTRLENTER_EXPLAIN'             => 'Allow sending a message by clicking “Ctrl+Enter”
-												in the Quick Reply and the Full Reply form.',
 	'ACP_QR_ENABLE_AJAX_SUBMIT'            => 'Enable Ajax posting in all forums',
 	'ACP_QR_ENABLE_AJAX_SUBMIT_EXPLAIN'    => 'Allow Ajax posting in all forums right away.',
 	'ACP_QR_ENABLE_RE'                     => 'Enable “Re:”',
@@ -108,7 +105,6 @@ $lang = array_merge($lang, array(
 												<br /><em>Note that quote button will be hidden if this setting
 												is disabled and the user does not have the permission to use it for full quote.</em>',
 	'ACP_QR_QUICKQUOTE_EXPLAIN'            => 'Allow quotes through a “popup” that appears when you select text in a message.',
-	'ACP_QR_QUICKQUOTE_LINK'               => 'Add a link to the profile of the post author when using quick quote',
 	'ACP_QR_SCROLL_TIME'                   => 'Time for a single scroll and animation event',
 	'ACP_QR_SCROLL_TIME_EXPLAIN'           => 'Time in milliseconds for the soft scroll feature. Enter 0 for the standard scroll.',
 	'ACP_QR_SHOW_BUTTON_TRANSLIT'          => 'Show button “Convert”',
@@ -116,5 +112,4 @@ $lang = array_merge($lang, array(
 	'ACP_QR_SHOW_SUBJECTS_IN_SEARCH'       => 'Show posts subjects in search results',
 	'ACP_QR_SMILIES'                       => 'Display smilies',
 	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smiles in the Quick Reply form.',
-	'ACP_QR_SOURCE_POST'                   => 'Add a link to the quoted message when quoting',
 ));

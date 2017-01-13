@@ -256,7 +256,6 @@ class form_helper
 		}
 		$message_parser = new \parse_message();
 		$message_parser->set_plupload($this->plupload);
-		$message_parser->set_mimetype_guesser($this->mimetype_guesser);
 
 		$message_parser->get_submitted_attachment_data($this->user->data['user_id']);
 

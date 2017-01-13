@@ -219,7 +219,7 @@
 	quickreply.style.getQuoteButtons = function(elements, type) {
 		var container = (type === 'last') ? elements.find('.post:last-child') : elements,
 			buttons = container.find('.post-buttons .quote-icon');
-		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons;
+		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons; //@TODO - it is not work. Full quote.
 	};
 
 	/**
@@ -236,7 +236,7 @@
 	 * @param {function} fn       Event handler function
 	 */
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
-		elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', fn);
+		elements.find('.post-buttons .responsive-menu').on('click', '.icon.fa-quote-left, .icon.fa-quote-left + span', fn); // @TODO Get link (parent) instead only icon and text
 	};
 
 	/**
@@ -292,6 +292,7 @@
 			dropdownStyle += 'left: ' + (pageX - 20) + 'px;';
 		}
 		appendClass = (appendClass) ? ' ' + appendClass : '';
+
 		return $('<div class="dropdown qr_dropdown' + appendClass + '" style="' + dropdownStyle + '"><div class="pointer" style="' + pointerStyle + '"><div class="pointer-inner"></div></div><ul class="dropdown-contents dropdown-nonscroll"><li>' + contentRows.join('</li><li>') + '</li></ul></div>').appendTo('body');
 	};
 

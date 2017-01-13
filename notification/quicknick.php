@@ -26,7 +26,7 @@ class quicknick extends \phpbb\notification\type\quote
 	*
 	* @var string
 	*/
-	protected static $regular_expression_match = '#\[ref(.+?)\](.+?)\[\/ref#';
+	protected static $regular_expression_match = '#\[ref(.+?)\]<\/s>(.+?)<e>\[\/ref#';
 
 	/**
 	* Language key used to output the text
@@ -80,7 +80,7 @@ class quicknick extends \phpbb\notification\type\quote
 		$usernames[2] = array_unique($usernames[2]);
 		$usernames = array_map('utf8_clean_string', $usernames[2]);
 
-		$users = $this->get_ids_of_usernames($usernames, $post['poster_id']);
+		$users = array(); //$users = $this->get_ids_of_usernames($usernames, $post['poster_id']); // @TODO $this->notification time is NULL, fix it
 
 		return $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
 	}

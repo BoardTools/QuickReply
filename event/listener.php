@@ -100,6 +100,16 @@ class listener implements EventSubscriberInterface
 		$topic_data = $event['topic_data'];
 		$post_row = $event['post_row'];
 		$row = $event['row'];
+		if ($this->config['qr_quickquote'])
+		{
+			$row = $event['row'];
+			$post_row = $event['post_row'];
+			$post_row = array_merge($post_row, array(
+				'QR_POST_TIME' => $row['post_time'],
+			));
+			$event['post_row'] = $post_row;
+		}
+
 		if ($this->config['qr_full_quote'] && $this->auth->acl_get('f_reply', $topic_data['forum_id']))
 		{
 			$decoded_message = censor_text($row['post_text']);
@@ -204,11 +214,6 @@ class listener implements EventSubscriberInterface
 				'QR_HIDE_SUBJECT_BOX'     => $this->config['qr_hide_subject_box'],
 			));
 		};
-
-		// Ctrl+Enter submit
-		$page_data = array_merge($page_data, array(
-			'S_QR_CE_ENABLE' => $this->helper->plugins_helper->qr_ctrlenter_enabled(),
-		));
 
 		$event['post_data'] = $post_data;
 		$event['page_data'] = $page_data;

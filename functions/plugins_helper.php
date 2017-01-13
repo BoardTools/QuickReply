@@ -151,29 +151,4 @@ class plugins_helper
 		return ($event['mode'] == 'quote' && !$event['submit'] && !$event['preview'] && !$event['refresh'] &&
 			$this->full_quote_disabled($event['post_data'], $event['post_id']));
 	}
-
-	/**
-	 * Detects whether Ctrl+Enter feature is enabled in QuickReply extension.
-	 * We need to disable this feature in phpBB 3.1.9 and higher
-	 * as it has been added to the core.
-	 *
-	 * @deprecated 1.0.2 added only for backwards compatibility reasons
-	 * @return bool
-	 */
-	public function qr_ctrlenter_enabled()
-	{
-		$qr_ctrlenter = $this->config['qr_ctrlenter'];
-		if ($qr_ctrlenter)
-		{
-			if (version_compare($this->config['version'], '3.1.8', '>'))
-			{
-				$this->config->set('qr_ctrlenter', 0);
-			}
-			else
-			{
-				return $qr_ctrlenter;
-			}
-		}
-		return false;
-	}
 }

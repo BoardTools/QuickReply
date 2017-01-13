@@ -21,17 +21,6 @@
 		}
 	}
 
-	/*********************/
-	/* Ctrl+Enter Plugin */
-	/*********************/
-	if (quickreply.settings.ctrlEnter) {
-		$(quickreply.editor.textareaSelector).keydown(function(event) {
-			if (event.ctrlKey && (event.keyCode === 13 || event.keyCode === 10)) {
-				$(this).parents('form').find('input[name="post"]').click();
-			}
-		});
-	}
-
 	/********************/
 	/* Helper functions */
 	/********************/
@@ -120,40 +109,28 @@
 		 *
 		 * @returns {string}
 		 */
-		function getUserName() {
+		function getQuoteData() {
 			var postAuthor = $('#qr_author_p' + self._postID),
 				nickname = postAuthor.text(),
-				userProfileUrl = postAuthor.attr('data-url').replace(/^\.[\/\\]/, quickreply.editor.boardURL)
-					.replace(/(&amp;|&|\?)sid=[0-9a-f]{32}(&amp;|&)?/,
-						function(str, p1, p2) {
-							return (p2) ? p1 : '';
-						}
-					);
-			return (quickreply.settings.quickQuoteLink && userProfileUrl && quickreply.settings.allowBBCode) ?
-								'[url=' + userProfileUrl + ']' + nickname + '[/url]' : nickname;
-		}
-
-		/**
-		 * Generates the string with [post] BBCode used for back link to the replied message.
-		 *
-		 * @returns {string}
-		 */
-		function getPostBBCode() {
-			return (quickreply.settings.sourcePost) ? '[post]' + self._postID + '[/post] ' : '';
+				userID = postAuthor.attr('data-url').replace(/(.)*u=/, ''),
+				potsTime = $('#qr_time' +  self._postID).text();
+			return [nickname, userID, potsTime];
 		}
 
 		/**
 		 * Inserts a quote from the specified post to quick reply textarea.
 		 */
 		self._insertQuote = function() {
-			var username = getUserName(),
-				bbpost = getPostBBCode(); // Link to the source post
+			var quoteData = getQuoteData(),
+			username = quoteData[0],
+			userID = quoteData[1],
+			postTime = quoteData[2];
 
 			if (self._selection) {
 				quickreply.style.showQuickReplyForm();
 
 				if (quickreply.settings.allowBBCode) {
-					insert_text('[quote="' + username + '"]' + bbpost + self._selection + '[/quote]\r');
+					insert_text('[quote=' + username + ' post_id=' + self._postID + ' time=' + postTime + ' user_id=' + userID + ']' + self._selection + '[/quote]\r');
 				} else {
 					insert_text(username + ' ' + quickreply.language.WROTE + ':' + '\n');
 

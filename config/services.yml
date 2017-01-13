@@ -112,19 +112,7 @@ services:
 
     boardtools.quickreply.notification.type.quicknick:
         class: boardtools\quickreply\notification\quicknick
-        scope: prototype # scope MUST be prototype for this to work!
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.notifications%
-            - %tables.user_notifications%
+        parent: notification.type.quote
         tags:
             - { name: notification.type }
 

@@ -23,7 +23,6 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'QR_ATTACH_NOTICE'                 => 'К этому ответу прикреплено по крайней мере одно вложение.',
 	'QR_BBCODE'                        => 'BBCode',
-	'QR_BBPOST'                        => 'Источник цитаты',
 	'QR_CANCEL_SUBMISSION'             => 'Отменить отправку',
 	'QR_FULLSCREEN'                    => 'Полноэкранный редактор',
 	'QR_FULLSCREEN_EXIT'               => 'Выйти из полноэкранного режима',

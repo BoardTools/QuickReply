@@ -1,3 +1,6 @@
+<!-- IF S_QR_QUICKQUOTE_ENABLE or S_QR_FULL_QUOTE and S_QR_FULL_QUOTE_ALLOWED -->
+	<div id="qr_time{postrow.POST_ID}" style="display: none;">{postrow.QR_POST_TIME}</div>
+<!-- ENDIF -->
 <div id="qr_author_p{postrow.POST_ID}" style="display: none;" data-url="{postrow.U_POST_AUTHOR}">{postrow.POST_AUTHOR_FULL}</div>
 <!-- IF S_QR_FULL_QUOTE and postrow.DECODED_MESSAGE != '' -->
 <div id="decoded_p{postrow.POST_ID}" style="display: none;">{postrow.DECODED_MESSAGE}</div>

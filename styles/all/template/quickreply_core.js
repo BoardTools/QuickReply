@@ -335,7 +335,7 @@
 				persist = $this.attr('id') === 'nav-main',
 				allLinks = $this.children(),
 				links = allLinks.not(filterSkip),
-				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+				html = '<li class="responsive-menu" style="display: none;"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
 				filterLastList = links.filter(filterLast),
 				slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
@@ -436,8 +436,10 @@
 					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 
 					if ($this.hasClass('post-buttons')) {
-						$('.button', menu).removeClass('button icon-button');
-						$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
+						$('.button', menu).removeClass('button');
+						$('.sr-only', menu).removeClass('sr-only');
+						$('.js-responsive-menu-link', item).addClass('button').addClass('button-icon-only');
+						$('.js-responsive-menu-link .icon', item).removeClass('fa-bars').addClass('fa-ellipsis-h');
 					}
 					copied = true;
 				}
@@ -474,7 +476,7 @@
 			}
 
 			if (!persist) {
-				phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+				phpbb.registerDropdown(item.find('a.js-responsive-menu-link'), item.find('.dropdown'));
 			}
 
 			check();

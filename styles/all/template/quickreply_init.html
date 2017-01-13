@@ -23,7 +23,6 @@ quickreply.settings = {
 	allowedGuest: <!-- IF S_QR_ALLOWED_GUEST -->true<!-- ELSE -->false<!-- ENDIF -->,
 	attachBox: <!-- IF S_QR_SHOW_ATTACH_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
 	colouredNick: <!-- IF S_QR_COLOUR_NICKNAME -->true<!-- ELSE -->false<!-- ENDIF -->,
-	ctrlEnter: <!-- IF S_QR_CE_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	enableBBCode: <!-- IF S_BBCODE_BUTTONS -->true<!-- ELSE -->false<!-- ENDIF -->,
 	enableComma: <!-- IF S_QR_COMMA_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	enableScroll: <!-- IF S_QR_ENABLE_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
@@ -42,18 +41,15 @@ quickreply.settings = {
 	quickNickPM: <!-- IF S_QR_QUICKNICK_PM -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickQuote: <!-- IF S_QR_QUICKQUOTE_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
 	quickQuoteButton: <!-- IF S_QR_QUICKQUOTE_BUTTON -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickQuoteLink: <!-- IF S_QR_QUICKQUOTE_LINK -->true<!-- ELSE -->false<!-- ENDIF -->,
 	saveReply: <!-- IF S_QR_SAVE_REPLY -->true<!-- ELSE -->false<!-- ENDIF -->,
 	scrollInterval: {S_QR_SCROLL_INTERVAL},
 	softScroll: <!-- IF S_QR_SOFT_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
-	sourcePost: <!-- IF QR_SOURCE_POST -->true<!-- ELSE -->false<!-- ENDIF -->,
 	unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
 };
 
 // Useful variables for QuickReply.
 quickreply.editor = {
 	attachPanel: '#attach-panel',
-	boardURL: '{BOARD_URL}',
 	currentPost: '',
 	mainForm: '#qr_postform',
 	messageStorage: '#qr_message',
