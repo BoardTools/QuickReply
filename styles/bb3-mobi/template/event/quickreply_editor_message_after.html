@@ -1,0 +1,11 @@
+<script type="text/javascript">
+// <![CDATA[
+var qr_postform = document.getElementById('qr_postform');
+var qr_textarea = document.getElementById('message-box').getElementsByTagName('textarea')[0];
+qr_postform.setAttribute('id', 'postform');
+qr_textarea.setAttribute('id', 'message');
+// ]]>
+</script>
+<!-- IF S_QR_SHOW_ATTACH_BOX -->
+<input type="file" name="fileupload" id="fileupload" maxlength="{FILESIZE}" value="" class="inputbox autowidth" />
+<!-- ENDIF -->

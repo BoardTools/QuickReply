@@ -1,0 +1,23 @@
+<!-- IF S_QR_NOT_CHANGE_SUBJECT --><input type="hidden" name="subject" value="{SUBJECT}" /><!-- ENDIF -->
+<!-- IF S_DISPLAY_USERNAME -->
+<div class="post bg1">
+<b>{L_USERNAME}{L_COLON}</b><br />
+<input type="text" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></div><!-- ENDIF -->
+<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
+<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
+<div id="qr_captcha_container">
+<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+</div>
+<!-- ENDIF -->
+<!-- IF S_SMILIES_ALLOWED and .smiley -->
+<div class="post bg1" id="smiley-box">
+<!-- EVENT posting_editor_smilies_before -->
+<!-- BEGIN smiley -->
+<!-- IF smiley.S_ROW_COUNT < 10 or not S_SHOW_SMILEY_LINK -->
+<a class="small-icon" href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a><!-- ENDIF -->
+<!-- END smiley -->
+<!-- IF S_SHOW_SMILEY_LINK --><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 750, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a><!-- ENDIF -->
+<!-- EVENT posting_editor_smilies_after -->
+</div>
+<!-- ENDIF -->
+<!-- INCLUDE posting_buttons.html -->

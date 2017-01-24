@@ -1,0 +1,21 @@
+<!-- IF S_QR_QUICKNICK_ENABLE -->
+<script type="text/javascript">
+//<![CDATA[
+var quickreply = {};
+// Configuration settings for QuickReply.
+quickreply.settings = {
+	colouredNick: <!-- IF S_QR_COLOUR_NICKNAME -->true<!-- ELSE -->false<!-- ENDIF -->,
+	enableBBCode: <!-- IF S_BBCODE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
+	enableComma: <!-- IF S_QR_COMMA_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
+	quickNickRef: <!-- IF S_QR_QUICKNICK_REF -->true<!-- ELSE -->false<!-- ENDIF -->,
+};
+// Language variables for QuickReply.
+quickreply.language = {
+	PROFILE: '{LA_QR_PROFILE}',
+	QUICKNICK: '{LA_QR_QUICKNICK}',
+	QUICKNICK_TITLE: '{LA_QR_QUICKNICK_TITLE}',
+};
+//]]>
+</script>
+<!-- INCLUDEJS @boardtools_quickreply/quickreply_plugins.js -->
+<!-- ENDIF -->
