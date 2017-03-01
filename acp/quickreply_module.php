@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
@@ -45,7 +45,7 @@ class quickreply_module extends acp_module_helper
 				//
 				'legend2'                 => 'ACP_QR_LEGEND_DISPLAY',
 				'forum_qr_form_type'      => array('lang' => 'ACP_QR_FORM_TYPE', 'lang_explain' => 'ACP_QR_LEAVE_AS_IS_EXPLAIN', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_qr_form_type', 'explain' => true),
-				'qr_ctrlenter'            => array('lang' => 'ACP_QR_CTRLENTER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+				'qr_ctrlenter'            => array('lang' => 'ACP_QR_CTRLENTER_NOTICE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_attach'               => array('lang' => 'ACP_QR_ATTACH', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_bbcode'               => array('lang' => 'ACP_QR_BBCODE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_smilies'              => array('lang' => 'ACP_QR_SMILIES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
@@ -63,12 +63,12 @@ class quickreply_module extends acp_module_helper
 		);
 
 		/**
-		 * We need to disable this feature in phpBB 3.1.9 and higher
-		 * as it has been added to the core.
+		 * "Ctrl+Enter" feature is not included in the core of phpBB 3.1.8 and lower.
+		 * Change the tooltip enabling setting to feature enabling instead.
 		 */
-		if (version_compare($this->config['version'], '3.1.8', '>'))
+		if (!version_compare($this->config['version'], '3.1.8', '>'))
 		{
-			unset($this->display_vars['vars']['qr_ctrlenter']);
+			$this->display_vars['vars']['qr_ctrlenter']['lang'] = 'ACP_QR_CTRLENTER';
 		}
 
 		// Set default values.

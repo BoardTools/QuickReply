@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -256,6 +256,7 @@ class listener_helper
 			'S_QR_LAST_QUOTE'         => $this->config['qr_last_quote'],
 			'S_QR_SAVE_REPLY'         => $this->user->data['ajax_pagination'],
 			'S_QR_CE_ENABLE'          => $this->plugins_helper->qr_ctrlenter_enabled(),
+			'S_QR_CTRL_ENTER_NOTICE'  => $this->config['qr_ctrlenter'],
 			'QR_SOURCE_POST'          => $this->config['qr_source_post'],
 			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],
 

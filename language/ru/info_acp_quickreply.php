@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -60,8 +60,9 @@ $lang = array_merge($lang, array(
 	'ACP_QR_COMMA'                         => 'Включить запятую',
 	'ACP_QR_COMMA_EXPLAIN'                 => 'Автоматически добавлять запятую после ника при использовании опции «Обращение по никнейму».',
 	'ACP_QR_CTRLENTER'                     => 'Включить отправку по «Ctrl+Enter»',
-	'ACP_QR_CTRLENTER_EXPLAIN'             => 'Разрешить отправку сообщения при нажатии «Ctrl+Enter»
-												в формах полного и быстрого ответа.',
+	'ACP_QR_CTRLENTER_EXPLAIN'             => 'Разрешить отправку сообщения при нажатии «Ctrl+Enter» в формах полного и быстрого ответа. При наведении курсора на кнопку «Отправить» в форме быстрого ответа будет показана подсказка о возможности использования данной функции.',
+	'ACP_QR_CTRLENTER_NOTICE'              => 'Включить подсказку о возможности использования «Ctrl+Enter»',
+	'ACP_QR_CTRLENTER_NOTICE_EXPLAIN'      => 'Подсказка будет показана при наведении курсора на кнопку «Отправить» в форме быстрого ответа. Отключение данной настройки не отключает функцию отправки сообщения при нажатии «Ctrl+Enter».',
 	'ACP_QR_ENABLE_AJAX_SUBMIT'            => 'Включить Ajax отправку сообщений во всех форумах',
 	'ACP_QR_ENABLE_AJAX_SUBMIT_EXPLAIN'    => 'Разрешить использовать Ajax отправку сообщений сразу во всех форумах.',
 	'ACP_QR_ENABLE_RE'                     => 'Включить префикс «Re:»',

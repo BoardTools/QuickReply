@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -25,6 +25,8 @@ $lang = array_merge($lang, array(
 	'QR_BBCODE'                        => 'BBCode',
 	'QR_BBPOST'                        => 'Источник цитаты',
 	'QR_CANCEL_SUBMISSION'             => 'Отменить отправку',
+	'QR_CTRL_ENTER'                    => 'Вы также можете отправить свой ответ, одновременно нажав клавиши Ctrl и Enter на клавиатуре.',
+	'QR_FORM_HIDE'                     => 'Свернуть форму быстрого ответа',
 	'QR_FULLSCREEN'                    => 'Полноэкранный редактор',
 	'QR_FULLSCREEN_EXIT'               => 'Выйти из полноэкранного режима',
 	'QR_INSERT_TEXT'                   => 'Вставить цитату в окно ответа',

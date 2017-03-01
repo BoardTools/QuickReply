@@ -31,6 +31,9 @@
 			}
 		});
 	}
+	if (quickreply.settings.ctrlEnterNotice) {
+		quickreply.$.mainForm.find('input[name="post"]').attr('title', quickreply.language.CTRL_ENTER);
+	}
 
 	/********************/
 	/* Helper functions */
@@ -150,7 +153,7 @@
 				bbpost = getPostBBCode(); // Link to the source post
 
 			if (self._selection) {
-				quickreply.style.showQuickReplyForm();
+				quickreply.form.show();
 
 				if (quickreply.settings.allowBBCode) {
 					insert_text('[quote="' + username + '"]' + bbpost + self._selection + '[/quote]\r');
@@ -402,7 +405,8 @@
 		QrHelper.apply(this, arguments);
 
 		var self = this,
-			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n';
+			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
+			nicknameSelector = quickreply.editor.profileLinkSelector + ', ' + quickreply.editor.profileNoLinkSelector;
 
 		/**
 		 * Whether QuickNick dropdown is enabled.
@@ -427,10 +431,10 @@
 		/**
 		 * Generates new QuickNick dropdown for the specified profile link.
 		 *
-		 * @param {event}  evt  jQuery Event object
-		 * @param {jQuery} link jQuery element for the user profile link
+		 * @param {event}  evt       jQuery Event object
+		 * @param {jQuery} $nickname jQuery element for the user profile link
 		 */
-		function addDropdown(evt, link) {
+		function addDropdown(evt, $nickname) {
 			// Get cursor coordinates
 			if (!evt) {
 				evt = window.event;
@@ -439,8 +443,8 @@
 			var coordinates = self._getCoordinates(evt);
 
 			// Get nick and id
-			var viewprofileURL = link.attr('href');
-			var pmLink = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
+			var viewprofileURL = $nickname.attr('href');
+			var pmLink = $nickname.parents('.post').find('.contact-icon.pm-icon').parent('a');
 
 			var quickNickDropdown = quickreply.style.quickNickDropdown(
 				coordinates.x, coordinates.y, viewprofileURL, pmLink
@@ -448,7 +452,7 @@
 			self._setDropdown(quickNickDropdown);
 
 			$('a.qr_quicknick', quickNickDropdown).mousedown(function() {
-				self.insert(link);
+				self.insert($nickname);
 				self._removeDropdown();
 				return false;
 			});
@@ -461,23 +465,24 @@
 		 * @param {jQuery} elements jQuery container
 		 */
 		function quickNickHandlePosts(e, elements) {
-			elements.find(quickreply.editor.profileLinkSelector).each(function() {
+			elements.find(nicknameSelector).each(function() {
 				$(this).attr('title', quickreply.language.QUICKNICK);
 			});
+			elements.find(quickreply.editor.profileNoLinkSelector).addClass('qr_quicknick_trigger');
 		}
 
 		/**
 		 * Inserts the nickname of the specified user to quick reply textarea.
 		 *
-		 * @param {jQuery} link jQuery element for the user profile link
+		 * @param {jQuery} $nickname jQuery element for the user profile link
 		 */
-		self.insert = function(link) {
-			var nickname = link.text(),
-				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
+		self.insert = function($nickname) {
+			var nickname = $nickname.text(),
+				color = ($nickname.hasClass('username-coloured')) ? $nickname.css('color') : false,
 				qrColor = (quickreply.settings.colouredNick && color) ?
 					'=' + quickreply.functions.getHexColor(color) : '';
 
-			quickreply.style.showQuickReplyForm();
+			quickreply.form.show();
 
 			if (!quickreply.settings.allowBBCode) {
 				insert_text(nickname + comma, false);
@@ -499,7 +504,7 @@
 				quickreply.$.qrPosts.on('qr_loaded', quickNickHandlePosts);
 
 				/* Ajax Submit */
-				quickreply.$.qrPosts.on('click', quickreply.editor.profileLinkSelector, function(e) {
+				quickreply.$.qrPosts.on('click', nicknameSelector, function(e) {
 					addDropdown(e, $(this));
 				});
 			}
@@ -507,8 +512,8 @@
 			if (quickNickIsString()) {
 				quickreply.$.qrPosts.on('click', '.qr_quicknick', function(e) {
 					e.preventDefault();
-					var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
-					self.insert(link);
+					var $nickname = $(this).parent().find(nicknameSelector);
+					self.insert($nickname);
 				});
 			}
 		};
@@ -544,7 +549,7 @@
 				var comma = (quickreply.settings.enableComma) ? ', ' : '',
 					nickname = $('#user_live_search').val();
 
-				quickreply.style.showQuickReplyForm();
+				quickreply.form.show();
 				insert_text('[ref]' + nickname + '[/ref]' + comma, false);
 			});
 		}

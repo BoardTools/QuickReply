@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -25,6 +25,8 @@ $lang = array_merge($lang, array(
 	'QR_BBCODE'                        => 'BBCode',
 	'QR_BBPOST'                        => 'Source of the post',
 	'QR_CANCEL_SUBMISSION'             => 'Cancel submission',
+	'QR_CTRL_ENTER'                    => 'You may also submit your reply by simultaneous pressing Ctrl and Enter keys on your keyboard.',
+	'QR_FORM_HIDE'                     => 'Collapse quick reply form',
 	'QR_FULLSCREEN'                    => 'Fullscreen editor',
 	'QR_FULLSCREEN_EXIT'               => 'Exit fullscreen mode',
 	'QR_INSERT_TEXT'                   => 'Insert quote in the Quick Reply form',

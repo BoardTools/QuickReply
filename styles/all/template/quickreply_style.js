@@ -343,14 +343,16 @@
 			);
 		}
 
-		listElements.push(
-			quickreply.functions.makeLink({
-				href: viewProfileURL,
-				className: "qr_profile",
-				title: quickreply.language.PROFILE,
-				text: quickreply.language.PROFILE
-			})
-		);
+		if (viewProfileURL) {
+			listElements.push(
+				quickreply.functions.makeLink({
+					href: viewProfileURL,
+					className: "qr_profile",
+					title: quickreply.language.PROFILE,
+					text: quickreply.language.PROFILE
+				})
+			);
+		}
 
 		return quickreply.style.createDropdown(listElements, pageX, pageY);
 	};

@@ -32,4 +32,4 @@ You can configure QuickReply by navigating in the ACP to `Extensions` -> `Quick 
 ## License
 [GNU General Public License v2](http://opensource.org/licenses/GPL-2.0)
 
-© 2014 - 2016 Tatiana5 and LavIgor
+© 2014 - 2017 Tatiana5 and LavIgor
