@@ -217,7 +217,7 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.getQuoteButtons = function(elements, type) {
-		var container = (type === 'last') ? elements.find('.post:last-child') : elements,
+		var container = (type === 'last') ? elements.find('.post-container:last-child') : elements,
 			buttons = container.find('.post-buttons .quote-icon');
 		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons;
 	};

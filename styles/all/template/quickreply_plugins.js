@@ -320,7 +320,7 @@
 			if (self._selection !== '') {
 				e.preventDefault();
 				self._insertQuote();
-			} else if (!quickreply.settings.fullQuoteAllowed) {
+			} else if (!quickreply.settings.fullQuoteAllowed || element.hasClass('qr-quickquote')) {
 				e.preventDefault();
 				quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
 			}
