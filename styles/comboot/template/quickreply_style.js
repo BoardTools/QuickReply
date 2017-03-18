@@ -32,7 +32,7 @@
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post-body panel panel-info" style="display: none;"><div class="panel-heading"><h3></h3></div><div class="panel-body"><div class="content"></div></div></div>');
+		$(quickreply.editor.mainForm).before('<div id="preview" class="post-body panel panel-info" style="display: none;"><div class="panel-heading"><h3></h3><i id="preview_close" class="fa fa-times"></i></div><div class="panel-body"><div class="content"></div></div></div>');
 	};
 
 	/**
@@ -187,6 +187,13 @@
 	};
 
 	/**
+	 * Hides the subject box from the form.
+	 */
+	quickreply.style.hideSubjectBox = function() {
+		$(quickreply.editor.mainForm).find('input[name="subject"]').closest(".form-group").hide();
+	};
+
+	/**
 	 * Save message for the full reply form.
 	 */
 	quickreply.style.setPostReplyHandler = function() {
@@ -218,16 +225,9 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.getQuoteButtons = function(elements, type) {
-		// There are no responsive quote buttons in this style.
-		var container = (type === 'last') ? elements.find('.post:last-child') : elements;
-		return container.find('.topic-buttons .fa-quote-left').parent('a');
-	};
-
-	/**
-	 * Hides the subject box from the form.
-	 */
-	quickreply.style.hideSubjectBox = function() {
-		$(quickreply.editor.mainForm).find('input[name="subject"]').closest(".form-group").hide();
+		var container = (type === 'last') ? elements.find('.post-container:last-child') : elements,
+			buttons = container.find('.topic-buttons .fa-quote-left').parent('a');
+		return (!type) ? buttons.not('.btn-toolbar-mobile button:has(.fa-quote-left)') : buttons;
 	};
 
 	/**
@@ -237,7 +237,20 @@
 	 * @param {function} fn       Event handler function
 	 */
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
-		// Do nothing - there is no responsive menu.
+		elements.find('.btn-toolbar-mobile').on('click', 'button:has(.fa-quote-left)', fn);
+	};
+
+	/**
+	 * Sets up non-responsive quote buttons.
+	 *
+	 * @param {jQuery} elements jQuery container
+	 */
+	quickreply.style.setSkipResponsiveForQuoteButtons = function(elements) {
+		$('.btn-toolbar-mobile').prepend('<button type="button" class="btn btn-default btn-xs" title="' +
+			quickreply.language.BUTTON_QUOTE + '"><i class="fa fa-quote-left"></i></button>')
+			.find('.dropdown-toggle').one('click', function() {
+			$(this).closest('.btn-toolbar-mobile').find('li').has('.fa-quote-left').remove();
+		});
 	};
 
 	/**
@@ -246,8 +259,8 @@
 	 * @returns {boolean}
 	 */
 	quickreply.style.isLastPage = function() {
-		return ($(quickreply.editor.paginationContainer).find('a').last().hasClass('btn-primary') ||
-			typeof $(quickreply.editor.paginationContainer).html() === "undefined");
+		return $(quickreply.editor.paginationContainer).find('a').last().hasClass('btn-primary') ||
+			typeof $(quickreply.editor.paginationContainer).html() === "undefined";
 	};
 
 	/**
@@ -270,6 +283,15 @@
 		elements.removeClass('qr-quickquote')
 			.attr('title', quickreply.language.REPLY_WITH_QUOTE)
 			.children('span').text(quickreply.language.BUTTON_QUOTE);
+	};
+
+	/**
+	 * Gets PM link anchor element for the specified profile.
+	 *
+	 * @param {jQuery} $nickname Profile nickname element
+	 */
+	quickreply.style.getPMLink = function($nickname) {
+		return $nickname.parents('.post-body').find('.contact-icon.pm-icon').parent('a');
 	};
 
 	/**
@@ -359,13 +381,22 @@
 		return quickreply.style.createDropdown(listElements, pageX, pageY);
 	};
 
+	/**
+	 * Calculates page bottom value for quick reply form.
+	 * Fixed footer elements affect this value.
+	 */
+	quickreply.style.getPageBottomValue = function() {
+		return $('#footer-nav').height();
+	};
+
 	// Style-specific functions.
 	function qrSetPosition() {
-		$(quickreply.editor.mainForm).css('bottom', $('#footer-nav').height());
+		$(quickreply.editor.mainForm).add('#qr_show_fixed_form').css('bottom', $('#footer-nav').height());
 		if (quickreply.form.is('fullscreen')) {
 			$(quickreply.editor.mainForm).css('padding-top', 0).css('height', '').css('top', $('#header-nav').height());
 		}
 	}
+
 	$(window).on('load resize', qrSetPosition);
 	$(quickreply.editor.mainForm).on('fullscreen-before', function() {
 		$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
@@ -375,14 +406,78 @@
 
 	// Special handling for events.
 	// Re-initialize to-top animation.
-	$("#qr_posts").on("qr_loaded", function() {
-		$('.to-top').click(function() {
+	$("#qr_posts").on("qr_loaded", function(e, elements) {
+		// Enable tooltip on all buttons
+		elements.find(".btn[data-toggle!='dropdown']:not([disabled]):not(.disabled)").attr({
+			'data-toggle': 'tooltip',
+			'data-container': 'body'
+		});
+		elements.find('[data-toggle="tooltip"]').tooltip({container: 'body'});
+
+		// Create mobile post toolbar
+		elements.find(quickreply.editor.postSelector).each(function() {
+			var $post = $(this),
+				$btn_groups = $post.find('.post-content .btn-toolbar .btn-group'),
+				$btn_groups_amount = $btn_groups.length;
+
+			$btn_groups.each(function(index) {
+				var $this = $(this),
+					$postbody = $this.closest('.post-body');
+				if (!$this.is(':empty')) {
+					$this.children('a').each(function() {
+						var $link = $(this),
+							$icon = $link.children('i').attr('class'),
+							$title = $link.data('original-title'),
+							$href = $link.attr('href'),
+							$item = '<li><a href="' + $href + '"><i class="' + $icon + '" aria-hidden="true"></i> ' + $title + '</a></li>';
+						$postbody.find('.btn-toolbar-mobile ul').append($item);
+					});
+					if (index !== $btn_groups_amount - 1) {
+						$postbody.find('.btn-toolbar-mobile ul').append('<li role="separator" class="divider"></li>');
+					}
+					$postbody.find('.btn-toolbar-mobile').removeClass('hidden').addClass('visible-xs-block');
+				}
+			});
+		});
+
+		elements.find('.to-top').click(function() {
 			$('#back-to-top').tooltip('hide');
 			$('body,html').animate({
 				scrollTop: 0
 			}, 800);
 			return false;
 		});
+
+		// Set data-lightbox
+		elements.find('.content img').each(function() {
+			var $this = $(this);
+			$this.attr('data-lightbox', $this.attr('src'));
+		});
+
+		var $primaryColor = $('.btn-primary').css('background-color'),
+			$footerColor = $('.panel-footer').css('background-color');
+
+		// more beautiful quote
+		elements.find('blockquote').css('border-left', '3px solid ' + $primaryColor)
+			.css('background-color', $footerColor);
+
+		// Smoth scroll #links
+		elements.find('a[href*=#]:not([href=#]):not([data-toggle=tab]):not([data-type=char-select])').click(function() {
+			if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+				var target = $(this.hash);
+				target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+				if (target.length) {
+					$('html,body').animate({
+						scrollTop: target.offset().top
+					}, 1000);
+					return false;
+				}
+			}
+		});
+	});
+
+	$('.btn-toolbar-mobile').find('.dropdown-toggle').one('click', function() {
+		$(this).closest('.btn-toolbar-mobile').find('li').last().filter('.divider').remove();
 	});
 
 	if (quickreply.settings.formType === 0) {

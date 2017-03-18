@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
+* @copyright (c) Tatiana5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -55,7 +55,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		}
 	}
 
-	private function load_class()
+	public function load_class()
 	{
 		if (!class_exists('acp_bbcodes'))
 		{
@@ -64,7 +64,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		return new \acp_bbcodes();
 	}
 
-	private function get_bbcode_data()
+	public function get_bbcode_data()
 	{
 		return array(
 			'ref' => array(
@@ -88,7 +88,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		);
 	}
 
-	private function build_bbcode_array($data)
+	public function build_bbcode_array($data)
 	{
 		return array(
 				'bbcode_tag'			=> $data['bbcode_tag'],
@@ -99,7 +99,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 			);
 	}
 
-	private function exist_bbcode($bbcode_name, $bbcode_array)
+	public function exist_bbcode($bbcode_name, $bbcode_array)
 	{
 		$sql = 'SELECT bbcode_id
 				FROM ' . $this->table_prefix . "bbcodes
@@ -112,7 +112,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		return $row_exists;
 	}
 
-	private function add_bbcode($row_exists, $bbcode_array)
+	public function add_bbcode($row_exists, $bbcode_array)
 	{
 		if ($row_exists)
 		{
@@ -126,7 +126,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		}
 	}
 
-	private function update_bbcode($bbcode_id, $bbcode_array)
+	public function update_bbcode($bbcode_id, $bbcode_array)
 	{
 		$sql = 'UPDATE ' . $this->table_prefix . 'bbcodes
 			SET ' . $this->db->sql_build_array('UPDATE', $bbcode_array) . '
@@ -134,7 +134,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		$this->db->sql_query($sql);
 	}
 
-	private function insert_bbcode($bbcode_array)
+	public function insert_bbcode($bbcode_array)
 	{
 		$bbcode_id = $this->get_next_bbcode_id();
 
@@ -146,7 +146,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		}
 	}
 
-	private function get_next_bbcode_id()
+	public function get_next_bbcode_id()
 	{
 		$sql = 'SELECT MAX(bbcode_id) AS max_bbcode_id
 			FROM ' . $this->table_prefix . 'bbcodes';
@@ -157,7 +157,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 		return $this->check_next_bbcode_id($row);
 	}
 
-	private function check_next_bbcode_id($row)
+	public function check_next_bbcode_id($row)
 	{
 		if ($row)
 		{

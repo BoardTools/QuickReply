@@ -386,10 +386,14 @@
 				quickreply.style.responsiveQuotesOnClick(quickreply.$.qrPosts, handleResponsiveClick);
 			});
 
-			$('#qr_posts').on('qr_completed', function(e, elements) {
+			quickreply.$.qrPosts.on('qr_completed', function(e, elements) {
 				setQuoteButtons(e, elements);
 				quickreply.style.responsiveQuotesOnClick(elements, handleResponsiveClick);
+			}).on('qr_loaded', function(e, elements) {
+				quickreply.style.setSkipResponsiveForQuoteButtons(elements);
 			});
+
+			quickreply.style.setSkipResponsiveForQuoteButtons(quickreply.$.qrPosts);
 		};
 	}
 	quickreply.plugins.fullQuote = new FullQuote();
@@ -444,7 +448,7 @@
 
 			// Get nick and id
 			var viewprofileURL = $nickname.attr('href');
-			var pmLink = $nickname.parents('.post').find('.contact-icon.pm-icon').parent('a');
+			var pmLink = quickreply.style.getPMLink($nickname);
 
 			var quickNickDropdown = quickreply.style.quickNickDropdown(
 				coordinates.x, coordinates.y, viewprofileURL, pmLink

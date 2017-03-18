@@ -24,3 +24,9 @@
 #qr_loading_text {
 	text-shadow: none;
 }
+
+#qr_show_fixed_form {
+	color: #00C0FF;
+	background-color: #111;
+	border-color: #111;
+}

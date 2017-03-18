@@ -50,6 +50,9 @@ class ajax_helper
 	/** @var bool */
 	public $qr_first;
 
+	/** @var bool */
+	public $qr_merged = false;
+
 	/** @var array */
 	private static $qr_fields = array();
 
@@ -106,7 +109,7 @@ class ajax_helper
 	}
 
 	/**
-	 * Output the page for QuickReply
+	 * Prepares and outputs the page for Ajax QuickReply request
 	 *
 	 * @param string $page_title      The title of the page
 	 * @param int    $current_post_id ID of the current last post
@@ -132,6 +135,12 @@ class ajax_helper
 		$this->output_ajax_response($page_title, $forum_id);
 	}
 
+	/**
+	 * Outputs the page for Ajax QuickReply request
+	 *
+	 * @param string $page_title The title of the page
+	 * @param int    $forum_id   Forum ID
+	 */
 	public function output_ajax_response($page_title, $forum_id)
 	{
 		page_header($page_title, false, $forum_id);
@@ -139,12 +148,13 @@ class ajax_helper
 		self::send_json(array(
 			'status' => 'success',
 			'result' => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
-			'insert' => $this->qr_insert
+			'insert' => $this->qr_insert,
+			'merged' => $this->qr_merged,
 		));
 	}
 
 	/**
-	 * Ajax submit
+	 * Sends Ajax submission status response
 	 *
 	 * @param object $event The event object
 	 */
@@ -177,12 +187,12 @@ class ajax_helper
 	public function is_not_approved($data)
 	{
 		return (
-			!$this->auth->acl_get('f_noapprove', $data['forum_id'])
-			&& empty($data['force_approved_state'])
-		) || (
-			isset($data['force_approved_state'])
-			&& !$data['force_approved_state']
-		);
+				!$this->auth->acl_get('f_noapprove', $data['forum_id'])
+				&& empty($data['force_approved_state'])
+			) || (
+				isset($data['force_approved_state'])
+				&& !$data['force_approved_state']
+			);
 	}
 
 	/**
@@ -263,6 +273,27 @@ class ajax_helper
 	}
 
 	/**
+	 * Checks whether the current post has been updated by merge
+	 *
+	 * @return bool
+	 */
+	public function check_post_merge()
+	{
+		$current_post = $this->request->variable('qr_cur_post_id', 0);
+
+		$sql = 'SELECT post_time
+				FROM ' . POSTS_TABLE . '
+				WHERE post_id = ' . (int) $current_post;
+		$result = $this->db->sql_query_limit($sql, 1);
+		$post_time = (int) $this->db->sql_fetchfield('post_time');
+		$this->db->sql_freeresult($result);
+
+		$lastclick = $this->request->variable('lastclick', time());
+
+		return $this->qr_merged = ($post_time != $lastclick);
+	}
+
+	/**
 	 * Sends the URL to the next post
 	 *
 	 * @param int $forum_id  Forum ID
@@ -318,6 +349,12 @@ class ajax_helper
 		$json_response->send(array_merge(self::$qr_fields, $data));
 	}
 
+	/**
+	 * Returns Ajax related template variables
+	 *
+	 * @param array $topic_data Array of topic data
+	 * @return array
+	 */
 	public function template_variables_for_ajax($topic_data)
 	{
 		$ajax_submit = $this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit'];

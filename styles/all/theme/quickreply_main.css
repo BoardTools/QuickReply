@@ -4,6 +4,22 @@
 	cursor: pointer;
 }
 
+#preview {
+	position: relative;
+}
+
+#preview_close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 1.2em;
+	cursor: pointer;
+}
+
+#preview_close:hover {
+	opacity: 0.5;
+}
+
 #qr_loading_text {
 	display: none;
 	position: fixed;
@@ -62,7 +78,7 @@
 }
 
 #qr_postform.no_transition * {
-	transition-duration: 0s !important;
+	transition: none !important;
 }
 
 #qr_postform textarea::-webkit-input-placeholder {
@@ -124,10 +140,6 @@
 	height: 115px !important;
 	min-height: 0;
 	transition: height 0.5s ease;
-}
-
-#qr_postform.qr_extended_form #message-box textarea.qr_fixed_textarea {
-	transition: height 0s;
 }
 
 .qr_fixed_form #attach-panel,
@@ -199,8 +211,7 @@
 
 #qr_show_fixed_form i {
 	float: left;
-	margin: 0;
-	background-color: #FFF;
+	margin: 1px;
 }
 
 #qr_show_fixed_form span {

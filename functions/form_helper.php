@@ -110,6 +110,11 @@ class form_helper
 		);
 	}
 
+	/**
+	 * Returns whether attachments are allowed on the server
+	 *
+	 * @return bool
+	 */
 	public function server_attach_allowed()
 	{
 		return (
@@ -118,6 +123,12 @@ class form_helper
 		);
 	}
 
+	/**
+	 * Returns whether attachments are allowed for the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool
+	 */
 	public function forum_attach_allowed($forum_id)
 	{
 		return (
@@ -155,6 +166,14 @@ class form_helper
 		return $bbcode_status;
 	}
 
+	/**
+	 * Assigns statuses as template variables
+	 *
+	 * @param bool $bbcode_status BBCode enabling status value
+	 * @param bool $img_status    Img enabling status value
+	 * @param bool $flash_status  Flash enabling status value
+	 * @param bool $quote_status  Quote enabling status value
+	 */
 	public function add_statuses_to_template($bbcode_status, $img_status, $flash_status, $quote_status)
 	{
 		$this->form_template_variables += array(
@@ -165,6 +184,12 @@ class form_helper
 		);
 	}
 
+	/**
+	 * Returns whether BBCodes are allowed in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool
+	 */
 	public function bbcode_status($forum_id)
 	{
 		return (
@@ -173,6 +198,12 @@ class form_helper
 		);
 	}
 
+	/**
+	 * Returns whether Flash is allowed in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool
+	 */
 	public function flash_status($forum_id)
 	{
 		return (
@@ -206,6 +237,12 @@ class form_helper
 		return $smilies_status;
 	}
 
+	/**
+	 * Returns whether smilies are allowed in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool
+	 */
 	public function smilies_status($forum_id)
 	{
 		return (
@@ -248,6 +285,11 @@ class form_helper
 		);
 	}
 
+	/**
+	 * Initialises and returns message parser object
+	 *
+	 * @return \parse_message
+	 */
 	public function get_message_parser()
 	{
 		if (!class_exists('parse_message'))
@@ -263,6 +305,12 @@ class form_helper
 		return $message_parser;
 	}
 
+	/**
+	 * Gets the maximum possible amount of files attached to the post in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return int
+	 */
 	public function get_max_files($forum_id)
 	{
 		return ($this->auth->acl_get('a_') || $this->auth->acl_get('m_', $forum_id)) ? 0 : (int) $this->config['max_attachments'];

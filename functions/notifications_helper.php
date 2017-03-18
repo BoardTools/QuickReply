@@ -69,18 +69,31 @@ class notifications_helper
 		}
 	}
 
+	/**
+	 * Returns array of data for notifications
+	 *
+	 * @param array  $data     Current notifications' data object
+	 * @param string $subject  Post's subject
+	 * @param string $username Username of the post author
+	 * @return array
+	 */
 	private function get_notification_data($data, $subject, $username)
 	{
 		return array_merge($data, array(
 			'topic_title'   => (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
 			'post_username' => $username,
-			'poster_id'     => $data['poster_id'],
 			'post_text'     => $data['message'],
 			'post_time'     => time(),
 			'post_subject'  => $subject,
 		));
 	}
 
+	/**
+	 * Handles (adds/updates) notifications
+	 *
+	 * @param string $mode              Current posting mode
+	 * @param array  $notification_data Array with notifications' data
+	 */
 	private function set_notification_data($mode, $notification_data)
 	{
 		if ($this->case_to_add($mode))
@@ -93,11 +106,23 @@ class notifications_helper
 		}
 	}
 
+	/**
+	 * Returns whether we need to add a notification
+	 *
+	 * @param string $mode Current posting mode
+	 * @return bool
+	 */
 	private function case_to_add($mode)
 	{
 		return in_array($mode, array('post', 'reply', 'quote'));
 	}
 
+	/**
+	 * Returns whether we need to update an existing notification
+	 *
+	 * @param string $mode Current posting mode
+	 * @return bool
+	 */
 	private function case_to_update($mode)
 	{
 		return in_array($mode, array('edit_topic', 'edit_first_post', 'edit', 'edit_last_post'));

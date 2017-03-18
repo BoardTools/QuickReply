@@ -53,8 +53,8 @@ class listener_cp implements EventSubscriberInterface
 			'core.acp_users_prefs_modify_data'          => 'acp_prefs_get_data',
 			'core.acp_users_prefs_modify_template_data' => 'acp_prefs_template_data',
 			'core.acp_users_prefs_modify_sql'           => 'ucp_prefs_set_data', // For the ACP.
-			'core.acp_manage_forums_request_data'		=> 'acp_manage_forums_get_data',
-			'core.acp_manage_forums_display_form'		=> 'acp_manage_forums_template_data',
+			'core.acp_manage_forums_request_data'       => 'acp_manage_forums_get_data',
+			'core.acp_manage_forums_display_form'       => 'acp_manage_forums_template_data',
 			'core.acp_manage_forums_initialise_data'    => 'acp_manage_forums_initialise_data',
 			'core.permissions'                          => 'add_permission',
 		);
@@ -143,14 +143,14 @@ class listener_cp implements EventSubscriberInterface
 	}
 
 	/**
-	 * Add data for new forum
+	 * Initialise forum data
 	 *
 	 * @param object $event The event object
 	 */
 	public function acp_manage_forums_initialise_data($event)
 	{
 		$forum_data = $event['forum_data'];
-		$forum_data = array_merge($forum_data, $this->cp_helper->qr_new_forums_data());
+		$forum_data = array_merge($forum_data, $this->cp_helper->qr_init_forums_data($forum_data));
 		$event['forum_data'] = $forum_data;
 	}
 

@@ -24,7 +24,7 @@
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post profile_hidden bg2" style="display: none;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
+		$(quickreply.editor.mainForm).before('<div id="preview" class="post profile_hidden bg2" style="display: none;"><i id="preview_close" class="fa fa-times"></i><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
 	};
 
 	/**
@@ -186,6 +186,13 @@
 	};
 
 	/**
+	 * Hides the subject box from the form.
+	 */
+	quickreply.style.hideSubjectBox = function() {
+		$("#subject").closest("dl").hide();
+	};
+
+	/**
 	 * Save message for the full reply form.
 	 */
 	quickreply.style.setPostReplyHandler = function() {
@@ -223,13 +230,6 @@
 	};
 
 	/**
-	 * Hides the subject box from the form.
-	 */
-	quickreply.style.hideSubjectBox = function() {
-		$("#subject").closest("dl").hide();
-	};
-
-	/**
 	 * Attaches onclick event to quote buttons in responsive menu.
 	 *
 	 * @param {jQuery}   elements Container with quote buttons
@@ -237,6 +237,15 @@
 	 */
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
 		elements.find('.post-buttons .responsive-menu').on('click', '.quote-icon', fn);
+	};
+
+	/**
+	 * Sets up non-responsive quote buttons.
+	 *
+	 * @param {jQuery} elements jQuery container
+	 */
+	quickreply.style.setSkipResponsiveForQuoteButtons = function(elements) {
+		quickreply.style.getQuoteButtons(elements).closest('li').attr('data-skip-responsive', 'true');
 	};
 
 	/**
@@ -269,6 +278,15 @@
 		elements.removeClass('qr-quickquote')
 			.attr('title', quickreply.language.REPLY_WITH_QUOTE)
 			.children('span').text(quickreply.language.BUTTON_QUOTE);
+	};
+
+	/**
+	 * Gets PM link anchor element for the specified profile.
+	 *
+	 * @param {jQuery} $nickname Profile nickname element
+	 */
+	quickreply.style.getPMLink = function($nickname) {
+		return $nickname.parents('.post').find('.contact-icon.pm-icon').parent('a');
 	};
 
 	/**
@@ -355,5 +373,13 @@
 		}
 
 		return quickreply.style.createDropdown(listElements, pageX, pageY);
+	};
+
+	/**
+	 * Calculates page bottom value for quick reply form.
+	 * Fixed footer elements affect this value.
+	 */
+	quickreply.style.getPageBottomValue = function() {
+		return 0;
 	};
 })(jQuery, window, document);

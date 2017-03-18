@@ -190,7 +190,7 @@
 		};
 
 		/**
-		 * pageJump function for QuickReply.
+		 * pageJump function for QuickReply when SEO plugin is enabled.
 		 *
 		 * @param {jQuery} item
 		 */
@@ -240,65 +240,35 @@
 	}
 
 	/**
-	 * Shows/hides the preview block.
-	 * By default the block will be hidden if no options are specified.
-	 *
-	 * @param {object} [options] Optional array of options.
-	 */
-	function setPreview(options) {
-		var ops = {
-			display: 'none',
-			title: '',
-			content: '',
-			attachments: false,
-			removeAttachBox: true
-		}, $preview = $('#preview');
-		if (options) {
-			ops = $.extend(ops, options);
-		}
-		$preview.css('display', ops.display)
-			.find('h3').html(ops.title).end()
-			.find('.content').html(ops.content).end();
-		if (quickreply.settings.attachBox) {
-			if (ops.removeAttachBox) {
-				$preview.find('dl.attachbox').remove();
-			}
-			if (ops.attachments) {
-				$preview.find('.content').after(ops.attachments);
-			}
-		}
-	}
-
-	/**
 	 * Handles dropdowns for the specified container.
 	 *
-	 * @param {jQuery} container
+	 * @param {jQuery} $container
 	 */
-	function handleDrops(container) {
+	function handleDrops($container) {
 		/**
 		 * Dropdowns
 		 */
-		container.find('.dropdown-container').each(function() {
+		$container.find('.dropdown-container').each(function() {
 			var $this = $(this),
-				trigger = $this.find('.dropdown-trigger:first'),
-				contents = $this.find('.dropdown'),
+				$trigger = $this.find('.dropdown-trigger:first'),
+				$contents = $this.find('.dropdown'),
 				options = {
 					direction: 'auto',
 					verticalDirection: 'auto'
 				},
 				data;
 
-			if (!trigger.length) {
+			if (!$trigger.length) {
 				data = $this.attr('data-dropdown-trigger');
-				trigger = data ? $this.children(data) : $this.children('a:first');
+				$trigger = data ? $this.children(data) : $this.children('a:first');
 			}
 
-			if (!contents.length) {
+			if (!$contents.length) {
 				data = $this.attr('data-dropdown-contents');
-				contents = data ? $this.children(data) : $this.children('div:first');
+				$contents = data ? $this.children(data) : $this.children('div:first');
 			}
 
-			if (!trigger.length || !contents.length) {
+			if (!$trigger.length || !$contents.length) {
 				return;
 			}
 
@@ -315,186 +285,188 @@
 				options.direction = 'right';
 			}
 
-			phpbb.registerDropdown(trigger, contents, options);
+			phpbb.registerDropdown($trigger, $contents, options);
 		});
 	}
 
 	/**
 	 * Handles responsive links for the specified container.
 	 *
-	 * @param {jQuery} container
+	 * @param {jQuery} $container
 	 */
-	function qrResponsiveLinks(container) {
+	function qrResponsiveLinks($container) {
 		/**
 		 * Responsive link lists
 		 */
-		container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
+		var selector = '.linklist:not(.navlinks, [data-skip-responsive]),' +
+			'.postbody .post-buttons:not([data-skip-responsive])';
+		$container.find(selector).each(function() {
 			var $this = $(this),
 				filterSkip = '.breadcrumbs, [data-skip-responsive]',
 				filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
-				persist = $this.attr('id') === 'nav-main',
-				allLinks = $this.children(),
-				links = allLinks.not(filterSkip),
-				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-				filterLastList = links.filter(filterLast),
-				slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
+				$linksAll = $this.children(),
+				$linksNotSkip = $linksAll.not(filterSkip), // All items that can potentially be hidden
+				$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
+				$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
+				persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
+				html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown hidden"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+				slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
-			if (!persist) {
-				if (links.is('.rightside')) {
-					links.filter('.rightside:first').before(html);
+			// Add a hidden drop-down menu to each links list (except those that already have one)
+			if (!persistent) {
+				if ($linksNotSkip.is('.rightside')) {
+					$linksNotSkip.filter('.rightside:first').before(html);
 					$this.children('.responsive-menu').addClass('rightside');
 				} else {
 					$this.append(html);
 				}
 			}
 
-			var item = $this.children('.responsive-menu'),
-				menu = item.find('.dropdown-contents'),
+			// Set some object references and initial states
+			var $menu = $this.children('.responsive-menu'),
+				$menuContents = $menu.find('.dropdown-contents'),
+				persistentContent = $menuContents.find('li:not(.separator)').length,
+				lastWidth = false,
 				compact = false,
-				responsive = false,
-				copied = false;
+				responsive1 = false,
+				responsive2 = false,
+				copied1 = false,
+				copied2 = false,
+				maxHeight = 0;
+
+			// Find the tallest element in the list (we assume that all elements are roughly the same height)
+			$linksAll.each(function() {
+				if (!$(this).height()) {
+					return;
+				}
+				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+			});
+			if (maxHeight < 1) {
+				return; // Shouldn't be possible, but just in case, abort
+			} else {
+				maxHeight = maxHeight + slack;
+			}
 
 			function check() {
-				// Unhide the quick-links menu if it has content
-				if (persist) {
-					item.addClass('hidden');
-					if (menu.find('li:not(.separator, .clone)').length || (responsive && menu.find('li.clone').length)) {
-						item.removeClass('hidden');
-					}
+				var width = $body.width();
+				// We can't make it any smaller than this, so just skip
+				if (responsive2 && compact && (width <= lastWidth)) {
+					return;
 				}
+				lastWidth = width;
 
 				// Reset responsive and compact layout
-				if (responsive) {
-					responsive = false;
-					$this.removeClass('responsive');
-					links.css('display', '');
-					if (!persist) {
-						item.css('display', 'none');
-					}
+				if (responsive1 || responsive2) {
+					$linksNotSkip.removeClass('hidden');
+					$menuContents.children('.clone').addClass('hidden');
+					responsive1 = responsive2 = false;
 				}
-
 				if (compact) {
-					compact = false;
 					$this.removeClass('compact');
+					compact = false;
 				}
 
-				// Find tallest element
-				var maxHeight = 0;
-				allLinks.each(function() {
-					if (!$(this).height()) {
-						return;
-					}
-					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-				});
-
-				if (maxHeight < 1) {
-					return;
+				// Unhide the quick-links menu if it has "persistent" content
+				if (persistent && persistentContent) {
+					$menu.removeClass('hidden');
+				} else {
+					$menu.addClass('hidden');
 				}
 
 				// Nothing to resize if block's height is not bigger than tallest element's height
-				if ($this.height() <= (maxHeight + slack)) {
+				if ($this.height() <= maxHeight) {
 					return;
 				}
 
-				// Enable compact layout, find tallest element, compare to height of whole block
-				compact = true;
-				$this.addClass('compact');
-
-				var compactMaxHeight = 0;
-				allLinks.each(function() {
-					if (!$(this).height()) {
-						return;
-					}
-					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
-				});
-
-				if ($this.height() <= (maxHeight + slack)) {
+				// STEP 1: Compact
+				if (!compact) {
+					$this.addClass('compact');
+					compact = true;
+				}
+				if ($this.height() <= maxHeight) {
 					return;
 				}
 
-				// Compact layout did not resize block enough, switch to responsive layout
-				compact = false;
-				$this.removeClass('compact');
-				responsive = true;
-
-				if (!copied) {
-					var clone = links.clone(true);
-					clone.filter('.rightside').each(function() {
-						if (persist) {
-							$(this).addClass('clone');
-						}
-						menu.prepend(this);
-					});
-
-					if (persist) {
-						menu.prepend(clone.not('.rightside').addClass('clone'));
-					} else {
-						menu.prepend(clone.not('.rightside'));
-					}
-
-					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
-					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+				// STEP 2: First responsive set - compact
+				if (compact) {
+					$this.removeClass('compact');
+					compact = false;
+				}
+				// Copy the list items to the dropdown
+				if (!copied1) {
+					var $clones1 = $linksFirst.clone();
+					$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
 					if ($this.hasClass('post-buttons')) {
-						$('.button', menu).removeClass('button icon-button');
-						$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
+						$('.button', $menuContents).removeClass('button icon-button');
+						$('.responsive-menu-link', $menu).addClass('button icon-button').prepend('<span></span>');
 					}
-					copied = true;
+					copied1 = true;
 				}
-				else {
-					menu.children().css('display', '');
+				if (!responsive1) {
+					$linksFirst.addClass('hidden');
+					responsive1 = true;
+					$menuContents.children('.clone-first').removeClass('hidden');
+					$menu.removeClass('hidden');
 				}
-
-				item.css('display', '');
-				$this.addClass('responsive');
-
-				// Try to not hide filtered items
-				if (filterLastList.length) {
-					links.not(filterLast).css('display', 'none');
-
-					maxHeight = 0;
-					filterLastList.each(function() {
-						if (!$(this).height()) {
-							return;
-						}
-						maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-					});
-
-					if ($this.height() <= (maxHeight + slack)) {
-						menu.children().filter(filterLast).css('display', 'none');
-						return;
-					}
+				if ($this.height() <= maxHeight) {
+					return;
 				}
 
-				// If even responsive isn't enough, use both responsive and compact at same time
-				compact = true;
-				$this.addClass('compact');
+				// STEP 3: First responsive set + compact
+				if (!compact) {
+					$this.addClass('compact');
+					compact = true;
+				}
+				if ($this.height() <= maxHeight) {
+					return;
+				}
 
-				links.css('display', 'none');
+				// STEP 4: Last responsive set - compact
+				if (!$linksLast.length) {
+					return; // No other links to hide, can't do more
+				}
+				if (compact) {
+					$this.removeClass('compact');
+					compact = false;
+				}
+				// Copy the list items to the dropdown
+				if (!copied2) {
+					var $clones2 = $linksLast.clone();
+					$menuContents.prepend($clones2.addClass('clone clone-last').removeClass('leftside rightside'));
+					copied2 = true;
+				}
+				if (!responsive2) {
+					$linksLast.addClass('hidden');
+					responsive2 = true;
+					$menuContents.children('.clone-last').removeClass('hidden');
+				}
+				if ($this.height() <= maxHeight) {
+					return;
+				}
+
+				// STEP 5: Last responsive set + compact
+				if (!compact) {
+					$this.addClass('compact');
+					compact = true;
+				}
 			}
 
-			if (!persist) {
-				phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+			if (!persistent) {
+				phpbb.registerDropdown($menu.find('a.responsive-menu-link'), $menu.find('.dropdown'), false);
 			}
+
+			// If there are any images in the links list, run the check again after they have loaded
+			$linksAll.find('img').each(function() {
+				$(this).load(function() {
+					check();
+				});
+			});
 
 			check();
 			$(window).resize(check);
 		});
 	}
-
-	// /**
-	//  * Sets the Parent class for the Child class.
-	//  *
-	//  * @param {function} Parent Parent constructor
-	//  * @param {function} Child  Child constructor
-	//  */
-	// function makeChild(Parent, Child) {
-	// 	function F() {}
-	// 	F.prototype = Parent.prototype;
-	// 	Child.prototype = new F();
-	// 	Child.prototype.constructor = Child;
-	// 	Child.parent = Parent;
-	// }
 
 	function QrJqueryElements() {
 		this.qrPosts = $('#qr_posts');
@@ -897,6 +869,12 @@
 				if (self.is('hidden')) {
 					$('#qr_show_fixed_form').show();
 				}
+
+				if (!immediate) {
+					self.setCheckExtendedInterval();
+				} else {
+					checkExtended();
+				}
 			} else {
 				setHidden(immediate);
 			}
@@ -964,14 +942,14 @@
 			quickreply.style.showQuickReplyForm();
 
 			// Switch off Quick Reply Toggle Plugin
-			$('#reprap input[type=submit]').prop('disabled', 'disabled');
+			$('#reprap').remove();
 
 			self.$.finish();
 
+			// Set up placeholder before making quick reply form fixed.
 			$('<div id="qr_form_placeholder" />').css('height', self.$.height()).insertAfter(self.$);
 
 			self.$.addClass('qr_fixed_form');
-			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 			quickreply.style.setAdditionalElements();
 
@@ -987,9 +965,15 @@
 
 			$('#qr_action_box').prependTo('#message-box');
 
+			addToggleButton();
 			if (!self.hasReply()) {
-				self.setCompact(true);
+				self.$.addClass('no_transition');
+				self.setCompact(true); // Should be set AFTER the toggle button has been added to the page.
+				self.$.removeClass('no_transition');
 			}
+
+			// Now we can make it fixed for further transitions.
+			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
 
 			// Add events.
 			if (quickreply.plugins.abbc3) {
@@ -1035,7 +1019,6 @@
 				}
 			});
 
-			addToggleButton();
 			$('.qr_form_hide_button').click(function() {
 				setHidden();
 			});
@@ -1057,13 +1040,45 @@
 			});
 
 			$(window).on('scroll resize', checkExtended);
-			$(document).ready(checkExtended);
-			quickreply.$.qrPosts.click(checkExtended); // for spoilers and other toggles
+			$(window).on('load', function() {
+				// interval is needed because of form animation
+				self.setCheckExtendedInterval(5000);
+			});
+			quickreply.$.qrPosts.click(self.setCheckExtendedInterval); // for spoilers and other toggles
 
 			$(window).resize(setFormWidth);
 			$(document).ready(setFormWidth);
 
 			$(window).resize(setSmileyBox);
+		};
+
+		/**
+		 * Checks whether we need to change the extended form state during the specified time period.
+		 *
+		 * @param {number} duration Time period for extension checker to work
+		 * @param {number} interval Interval between each check
+		 */
+		function checkExtendedStateChange(duration, interval) {
+			duration -= interval;
+			checkExtended();
+
+			if (duration > 0) {
+				setTimeout(function() {
+					checkExtendedStateChange(duration, interval);
+				}, interval);
+			}
+		}
+
+		/**
+		 * Initializes the extended form state change checker function.
+		 *
+		 * @param {number} [duration] Time period for extension checker to work (1600 ms by default)
+		 * @param {number} [interval] Interval between each check (200 ms by default)
+		 */
+		this.setCheckExtendedInterval = function(duration, interval) {
+			duration = duration || 1600;
+			interval = interval || 200;
+			checkExtendedStateChange(duration, interval);
 		};
 
 		/**
@@ -1076,7 +1091,7 @@
 
 			var $window = $(window),
 				$previous = self.$.prevAll(":visible:first"),
-				scrollBottom = $window.scrollTop() + $window.height(),
+				scrollBottom = $window.scrollTop() + $window.height() - quickreply.style.getPageBottomValue(),
 				formOffset = $previous.offset().top + $previous.height(),
 				formHeight = self.is('hidden') ? 0 : self.$.height();
 
@@ -1091,9 +1106,6 @@
 		 * Sets extended standard form mode.
 		 */
 		function setExtended() {
-			// Switch on Quick Reply Toggle Plugin if it is installed
-			$('#reprap input[type=submit]').prop('disabled', '');
-
 			$('#qr_form_placeholder').remove();
 
 			// Opens attachments form and refreshes the uploader: triggers necessary event.
@@ -1120,9 +1132,6 @@
 		 * Exits extended standard form mode and sets fixed form mode.
 		 */
 		function exitExtended() {
-			// Switch off Quick Reply Toggle Plugin
-			$('#reprap input[type=submit]').prop('disabled', 'disabled');
-
 			var placeholderHeight = self.$.height();
 
 			quickreply.$.textarea.addClass('qr_fixed_textarea');
@@ -1162,6 +1171,7 @@
 				bottom: -self.$.height() + 'px'
 			}, slideInterval).addClass('qr_hidden_form');
 			$('#qr_show_fixed_form').show();
+			checkExtended();
 		}
 
 
@@ -1173,7 +1183,7 @@
 		function exitHidden(immediate) {
 			var slideInterval = (immediate) ? 0 : qrSlideInterval;
 			self.$.finish().animate({
-				bottom: 0
+				bottom: quickreply.style.getPageBottomValue()
 			}, slideInterval).removeClass('qr_hidden_form');
 			$('#qr_show_fixed_form').hide();
 			quickreply.$.textarea.focus();
@@ -1312,7 +1322,7 @@
 			$(quickreply.editor.textareaSelector).val('').attr('style', 'height: 9em;');
 
 			if ($('#preview').is(':visible')) {
-				setPreview(); // Hide preview.
+				quickreply.preview.set(); // Hide preview.
 			}
 
 			hideColourPalette();
@@ -1332,9 +1342,47 @@
 		};
 	}
 
-	// @todo
 	function Preview() {
+		/**
+		 * Shows/hides the preview block.
+		 * By default the block will be hidden if no options are specified.
+		 *
+		 * @param {object} [options] Optional array of options.
+		 */
+		this.set = function(options) {
+			var ops = {
+				display: 'none',
+				title: '',
+				content: '',
+				attachments: false,
+				removeAttachBox: true
+			}, $preview = $('#preview');
+			if (options) {
+				ops = $.extend(ops, options);
+			}
+			$preview.finish().css('display', ops.display)
+				.find('h3').html(ops.title).end()
+				.find('.content').html(ops.content).end();
+			if (quickreply.settings.attachBox) {
+				if (ops.removeAttachBox) {
+					$preview.find('dl.attachbox').remove();
+				}
+				if (ops.attachments) {
+					$preview.find('.content').after(ops.attachments);
+				}
+			}
+		};
 
+		/**
+		 * Initializes Ajax preview block.
+		 */
+		this.init = function() {
+			quickreply.style.initPreview();
+			$('#preview_close').click(function() {
+				$('#preview').slideUp(qrSlideInterval);
+				quickreply.form.setCheckExtendedInterval(qrSlideInterval);
+			}).attr('title', quickreply.language.PREVIEW_CLOSE);
+		};
 	}
 
 	function Ajax() {
@@ -1343,7 +1391,7 @@
 		 */
 		this.init = function() {
 			if (quickreply.settings.ajaxSubmit) {
-				quickreply.style.initPreview();
+				quickreply.preview.init();
 
 				quickreply.$.mainForm.attr('data-ajax', 'qr_ajax_submit').submit(function() {
 					quickreply.loading.start();
@@ -1427,15 +1475,6 @@
 		};
 
 		/**
-		 * Removes the post and related content from the page.
-		 *
-		 * @param {jQuery} $post jQuery selector for the post
-		 */
-		function removePost($post) {
-			$post.closest('.post-container').remove();
-		}
-
-		/**
 		 * Returns the requestData object for Ajax callback function.
 		 * Used when new messages have been added to the topic.
 		 *
@@ -1445,17 +1484,7 @@
 		function getReplyData(merged) {
 			var replySetData = {qr_no_refresh: 1};
 			if (merged) {
-				var $mergedPost = quickreply.$.qrPosts.find(quickreply.editor.postSelector).last();
 				$.extend(replySetData, {qr_get_current: 1});
-				if (quickreply.settings.softScroll) {
-					$mergedPost.slideUp(qrSlideInterval, function() {
-						removePost($(this));
-					});
-				} else {
-					quickreply.$.qrPosts.one('qr_insert_before', function() {
-						removePost($mergedPost);
-					});
-				}
 			}
 			return replySetData;
 		}
@@ -1519,7 +1548,7 @@
 
 				case "preview":
 					var $preview = $('#preview');
-					setPreview({
+					quickreply.preview.set({
 						display: 'block',
 						title: res.PREVIEW_TITLE,
 						content: res.PREVIEW_TEXT,
@@ -1694,6 +1723,31 @@
 		}
 
 		/**
+		 * Removes the post and related content from the page.
+		 *
+		 * @param {jQuery} $post jQuery selector for the post
+		 */
+		function removePost($post) {
+			$post.closest('.post-container').remove();
+		}
+
+		/**
+		 * Removes old content of the merged post.
+		 */
+		function prepareMergedPost() {
+			var $mergedPost = quickreply.$.qrPosts.find(quickreply.editor.postSelector).last();
+			if (quickreply.settings.softScroll) {
+				$mergedPost.slideUp(qrSlideInterval, function() {
+					removePost($(this));
+				});
+			} else {
+				quickreply.$.qrPosts.one('qr_insert_before', function() {
+					removePost($mergedPost);
+				});
+			}
+		}
+
+		/**
 		 * Error response handler.
 		 */
 		function resultError() {
@@ -1709,6 +1763,7 @@
 		 * @param {object}  res                     The result of the response
 		 * @param {string}  [res.result]            Parsed HTML result
 		 * @param {boolean} [res.insert]            Whether we need to insert the result, overwrite otherwise
+		 * @param {boolean} [res.merged]            Whether last displayed post has been updated by merge
 		 * @param {boolean} [res.captcha_refreshed] Whether the CAPTCHA data has been updated
 		 * @param {string}  [res.captcha_result]    Parsed HTML for CAPTCHA container
 		 * @param {string}  [res.MESSAGE_TEXT]      Information notice
@@ -1716,6 +1771,10 @@
 		function resultSuccess(res) {
 			if (res.result) {
 				if (res.insert) {
+					if (res.merged) {
+						prepareMergedPost();
+					}
+
 					quickreply.style.markRead($('#qr_posts'));
 					var $tempContainer = $(quickreply.editor.tempContainer);
 					$tempContainer.html(res.result);

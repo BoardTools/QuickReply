@@ -63,12 +63,12 @@ class listener_ajax implements EventSubscriberInterface
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
 		return array(
-			'core.viewtopic_get_post_data'              => array('viewtopic_modify_sql', -2),
-			'core.viewtopic_modify_page_title'          => array('ajaxify_viewtopic_data', -2),
-			'core.posting_modify_submission_errors'     => 'detect_new_posts',
-			'core.posting_modify_template_vars'         => 'ajax_preview',
-			'core.submit_post_end'                      => array('ajax_submit', -2),
-			'rxu.postsmerging.posts_merging_end'        => 'ajax_submit',
+			'core.viewtopic_get_post_data'          => array('viewtopic_modify_sql', -2),
+			'core.viewtopic_modify_page_title'      => array('ajaxify_viewtopic_data', -2),
+			'core.posting_modify_submission_errors' => 'detect_new_posts',
+			'core.posting_modify_template_vars'     => 'ajax_preview',
+			'core.submit_post_end'                  => array('ajax_submit', -2),
+			'rxu.postsmerging.posts_merging_end'    => 'ajax_submit',
 		);
 	}
 
@@ -85,12 +85,18 @@ class listener_ajax implements EventSubscriberInterface
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 		if ($this->ajax_helper->no_refresh($current_post, $post_list))
 		{
-			$qr_get_current = $this->request->is_set('qr_get_current');
+			$this->ajax_helper->qr_merged = $qr_get_current = $this->request->is_set('qr_get_current');
 			$sql_ary = $event['sql_ary'];
-			$compare = ($qr_get_current) ? ' >= ' : ' > ';
+
+			$compare = (
+				$qr_get_current ||
+				in_array($current_post, $post_list) && $this->ajax_helper->check_post_merge()
+			) ? ' >= ' : ' > ';
 			$sql_ary['WHERE'] .= ' AND p.post_id' . $compare . $current_post;
+
 			$this->ajax_helper->qr_insert = true;
 			$this->ajax_helper->qr_first = ($current_post == min($post_list)) && $qr_get_current;
+
 			$event['sql_ary'] = $sql_ary;
 
 			// Check whether no posts are found.

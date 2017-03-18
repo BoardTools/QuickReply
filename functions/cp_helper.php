@@ -29,6 +29,12 @@ class cp_helper
 		$this->request = $request;
 	}
 
+	/**
+	 * Returns array of template variables for user settings in the ACP
+	 *
+	 * @param array $data Array with users preferences data
+	 * @return array
+	 */
 	public function qr_user_prefs_data($data)
 	{
 		return array(
@@ -44,6 +50,12 @@ class cp_helper
 		);
 	}
 
+	/**
+	 * Returns quick reply related user settings data
+	 *
+	 * @param array $user_row User data array
+	 * @return array
+	 */
 	public function qr_get_user_prefs_data($user_row)
 	{
 		return array(
@@ -56,6 +68,12 @@ class cp_helper
 		);
 	}
 
+	/**
+	 * Returns array of SQL variables for user settings
+	 *
+	 * @param array $data Array with users preferences data
+	 * @return array
+	 */
 	public function qr_set_user_prefs_data($data)
 	{
 		return array(
@@ -68,6 +86,12 @@ class cp_helper
 		);
 	}
 
+	/**
+	 * Returns array of template variables for forum settings in the ACP
+	 *
+	 * @param array $forum_data Forum data array
+	 * @return array
+	 */
 	public function qr_forums_data($forum_data)
 	{
 		return array(
@@ -77,6 +101,11 @@ class cp_helper
 		);
 	}
 
+	/**
+	 * Returns array of forum settings updated by user's request
+	 *
+	 * @return array
+	 */
 	public function qr_get_forums_data()
 	{
 		return array(
@@ -85,11 +114,17 @@ class cp_helper
 		);
 	}
 
-	public function qr_new_forums_data()
+	/**
+	 * Returns array of initialised forum settings
+	 *
+	 * @param array $forum_data Forum data array
+	 * @return array
+	 */
+	public function qr_init_forums_data($forum_data)
 	{
 		return array(
-			'qr_ajax_submit' => false,
-			'qr_form_type'   => 0,
+			'qr_ajax_submit' => $forum_data['qr_ajax_submit'],
+			'qr_form_type'   => $forum_data['qr_form_type'],
 		);
 	}
 }

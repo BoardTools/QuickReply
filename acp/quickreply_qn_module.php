@@ -24,8 +24,6 @@ class quickreply_qn_module extends acp_module_helper
 
 	/**
 	 * Generates the array of display_vars
-	 *
-	 * @return array
 	 */
 	protected function generate_display_vars()
 	{
