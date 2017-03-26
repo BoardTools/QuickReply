@@ -1,4 +1,4 @@
-/* global phpbb, phpbb_seo, quickreply, plupload */
+/* global phpbb, phpbb_seo, quickreply, pageJump, plupload */
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
@@ -95,7 +95,7 @@
 	/* Save message when navigating the topic. */
 	var restoredMessage = $(quickreply.editor.messageStorage).html();
 	if (restoredMessage !== '') {
-		$(quickreply.editor.textareaSelector).val(restoredMessage);
+		quickreply.$.textarea.val(restoredMessage);
 	}
 
 	/* Save message for the full reply form. */
@@ -131,6 +131,8 @@
 		 * @param {string} text  Text of the alert.
 		 */
 		quickreply.functions.alert = function(title, text) {
+			quickreply.functions.clearLoadingTimeout();
+
 			var alert = phpbb.alert(title, text);
 			qrAlertTimer = setTimeout(function() {
 				$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
@@ -170,15 +172,23 @@
 		/**
 		 * pageJump function for QuickReply.
 		 *
-		 * @param {jQuery} item
+		 * @param {jQuery} $item
 		 */
-		quickreply.functions.pageJump = function(item) {
-			var page = parseInt(item.val(), 10);
+		quickreply.functions.pageJump = function($item) {
+			if (!quickreply.settings.saveReply) {
+				pageJump($item);
+				return;
+			} else if (quickreply.plugins.seo) {
+				quickreply.functions.seoPageJump($item);
+				return;
+			}
+
+			var page = parseInt($item.val(), 10);
 
 			if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
-				var perPage = item.attr('data-per-page'),
-					baseUrl = item.attr('data-base-url'),
-					startName = item.attr('data-start-name');
+				var perPage = $item.attr('data-per-page'),
+					baseUrl = $item.attr('data-base-url'),
+					startName = $item.attr('data-start-name');
 
 				if (baseUrl.indexOf('?') === -1) {
 					quickreply.ajaxReload.loadPage(baseUrl + '?' + startName + '=' + ((page - 1) * perPage));
@@ -192,15 +202,15 @@
 		/**
 		 * pageJump function for QuickReply when SEO plugin is enabled.
 		 *
-		 * @param {jQuery} item
+		 * @param {jQuery} $item
 		 */
-		quickreply.functions.seoPageJump = function(item) {
-			var page = parseInt(item.val(), 10);
+		quickreply.functions.seoPageJump = function($item) {
+			var page = parseInt($item.val(), 10);
 
 			if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
-				var per_page = item.attr('data-per-page'),
-					base_url = item.attr('data-base-url'),
-					start_name = item.attr('data-start-name'),
+				var per_page = $item.attr('data-per-page'),
+					base_url = $item.attr('data-base-url'),
+					start_name = $item.attr('data-start-name'),
 					anchor = '',
 					anchor_parts = base_url.split('#');
 
@@ -617,7 +627,7 @@
 		 * @returns {boolean}
 		 */
 		this.hasReply = function() {
-			return !!($(quickreply.editor.textareaSelector).val() ||
+			return !!(quickreply.$.textarea.val() ||
 			$('#file-list').children().not('#attach-row-tpl').length);
 		};
 
@@ -645,9 +655,10 @@
 				return;
 			}
 			var slideFunction = (visibility === 'show') ? 'show' : (
-				(visibility === 'toggle') ? 'slideToggle' : (
-				(visibility === 'hide') ? 'slideUp' : 'slideDown'
-			)), options = (visibility === 'show') ? null : ((animationOptions) ? animationOptions : qrSlideInterval);
+					(visibility === 'toggle') ? 'slideToggle' : (
+						(visibility === 'hide') ? 'slideUp' : 'slideDown'
+					)),
+				options = (visibility === 'show') ? null : ((animationOptions) ? animationOptions : qrSlideInterval);
 			$('#qr_attach_notice').finish()[slideFunction](options);
 		}
 
@@ -820,7 +831,7 @@
 					right: '-1000px'
 				}, 500);
 				self.$.off('fullscreen.quickreply.smilies');
-				$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+				quickreply.$.textarea.off('mousemove.quickreply.smilies');
 			}
 			self.$.removeClass('with_smileys');
 			smileyBoxDisplayed = false;
@@ -836,12 +847,12 @@
 			if (isMobile()) {
 				$('#smiley-box').css('height', '')[(smileyBoxDisplayed) ? 'show' : 'hide']();
 				self.$.off('fullscreen.quickreply.smilies');
-				$(quickreply.$.textarea).off('mousemove.quickreply.smilies');
+				quickreply.$.textarea.off('mousemove.quickreply.smilies');
 			} else {
 				fixSmileyHeight();
 				$('#smiley-box').css('display', '').css('right', (smileyBoxDisplayed) ? '0' : '-1000px');
 				self.$.on('fullscreen.quickreply.smilies', fixSmileyHeight);
-				$(quickreply.$.textarea).on('mousemove.quickreply.smilies', fixSmileyHeight);
+				quickreply.$.textarea.on('mousemove.quickreply.smilies', fixSmileyHeight);
 			}
 		}
 
@@ -937,7 +948,7 @@
 		 * Initializes fixed form mode.
 		 */
 		this.initFixed = function() {
-			$(quickreply.editor.textareaSelector).attr('placeholder', quickreply.language.TYPE_REPLY);
+			quickreply.$.textarea.attr('placeholder', quickreply.language.TYPE_REPLY);
 
 			quickreply.style.showQuickReplyForm();
 
@@ -963,7 +974,7 @@
 				bindRefreshUploader();
 			}
 
-			$('#qr_action_box').prependTo('#message-box');
+			$('#qr_action_box').prependTo(quickreply.$.messageBox);
 
 			addToggleButton();
 			if (!self.hasReply()) {
@@ -973,7 +984,7 @@
 			}
 
 			// Now we can make it fixed for further transitions.
-			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
+			quickreply.$.textarea.addClass('qr_fixed_textarea');
 
 			// Add events.
 			if (quickreply.plugins.abbc3) {
@@ -1004,15 +1015,21 @@
 			});
 			addButtonTrigger('.qr_more_actions_button', '.qr_fixed_form .additional-element');
 
-			$(quickreply.editor.textareaSelector).focus(function() {
+			$(window).on('load', function() {
+				if (!$('.qr_fixed_form .additional-element').length) {
+					$('.qr_more_actions_button').css('visibility', 'hidden');
+				}
+			});
+
+			quickreply.$.textarea.focus(function() {
 				self.setFixed();
 			});
 
 			// Hide active dropdowns when click event happens outside
 			$body.on('mousedown.quickreply.form', function(e) {
 				var $parents = $(e.target).parents();
-				if (!$parents.is(quickreply.editor.mainForm) &&
-					!$(quickreply.editor.textareaSelector).val() &&
+				if (!$parents.is(quickreply.$.mainForm) &&
+					!quickreply.$.textarea.val() &&
 					!self.is('fullscreen') &&
 					!self.is('extended')) {
 					self.setCompact();
@@ -1113,7 +1130,7 @@
 
 			self.$.finish().removeClass('qr_fixed_form qr_compact_form').addClass('no_transition qr_extended_form')
 				.css('width', '');
-			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
+			quickreply.$.textarea.removeClass('qr_fixed_textarea');
 
 			$('#qr_action_box, #qr_text_action_box, #qr_show_fixed_form').hide();
 
@@ -1218,7 +1235,7 @@
 
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN);
-			$(quickreply.editor.textareaSelector).addClass('qr_fixed_textarea');
+			quickreply.$.textarea.addClass('qr_fixed_textarea');
 
 			$('#preview').insertBefore(self.$);
 			self.$.trigger('fullscreen-exit');
@@ -1239,7 +1256,7 @@
 
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN_EXIT);
-			$(quickreply.editor.textareaSelector).removeClass('qr_fixed_textarea');
+			quickreply.$.textarea.removeClass('qr_fixed_textarea');
 
 			$(document).on('keydown.quickreply.fullscreen', function(e) {
 				if (e.keyCode === 27) {
@@ -1319,7 +1336,7 @@
 		 */
 		this.refresh = function() {
 			$('input[name="post"]').removeAttr('data-clicked');
-			$(quickreply.editor.textareaSelector).val('').attr('style', 'height: 9em;');
+			quickreply.$.textarea.val('').attr('style', 'height: 9em;');
 
 			if ($('#preview').is(':visible')) {
 				quickreply.preview.set(); // Hide preview.
@@ -1521,7 +1538,7 @@
 						res.url.replace(/&amp;/ig, '&'), getReplyData(res.merged), {
 							scroll: 'last',
 							callback: function() {
-								$('#qr_postform').trigger('ajax_submit_success');
+								quickreply.$.mainForm.trigger('ajax_submit_success');
 								quickreply.form.refresh();
 							}
 						}
@@ -1556,10 +1573,10 @@
 					});
 					quickreply.loading.stop();
 					if (quickreply.settings.enableScroll) {
-						var $container = (quickreply.form.is('fullscreen')) ? quickreply.editor.mainForm : false;
+						var $container = (quickreply.form.is('fullscreen')) ? quickreply.$.mainForm : false;
 						quickreply.functions.softScroll($preview, $container);
 					}
-					$('#qr_postform').trigger('ajax_submit_preview', [$preview]);
+					quickreply.$.mainForm.trigger('ajax_submit_preview', [$preview]);
 					break;
 
 				case "no_approve":
@@ -1570,7 +1587,7 @@
 					quickreply.loading.setExplain(quickreply.language.loading.NEW_FORM_TOKEN);
 
 					// data-clicked attribute is cleared below, but we need to click the same button after the timeout.
-					var $clickedButton = $(quickreply.editor.mainForm).find('input[data-clicked="true"]');
+					var $clickedButton = quickreply.$.mainForm.find('input[data-clicked="true"]');
 
 					// The timeout is needed because phpBB checks the time difference for 'lastclick'.
 					setTimeout(function() {
@@ -1590,7 +1607,7 @@
 					break;
 			}
 			/* Fix for phpBB 3.1.9 */
-			$(quickreply.editor.mainForm).find('input[data-clicked]').removeAttr('data-clicked');
+			quickreply.$.mainForm.find('input[data-clicked]').removeAttr('data-clicked');
 		};
 	}
 
@@ -1608,30 +1625,30 @@
 		 * @param {function} [callback] Callback function (receives the element for scrolling)
 		 */
 		function showResponse(elements, callback) {
-			var submitButtons = $('#qr_submit_buttons');
-			quickreply.form.updateFields(submitButtons.html());
+			var $submitButtons = $('#qr_submit_buttons');
+			quickreply.form.updateFields($submitButtons.html());
 
 			// Work with history.
 			if (qrReplaceHistory) {
 				qrReplaceHistory = false;
-				phpbb.history.replaceUrl(submitButtons.attr('data-page-url'), submitButtons.attr('data-page-title'), {
+				phpbb.history.replaceUrl($submitButtons.attr('data-page-url'), $submitButtons.attr('data-page-title'), {
 					url: self.url,
-					title: submitButtons.attr('data-page-title'),
+					title: $submitButtons.attr('data-page-title'),
 					replaced: true
 				});
-				document.title = submitButtons.attr('data-page-title');
+				document.title = $submitButtons.attr('data-page-title');
 			} else if (qrStopHistory) {
 				qrStopHistory = false;
 			} else {
-				phpbb.history.pushUrl(submitButtons.attr('data-page-url'), submitButtons.attr('data-page-title'), {
+				phpbb.history.pushUrl($submitButtons.attr('data-page-url'), $submitButtons.attr('data-page-title'), {
 					url: self.url,
-					title: submitButtons.attr('data-page-title')
+					title: $submitButtons.attr('data-page-title')
 				});
-				document.title = submitButtons.attr('data-page-title');
+				document.title = $submitButtons.attr('data-page-title');
 			}
 
 			// Cleanup - we used all needed information from this temporary element.
-			submitButtons.remove();
+			$submitButtons.remove();
 
 			// Work with pagination.
 			quickreply.style.handlePagination();
@@ -1643,14 +1660,12 @@
 			quickreply.special.functions.qr_hide_subject(elements);
 
 			// Done! Let's finish the loading process.
-			$('#qr_posts').trigger('qr_loaded', [$(elements)]);
+			quickreply.$.qrPosts.trigger('qr_loaded', [$(elements)]);
 
-			// Callback function needs to stop loading itself. @TODO update
 			if (typeof callback === "function") {
 				callback(getScrollElement(elements));
-			} //else {
+			}
 			quickreply.loading.stop();
-			//}
 		}
 
 		/**
@@ -1678,7 +1693,7 @@
 		 */
 		function setDefaults() {
 			dataObject = {
-				qr_cur_post_id: $(quickreply.editor.mainForm).find('input[name="qr_cur_post_id"]').val(),
+				qr_cur_post_id: quickreply.$.mainForm.find('input[name="qr_cur_post_id"]').val(),
 				qr_request: 1
 			};
 			params = {
@@ -1748,6 +1763,89 @@
 		}
 
 		/**
+		 * Inserts new posts to the end of the page.
+		 *
+		 * @param {string} content HTML string with posts' content
+		 */
+		function insertPosts(content) {
+			quickreply.style.markRead(quickreply.$.qrPosts);
+
+			var $tempContainer = $(quickreply.editor.tempContainer);
+			$tempContainer.html(content);
+			qrReplaceHistory = true;
+
+			showResponse($tempContainer, function(element) {
+				if (quickreply.settings.softScroll) {
+					$tempContainer.slideDown(qrSlideInterval, function() {
+						qrResponsiveLinks($tempContainer);
+
+						quickreply.$.qrPosts.trigger('qr_completed', [$tempContainer]);
+
+						$tempContainer.children().appendTo(quickreply.$.qrPosts);
+						$tempContainer.hide().empty();
+
+						if (quickreply.settings.enableScroll) {
+							quickreply.functions.softScroll(element);
+						}
+					});
+				} else {
+					quickreply.$.qrPosts.trigger('qr_insert_before');
+
+					// Restore the subject of the first post.
+					quickreply.style.restoreFirstSubject(quickreply.$.qrPosts, $tempContainer);
+
+					$tempContainer.show();
+					qrResponsiveLinks($tempContainer);
+
+					quickreply.$.qrPosts.trigger('qr_completed', [$tempContainer]);
+
+					var $insertedPosts = $tempContainer.children().appendTo(quickreply.$.qrPosts);
+					$tempContainer.hide().empty();
+
+					if (quickreply.settings.enableScroll) {
+						quickreply.functions.softScroll($insertedPosts.first());
+					}
+				}
+			});
+		}
+
+		/**
+		 * Updates qrPosts container with the given content.
+		 *
+		 * @param {string} content HTML string with posts' content
+		 */
+		function updatePostsContainer(content) {
+			if (quickreply.settings.softScroll) {
+				quickreply.$.qrPosts.slideUp(qrSlideInterval, function() {
+					$(this).html(content);
+
+					showResponse($(this), function(element) {
+						quickreply.$.qrPosts.slideDown(qrSlideInterval, function() {
+							qrResponsiveLinks(quickreply.$.qrPosts);
+
+							quickreply.$.qrPosts.trigger('qr_completed', [quickreply.$.qrPosts]);
+
+							if (quickreply.settings.enableScroll) {
+								quickreply.functions.softScroll(element);
+							}
+						});
+					});
+				});
+			} else {
+				quickreply.$.qrPosts.html(content);
+
+				showResponse(quickreply.$.qrPosts);
+				qrResponsiveLinks(quickreply.$.qrPosts);
+
+				quickreply.$.qrPosts.trigger('qr_completed', [quickreply.$.qrPosts]);
+
+				if (quickreply.settings.enableScroll) {
+					quickreply.functions.softScroll(quickreply.$.qrPosts);
+				}
+			}
+		}
+
+		/**
 		 * Error response handler.
 		 */
 		function resultError() {
@@ -1774,67 +1872,9 @@
 					if (res.merged) {
 						prepareMergedPost();
 					}
-
-					quickreply.style.markRead($('#qr_posts'));
-					var $tempContainer = $(quickreply.editor.tempContainer);
-					$tempContainer.html(res.result);
-					qrReplaceHistory = true;
-					showResponse($tempContainer, function(element) {
-						if (quickreply.settings.softScroll) {
-							$tempContainer.slideDown(qrSlideInterval, function() {
-								qrResponsiveLinks($tempContainer);
-								$('#qr_posts').trigger('qr_completed', [$tempContainer]);
-
-								$tempContainer.children().appendTo('#qr_posts');
-								$tempContainer.hide();
-
-								if (quickreply.settings.enableScroll) {
-									quickreply.functions.softScroll(element);
-								}
-							});
-						} else {
-							var reply_posts = $('#qr_posts');
-							reply_posts.trigger('qr_insert_before');
-
-							// Restore the subject of the first post.
-							quickreply.style.restoreFirstSubject(reply_posts, $tempContainer);
-
-							$tempContainer.show();
-							qrResponsiveLinks($tempContainer);
-							reply_posts.trigger('qr_completed', [$tempContainer]);
-
-							var reply_posts_inserted = $tempContainer.children().appendTo('#qr_posts');
-							$tempContainer.hide();
-
-							if (quickreply.settings.enableScroll) {
-								quickreply.functions.softScroll(reply_posts_inserted.first());
-							}
-						}
-					});
+					insertPosts(res.result);
 				} else {
-					var reply_posts = $('#qr_posts');
-					if (quickreply.settings.softScroll) {
-						reply_posts.slideUp(qrSlideInterval, function() {
-							$(this).html(res.result);
-							showResponse($(this), function(element) {
-								reply_posts.slideDown(qrSlideInterval, function() {
-									qrResponsiveLinks(reply_posts);
-									reply_posts.trigger('qr_completed', [reply_posts]);
-									if (quickreply.settings.enableScroll) {
-										quickreply.functions.softScroll(element);
-									}
-								});
-							});
-						});
-					} else {
-						reply_posts.html(res.result);
-						showResponse(reply_posts);
-						qrResponsiveLinks(reply_posts);
-						reply_posts.trigger('qr_completed', [reply_posts]);
-						if (quickreply.settings.enableScroll) {
-							quickreply.functions.softScroll(reply_posts);
-						}
-					}
+					updatePostsContainer(res.result);
 				}
 				if (typeof params.callback === "function") {
 					params.callback();
@@ -1843,7 +1883,7 @@
 				$('#qr_captcha_container').slideUp(qrSlideInterval, function() {
 					quickreply.loading.stop();
 					$(this).html(res.captcha_result).slideDown(qrSlideInterval, function() {
-						$('#qr_postform').trigger('qr_captcha_refreshed');
+						quickreply.$.mainForm.trigger('qr_captcha_refreshed');
 					});
 				});
 			} else {
@@ -1862,7 +1902,7 @@
 		 */
 		function standardReload(url) {
 			$(window).off('beforeunload.quickreply');
-			$(quickreply.editor.mainForm).off('submit').attr('action', url).submit();
+			quickreply.$.mainForm.off('submit').attr('action', url).submit();
 		}
 
 		/**

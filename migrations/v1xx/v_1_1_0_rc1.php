@@ -9,7 +9,7 @@
 
 namespace boardtools\quickreply\migrations\v1xx;
 
-class v_1_1_0_RC1 extends \phpbb\db\migration\migration
+class v_1_1_0_rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

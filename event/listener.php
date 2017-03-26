@@ -207,11 +207,15 @@ class listener implements EventSubscriberInterface
 
 		// Ctrl+Enter submit
 		$page_data = array_merge($page_data, array(
-			'S_QR_CE_ENABLE' => $this->helper->plugins_helper->qr_ctrlenter_enabled(),
+			'S_QR_CE_ENABLE'          => $this->helper->plugins_helper->qr_ctrlenter_enabled(),
+			'S_QR_FULL_QUOTE_ALLOWED' => $this->auth->acl_get('f_qr_full_quote', $forum_id),
+			'S_QR_LAST_QUOTE'         => $this->config['qr_last_quote'],
 		));
 
 		$event['post_data'] = $post_data;
 		$event['page_data'] = $page_data;
+
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
 
 	/**

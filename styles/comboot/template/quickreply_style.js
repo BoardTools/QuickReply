@@ -1,7 +1,8 @@
-/* global quickreply, pageJump */
+/* global quickreply */
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
+	'use strict';
 
 	/**
 	 * Require special attention after style modifications:
@@ -32,7 +33,7 @@
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post-body panel panel-info" style="display: none;"><div class="panel-heading"><h3></h3><i id="preview_close" class="fa fa-times"></i></div><div class="panel-body"><div class="content"></div></div></div>');
+		quickreply.$.mainForm.before('<div id="preview" class="post-body panel panel-info" style="display: none;"><div class="panel-heading"><h3></h3><i id="preview_close" class="fa fa-times"></i></div><div class="panel-body"><div class="content"></div></div></div>');
 	};
 
 	/**
@@ -48,7 +49,7 @@
 	 * Opens quick reply form if it is collapsed.
 	 */
 	quickreply.style.showQuickReplyForm = function() {
-		var $this = $(quickreply.editor.mainForm).find('.panel-heading span.clickable');
+		var $this = quickreply.$.mainForm.find('.panel-heading span.clickable');
 		if ($this.hasClass('panel-collapsed')) {
 			$this.parents('.panel-collapsible').find('.panel-body, .panel-footer').show();
 			$this.removeClass('panel-collapsed');
@@ -61,10 +62,11 @@
 	 * Used in fixed form mode.
 	 */
 	quickreply.style.setAdditionalElements = function() {
-		var $messageBox = $('#message-box'),
-			$form_groups = $messageBox.closest('.form-group').siblings(),
-			$additional_tabs = $messageBox.closest('fieldset').siblings().not(quickreply.editor.attachPanel);
-		$form_groups.add($additional_tabs).not('#abbc3_buttons').addClass('additional-element').hide();
+		var $messageBox = quickreply.$.messageBox,
+			$formGroups = $messageBox.closest('.form-group').siblings(),
+			$additionalTabs = $messageBox.closest('fieldset').siblings().not(quickreply.editor.attachPanel);
+		$formGroups.add($additionalTabs).not('#abbc3_buttons').not('script, [type=hidden]')
+			.addClass('additional-element').hide();
 	};
 
 	/**
@@ -74,7 +76,7 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.formEditorElements = function(selectSubmitButtons) {
-		var $qrForm = $(quickreply.editor.mainForm),
+		var $qrForm = quickreply.$.mainForm,
 			$elements = $qrForm.find('#attach-tab, #format-buttons, #abbc3_buttons, .additional-element');
 		return (selectSubmitButtons) ? $elements.add($qrForm.find('.submit-buttons')) : $elements;
 	};
@@ -111,7 +113,8 @@
 	 */
 	quickreply.style.restoreFirstSubject = function(elements, tempContainer) {
 		if (quickreply.settings.hideSubject && !elements.find('.post-body').length) {
-			tempContainer.find(quickreply.editor.postTitleSelector).first().addClass('first').css('display', '').parents(quickreply.editor.postSelector).removeClass('hidden_subject');
+			tempContainer.find(quickreply.editor.postTitleSelector).first().addClass('first').css('display', '')
+				.parents(quickreply.editor.postSelector).removeClass('hidden_subject');
 		}
 	};
 
@@ -120,13 +123,8 @@
 	 */
 	quickreply.style.bindPagination = function() {
 		if (quickreply.settings.saveReply) {
-			$('nav .pagination a:not([href="#"])').click(function(event) {
-				event.preventDefault();
-				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
-				quickreply.ajaxReload.loadPage($(this).attr('href'));
-			});
-
-			$(quickreply.editor.totalPostsContainer).children('a:not([href="#unread"])').click(function(event) {
+			$(quickreply.editor.totalPostsContainer).children('a:not([href="#unread"])')
+				.add('nav .pagination a:not([href="#"])').click(function(event) {
 				event.preventDefault();
 				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});
@@ -134,32 +132,20 @@
 
 		$(quickreply.editor.totalPostsContainer).children('a[href="#unread"]').click(function(event) {
 			event.preventDefault();
-			var unread_posts = $('.post-body.panel-info');
-			quickreply.functions.softScroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
+			var $unreadPosts = $('.post-body.panel-info');
+			quickreply.functions.softScroll(($unreadPosts.length) ? $unreadPosts.first() : quickreply.$.qrPosts);
 		});
 
 		$('.total-posts-container .page-jump-form :button').click(function() {
 			var $input = $(this).parent().siblings('input.form-control');
-			if (!quickreply.settings.saveReply) {
-				pageJump($input);
-			} else if (quickreply.plugins.seo) {
-				quickreply.functions.seoPageJump($input);
-			} else {
-				quickreply.functions.pageJump($input);
-			}
+			quickreply.functions.pageJump($input);
 			$(quickreply.editor.totalPostsContainer).removeClass('open');
 		});
 
 		$('.total-posts-container .page-jump-form input.form-control').on('keypress', function(event) {
 			if (event.which === 13 || event.keyCode === 13) {
 				event.preventDefault();
-				if (!quickreply.settings.saveReply) {
-					pageJump($(this));
-				} else if (quickreply.plugins.seo) {
-					quickreply.functions.seoPageJump($(this));
-				} else {
-					quickreply.functions.pageJump($(this));
-				}
+				quickreply.functions.pageJump($(this));
 				$(quickreply.editor.totalPostsContainer).removeClass('open');
 			}
 		});
@@ -190,7 +176,7 @@
 	 * Hides the subject box from the form.
 	 */
 	quickreply.style.hideSubjectBox = function() {
-		$(quickreply.editor.mainForm).find('input[name="subject"]').closest(".form-group").hide();
+		quickreply.$.mainForm.find('input[name="subject"]').closest(".form-group").remove();
 	};
 
 	/**
@@ -200,7 +186,7 @@
 		$('.row:has(.pagination)').find('.fa-lock, .fa-pencil-square-o').closest('a').click(function(e) {
 			e.preventDefault();
 			$(window).off('beforeunload.quickreply');
-			$(quickreply.editor.mainForm).off('submit').find('[name="preview"]').off('click').click();
+			quickreply.$.mainForm.off('submit').find('[name="preview"]').off('click').click();
 		});
 	};
 
@@ -259,7 +245,7 @@
 	 * @returns {boolean}
 	 */
 	quickreply.style.isLastPage = function() {
-		return $(quickreply.editor.paginationContainer).find('a').last().hasClass('btn-primary') ||
+		return $(quickreply.editor.paginationContainer).find('li').last().hasClass('active') ||
 			typeof $(quickreply.editor.paginationContainer).html() === "undefined";
 	};
 
@@ -270,7 +256,7 @@
 	 */
 	quickreply.style.setQuickQuoteButton = function(elements) {
 		elements.addClass('qr-quickquote')
-			.attr('title', quickreply.language.QUICKQUOTE_TITLE)
+			.attr('title', quickreply.language.QUICKQUOTE_TITLE).tooltip('destroy').tooltip({container: 'body'})
 			.children('span').text(quickreply.language.QUICKQUOTE_TEXT);
 	};
 
@@ -281,7 +267,7 @@
 	 */
 	quickreply.style.removeQuickQuoteButton = function(elements) {
 		elements.removeClass('qr-quickquote')
-			.attr('title', quickreply.language.REPLY_WITH_QUOTE)
+			.attr('title', quickreply.language.REPLY_WITH_QUOTE).tooltip('destroy').tooltip({container: 'body'})
 			.children('span').text(quickreply.language.BUTTON_QUOTE);
 	};
 
@@ -391,21 +377,20 @@
 
 	// Style-specific functions.
 	function qrSetPosition() {
-		$(quickreply.editor.mainForm).add('#qr_show_fixed_form').css('bottom', $('#footer-nav').height());
+		quickreply.$.mainForm.add('#qr_show_fixed_form').css('bottom', $('#footer-nav').height());
 		if (quickreply.form.is('fullscreen')) {
-			$(quickreply.editor.mainForm).css('padding-top', 0).css('height', '').css('top', $('#header-nav').height());
+			quickreply.$.mainForm.css('padding-top', 0).css('height', '').css('top', $('#header-nav').height());
 		}
 	}
 
 	$(window).on('load resize', qrSetPosition);
-	$(quickreply.editor.mainForm).on('fullscreen-before', function() {
-		$(quickreply.editor.mainForm).css('padding-top', $('#header-nav').height());
+	quickreply.$.mainForm.on('fullscreen-before', function() {
+		quickreply.$.mainForm.css('padding-top', $('#header-nav').height());
 	}).on('fullscreen', qrSetPosition).on('fullscreen-exit', function() {
-		$(quickreply.editor.mainForm).css('top', 'auto');
+		quickreply.$.mainForm.css('top', 'auto');
 	});
 
 	// Special handling for events.
-	// Re-initialize to-top animation.
 	$("#qr_posts").on("qr_loaded", function(e, elements) {
 		// Enable tooltip on all buttons
 		elements.find(".btn[data-toggle!='dropdown']:not([disabled]):not(.disabled)").attr({
@@ -417,10 +402,10 @@
 		// Create mobile post toolbar
 		elements.find(quickreply.editor.postSelector).each(function() {
 			var $post = $(this),
-				$btn_groups = $post.find('.post-content .btn-toolbar .btn-group'),
-				$btn_groups_amount = $btn_groups.length;
+				$btnGroups = $post.find('.post-content .btn-toolbar .btn-group'),
+				$btnGroupsAmount = $btnGroups.length;
 
-			$btn_groups.each(function(index) {
+			$btnGroups.each(function(index) {
 				var $this = $(this),
 					$postbody = $this.closest('.post-body');
 				if (!$this.is(':empty')) {
@@ -432,7 +417,7 @@
 							$item = '<li><a href="' + $href + '"><i class="' + $icon + '" aria-hidden="true"></i> ' + $title + '</a></li>';
 						$postbody.find('.btn-toolbar-mobile ul').append($item);
 					});
-					if (index !== $btn_groups_amount - 1) {
+					if (index !== $btnGroupsAmount - 1) {
 						$postbody.find('.btn-toolbar-mobile ul').append('<li role="separator" class="divider"></li>');
 					}
 					$postbody.find('.btn-toolbar-mobile').removeClass('hidden').addClass('visible-xs-block');
@@ -440,6 +425,7 @@
 			});
 		});
 
+		// Re-initialize to-top animation.
 		elements.find('.to-top').click(function() {
 			$('#back-to-top').tooltip('hide');
 			$('body,html').animate({
@@ -476,6 +462,7 @@
 		});
 	});
 
+	// Fix mobile post toolbar
 	$('.btn-toolbar-mobile').find('.dropdown-toggle').one('click', function() {
 		$(this).closest('.btn-toolbar-mobile').find('li').last().filter('.divider').remove();
 	});
@@ -483,7 +470,7 @@
 	if (quickreply.settings.formType === 0) {
 		// Hide quick reply form after posting a reply.
 		$("#qr_postform").on("ajax_submit_success", function() {
-			var $this = $(quickreply.editor.mainForm).find('.panel-heading span.clickable');
+			var $this = quickreply.$.mainForm.find('.panel-heading span.clickable');
 			if (!$this.hasClass('panel-collapsed')) {
 				$this.parents('.panel-collapsible').find('.panel-body, .panel-footer').slideUp();
 				$this.addClass('panel-collapsed');

@@ -115,7 +115,7 @@ class plugins_helper
 		return (
 			!$this->auth->acl_get('f_qr_change_subject', $forum_id)
 			&& $mode != 'post'
-			&& ($topic_first_post_id != $post_id)
+			&& ($topic_first_post_id != $post_id || $mode == 'quote')
 		);
 	}
 

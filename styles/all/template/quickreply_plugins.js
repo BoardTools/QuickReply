@@ -15,7 +15,7 @@
 			});
 		} else {
 			$(document).ready(function() {
-				$(quickreply.editor.mainForm).find('input[name="subject"][type="text"]')
+				quickreply.$.mainForm.find('input[name="subject"][type="text"]')
 					.attr('disabled', 'disabled').css('color', 'grey');
 			});
 		}
@@ -25,7 +25,7 @@
 	/* Ctrl+Enter Plugin */
 	/*********************/
 	if (quickreply.settings.ctrlEnter) {
-		$(quickreply.editor.textareaSelector).keydown(function(event) {
+		quickreply.$.textarea.keydown(function(event) {
 			if (event.ctrlKey && (event.keyCode === 13 || event.keyCode === 10)) {
 				$(this).parents('form').find('input[name="post"]').click();
 			}
@@ -40,12 +40,12 @@
 	/********************/
 	function QrHelper() {
 		var self = this,
-			dropdown = false;
+			$dropdown = false;
 
 		/**
 		 * Gets cursor coordinates.
 		 *
-		 * @param {Event} evt jQuery Event object
+		 * @param {event} evt jQuery Event object
 		 * @returns {object}
 		 */
 		self._getCoordinates = function(evt) {
@@ -63,15 +63,15 @@
 		/**
 		 * Sets new dropdown and adds body event handler.
 		 *
-		 * @param {jQuery} newDropdown jQuery object for new dropdown
+		 * @param {jQuery} $newDropdown jQuery object for new dropdown
 		 */
-		self._setDropdown = function(newDropdown) {
-			dropdown = newDropdown;
+		self._setDropdown = function($newDropdown) {
+			$dropdown = $newDropdown;
 
 			// Hide active dropdowns when click event happens outside
 			$(document.body).on('mousedown.quickreply.dropdown', function(e) {
 				var $parents = $(e.target).parents();
-				if (!$parents.is(dropdown)) {
+				if (!$parents.is($dropdown)) {
 					self._removeDropdown();
 				}
 			});
@@ -81,10 +81,10 @@
 		 * Removes the dropdown.
 		 */
 		self._removeDropdown = function() {
-			if (dropdown) {
-				dropdown.remove();
+			if ($dropdown) {
+				$dropdown.remove();
 				$(document.body).off('mousedown.quickreply.dropdown');
-				dropdown = false;
+				$dropdown = false;
 			}
 		};
 	}
@@ -133,7 +133,7 @@
 						}
 					);
 			return (quickreply.settings.quickQuoteLink && userProfileUrl && quickreply.settings.allowBBCode) ?
-								'[url=' + userProfileUrl + ']' + nickname + '[/url]' : nickname;
+				'[url=' + userProfileUrl + ']' + nickname + '[/url]' : nickname;
 		}
 
 		/**
@@ -251,6 +251,7 @@
 			quickreply.$.qrPosts.on('mouseup', '.content', addQuickQuote);
 		};
 	}
+
 	quickreply.plugins.quickQuote = new QuickQuote();
 
 	if (quickreply.settings.quickQuote) {
@@ -341,7 +342,6 @@
 					quoteButtons = quickreply.style.getQuoteButtons(elements, 'all');
 
 					quickreply.style.setQuickQuoteButton(quoteButtons);
-
 				} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
 					// Style only last quote button
 					quoteButtons = quickreply.style.getQuoteButtons(quickreply.$.qrPosts, 'all');
@@ -396,6 +396,7 @@
 			quickreply.style.setSkipResponsiveForQuoteButtons(quickreply.$.qrPosts);
 		};
 	}
+
 	quickreply.plugins.fullQuote = new FullQuote();
 
 	if (quickreply.settings.fullQuote || quickreply.settings.quickQuoteButton) {
@@ -505,12 +506,10 @@
 				$(document).ready(function(e) {
 					quickNickHandlePosts(e, quickreply.$.qrPosts);
 				});
-				quickreply.$.qrPosts.on('qr_loaded', quickNickHandlePosts);
 
-				/* Ajax Submit */
 				quickreply.$.qrPosts.on('click', nicknameSelector, function(e) {
 					addDropdown(e, $(this));
-				});
+				}).on('qr_loaded', quickNickHandlePosts);
 			}
 
 			if (quickNickIsString()) {
@@ -522,6 +521,7 @@
 			}
 		};
 	}
+
 	quickreply.plugins.quickNick = new QuickNick();
 
 	/**
@@ -563,7 +563,7 @@
 	/* ABBC 3.1 Plugin */
 	/*******************/
 	if (quickreply.plugins.abbc3) {
-		var qr_abbc3_bbvideo = function(e, elements) {
+		var qrABBC3BBvideo = function(e, elements) {
 			var bbvideo = elements.find('.bbvideo');
 			if (bbvideo.length > 0) {
 				bbvideo.bbvideo();
@@ -571,19 +571,19 @@
 		};
 
 		/* Ajax Submit */
-		$('#qr_posts').on('qr_completed', qr_abbc3_bbvideo);
-		$('#qr_postform').on('ajax_submit_preview', qr_abbc3_bbvideo);
+		quickreply.$.qrPosts.on('qr_completed', qrABBC3BBvideo);
+		quickreply.$.mainForm.on('ajax_submit_preview', qrABBC3BBvideo);
 	}
 
 	/*********************/
 	/* reCAPTCHA2 Plugin */
 	/*********************/
 	if (quickreply.plugins.reCAPTCHA2) {
-		$('#qr_postform').on('qr_captcha_refreshed', function() {
-			var recaptcha2_wrapper = $('.g-recaptcha');
-			recaptcha2_wrapper.html('');
+		quickreply.$.mainForm.on('qr_captcha_refreshed', function() {
+			var recaptcha2Wrapper = $('.g-recaptcha');
+			recaptcha2Wrapper.html('');
 			grecaptcha.render(document.getElementsByClassName('g-recaptcha')[0], {
-				'sitekey': recaptcha2_wrapper.attr('data-sitekey')
+				'sitekey': recaptcha2Wrapper.attr('data-sitekey')
 			});
 		});
 	}

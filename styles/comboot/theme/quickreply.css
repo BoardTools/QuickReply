@@ -23,6 +23,11 @@ a span.imageset.icon_topic_latest:before {
 	padding-top: 2px;
 }
 
+.btn.qr-quickquote {
+	background-color: #aaa;
+	border-color: #aaa;
+}
+
 #preview h3 {
 	margin: 0;
 }
