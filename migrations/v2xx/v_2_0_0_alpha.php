@@ -9,7 +9,7 @@
 
 namespace boardtools\quickreply\migrations\v2xx;
 
-class qr_update_bbcode_ref extends \phpbb\db\migration\migration
+class v_2_0_0_alpha extends \phpbb\db\migration\migration
 {
 	public static function depends_on()
 	{
@@ -19,6 +19,9 @@ class qr_update_bbcode_ref extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
+			// Update existing configs
+			array('config.update', array('qr_version', '2.0.0-alpha')),
+
 			array('custom', array(array($this, 'update_bbcode_ref'))),
 		);
 	}
