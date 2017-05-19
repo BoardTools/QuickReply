@@ -112,6 +112,7 @@ services:
 
     boardtools.quickreply.notification.type.quicknick:
         class: boardtools\quickreply\notification\quicknick
+        shared: false # service MUST not be shared for this to work!
         parent: notification.type.quote
         tags:
             - { name: notification.type }
