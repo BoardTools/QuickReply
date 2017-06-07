@@ -15,10 +15,17 @@
 			});
 		} else {
 			$(document).ready(function() {
-				$(quickreply.editor.mainForm).find('input[name="subject"][type="text"]')
+				quickreply.$.mainForm.find('input[name="subject"][type="text"]')
 					.attr('disabled', 'disabled').css('color', 'grey');
 			});
 		}
+	}
+
+	/*********************/
+	/* Ctrl+Enter Plugin */
+	/*********************/
+	if (quickreply.settings.ctrlEnterNotice) {
+		quickreply.$.mainForm.find('input[name="post"]').attr('title', quickreply.language.CTRL_ENTER);
 	}
 
 	/********************/
@@ -26,12 +33,12 @@
 	/********************/
 	function QrHelper() {
 		var self = this,
-			dropdown = false;
+			$dropdown = false;
 
 		/**
 		 * Gets cursor coordinates.
 		 *
-		 * @param {Event} evt jQuery Event object
+		 * @param {event} evt jQuery Event object
 		 * @returns {object}
 		 */
 		self._getCoordinates = function(evt) {
@@ -49,15 +56,15 @@
 		/**
 		 * Sets new dropdown and adds body event handler.
 		 *
-		 * @param {jQuery} newDropdown jQuery object for new dropdown
+		 * @param {jQuery} $newDropdown jQuery object for new dropdown
 		 */
-		self._setDropdown = function(newDropdown) {
-			dropdown = newDropdown;
+		self._setDropdown = function($newDropdown) {
+			$dropdown = $newDropdown;
 
 			// Hide active dropdowns when click event happens outside
 			$(document.body).on('mousedown.quickreply.dropdown', function(e) {
 				var $parents = $(e.target).parents();
-				if (!$parents.is(dropdown)) {
+				if (!$parents.is($dropdown)) {
 					self._removeDropdown();
 				}
 			});
@@ -67,10 +74,10 @@
 		 * Removes the dropdown.
 		 */
 		self._removeDropdown = function() {
-			if (dropdown) {
-				dropdown.remove();
+			if ($dropdown) {
+				$dropdown.remove();
 				$(document.body).off('mousedown.quickreply.dropdown');
-				dropdown = false;
+				$dropdown = false;
 			}
 		};
 	}
@@ -105,29 +112,16 @@
 		};
 
 		/**
-		 * Generates a proper username string (with profile link if needed).
-		 *
-		 * @returns {string}
-		 */
-		function getQuoteData() {
-			var postAuthor = $('#qr_author_p' + self._postID),
-				nickname = postAuthor.text(),
-				userID = postAuthor.attr('data-url').replace(/(.)*u=/, ''),
-				potsTime = $('#qr_time' +  self._postID).text();
-			return [nickname, userID, potsTime];
-		}
-
-		/**
 		 * Inserts a quote from the specified post to quick reply textarea.
 		 */
 		self._insertQuote = function() {
-			var quoteData = getQuoteData(),
-			username = quoteData[0],
-			userID = quoteData[1],
-			postTime = quoteData[2];
+			var postAuthor = $('#qr_author_p' + self._postID),
+				username = postAuthor.text(),
+				userID = postAuthor.attr('data-url').replace(/(.)*[?&]u=/, ''),
+				postTime = $('#qr_time' +  self._postID).text();
 
 			if (self._selection) {
-				quickreply.style.showQuickReplyForm();
+				quickreply.form.show();
 
 				if (quickreply.settings.allowBBCode) {
 					insert_text('[quote=' + username + ' post_id=' + self._postID + ' time=' + postTime + ' user_id=' + userID + ']' + self._selection + '[/quote]\r');
@@ -225,6 +219,7 @@
 			quickreply.$.qrPosts.on('mouseup', '.content', addQuickQuote);
 		};
 	}
+
 	quickreply.plugins.quickQuote = new QuickQuote();
 
 	if (quickreply.settings.quickQuote) {
@@ -294,7 +289,7 @@
 			if (self._selection !== '') {
 				e.preventDefault();
 				self._insertQuote();
-			} else if (!quickreply.settings.fullQuoteAllowed) {
+			} else if (!quickreply.settings.fullQuoteAllowed || element.hasClass('qr-quickquote')) {
 				e.preventDefault();
 				quickreply.functions.alert(quickreply.language.ERROR, quickreply.language.NO_FULL_QUOTE);
 			}
@@ -315,7 +310,6 @@
 					quoteButtons = quickreply.style.getQuoteButtons(elements, 'all');
 
 					quickreply.style.setQuickQuoteButton(quoteButtons);
-
 				} else if (!quickreply.settings.lastQuote && quickreply.style.isLastPage()) {
 					// Style only last quote button
 					quoteButtons = quickreply.style.getQuoteButtons(quickreply.$.qrPosts, 'all');
@@ -360,12 +354,17 @@
 				quickreply.style.responsiveQuotesOnClick(quickreply.$.qrPosts, handleResponsiveClick);
 			});
 
-			$('#qr_posts').on('qr_completed', function(e, elements) {
+			quickreply.$.qrPosts.on('qr_completed', function(e, elements) {
 				setQuoteButtons(e, elements);
 				quickreply.style.responsiveQuotesOnClick(elements, handleResponsiveClick);
+			}).on('qr_loaded', function(e, elements) {
+				quickreply.style.setSkipResponsiveForQuoteButtons(elements);
 			});
+
+			quickreply.style.setSkipResponsiveForQuoteButtons(quickreply.$.qrPosts);
 		};
 	}
+
 	quickreply.plugins.fullQuote = new FullQuote();
 
 	if (quickreply.settings.fullQuote || quickreply.settings.quickQuoteButton) {
@@ -379,7 +378,8 @@
 		QrHelper.apply(this, arguments);
 
 		var self = this,
-			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n';
+			comma = (quickreply.settings.enableComma) ? ', ' : '\r\n',
+			nicknameSelector = quickreply.editor.profileLinkSelector + ', ' + quickreply.editor.profileNoLinkSelector;
 
 		/**
 		 * Whether QuickNick dropdown is enabled.
@@ -404,10 +404,10 @@
 		/**
 		 * Generates new QuickNick dropdown for the specified profile link.
 		 *
-		 * @param {event}  evt  jQuery Event object
-		 * @param {jQuery} link jQuery element for the user profile link
+		 * @param {event}  evt       jQuery Event object
+		 * @param {jQuery} $nickname jQuery element for the user profile link
 		 */
-		function addDropdown(evt, link) {
+		function addDropdown(evt, $nickname) {
 			// Get cursor coordinates
 			if (!evt) {
 				evt = window.event;
@@ -416,8 +416,8 @@
 			var coordinates = self._getCoordinates(evt);
 
 			// Get nick and id
-			var viewprofileURL = link.attr('href');
-			var pmLink = link.parents('.post').find('.contact-icon.pm-icon').parent('a');
+			var viewprofileURL = $nickname.attr('href');
+			var pmLink = quickreply.style.getPMLink($nickname);
 
 			var quickNickDropdown = quickreply.style.quickNickDropdown(
 				coordinates.x, coordinates.y, viewprofileURL, pmLink
@@ -425,7 +425,7 @@
 			self._setDropdown(quickNickDropdown);
 
 			$('a.qr_quicknick', quickNickDropdown).mousedown(function() {
-				self.insert(link);
+				self.insert($nickname);
 				self._removeDropdown();
 				return false;
 			});
@@ -438,23 +438,24 @@
 		 * @param {jQuery} elements jQuery container
 		 */
 		function quickNickHandlePosts(e, elements) {
-			elements.find(quickreply.editor.profileLinkSelector).each(function() {
+			elements.find(nicknameSelector).each(function() {
 				$(this).attr('title', quickreply.language.QUICKNICK);
 			});
+			elements.find(quickreply.editor.profileNoLinkSelector).addClass('qr_quicknick_trigger');
 		}
 
 		/**
 		 * Inserts the nickname of the specified user to quick reply textarea.
 		 *
-		 * @param {jQuery} link jQuery element for the user profile link
+		 * @param {jQuery} $nickname jQuery element for the user profile link
 		 */
-		self.insert = function(link) {
-			var nickname = link.text(),
-				color = (link.hasClass('username-coloured')) ? link.css('color') : false,
+		self.insert = function($nickname) {
+			var nickname = $nickname.text(),
+				color = ($nickname.hasClass('username-coloured')) ? $nickname.css('color') : false,
 				qrColor = (quickreply.settings.colouredNick && color) ?
 					'=' + quickreply.functions.getHexColor(color) : '';
 
-			quickreply.style.showQuickReplyForm();
+			quickreply.form.show();
 
 			if (!quickreply.settings.allowBBCode) {
 				insert_text(nickname + comma, false);
@@ -473,23 +474,22 @@
 				$(document).ready(function(e) {
 					quickNickHandlePosts(e, quickreply.$.qrPosts);
 				});
-				quickreply.$.qrPosts.on('qr_loaded', quickNickHandlePosts);
 
-				/* Ajax Submit */
-				quickreply.$.qrPosts.on('click', quickreply.editor.profileLinkSelector, function(e) {
+				quickreply.$.qrPosts.on('click', nicknameSelector, function(e) {
 					addDropdown(e, $(this));
-				});
+				}).on('qr_loaded', quickNickHandlePosts);
 			}
 
 			if (quickNickIsString()) {
 				quickreply.$.qrPosts.on('click', '.qr_quicknick', function(e) {
 					e.preventDefault();
-					var link = $(this).parent().find(quickreply.editor.profileLinkSelector);
-					self.insert(link);
+					var $nickname = $(this).parent().find(nicknameSelector);
+					self.insert($nickname);
 				});
 			}
 		};
 	}
+
 	quickreply.plugins.quickNick = new QuickNick();
 
 	/**
@@ -521,7 +521,7 @@
 				var comma = (quickreply.settings.enableComma) ? ', ' : '',
 					nickname = $('#user_live_search').val();
 
-				quickreply.style.showQuickReplyForm();
+				quickreply.form.show();
 				insert_text('[ref]' + nickname + '[/ref]' + comma, false);
 			});
 		}
@@ -531,7 +531,7 @@
 	/* ABBC 3.1 Plugin */
 	/*******************/
 	if (quickreply.plugins.abbc3) {
-		var qr_abbc3_bbvideo = function(e, elements) {
+		var qrABBC3BBvideo = function(e, elements) {
 			var bbvideo = elements.find('.bbvideo');
 			if (bbvideo.length > 0) {
 				bbvideo.bbvideo();
@@ -539,19 +539,19 @@
 		};
 
 		/* Ajax Submit */
-		$('#qr_posts').on('qr_completed', qr_abbc3_bbvideo);
-		$('#qr_postform').on('ajax_submit_preview', qr_abbc3_bbvideo);
+		quickreply.$.qrPosts.on('qr_completed', qrABBC3BBvideo);
+		quickreply.$.mainForm.on('ajax_submit_preview', qrABBC3BBvideo);
 	}
 
 	/*********************/
 	/* reCAPTCHA2 Plugin */
 	/*********************/
 	if (quickreply.plugins.reCAPTCHA2) {
-		$('#qr_postform').on('qr_captcha_refreshed', function() {
-			var recaptcha2_wrapper = $('.g-recaptcha');
-			recaptcha2_wrapper.html('');
+		quickreply.$.mainForm.on('qr_captcha_refreshed', function() {
+			var recaptcha2Wrapper = $('.g-recaptcha');
+			recaptcha2Wrapper.html('');
 			grecaptcha.render(document.getElementsByClassName('g-recaptcha')[0], {
-				'sitekey': recaptcha2_wrapper.attr('data-sitekey')
+				'sitekey': recaptcha2Wrapper.attr('data-sitekey')
 			});
 		});
 	}

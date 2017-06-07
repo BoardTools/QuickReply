@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -49,18 +49,20 @@ $lang = array_merge($lang, array(
 												is used in individual forums.',
 	'ACP_QR_ALLOW_FOR_GUESTS'              => 'Allow quick reply for guests if it is enabled',
 	'ACP_QR_ATTACH'                        => 'Allow attachments',
-	'ACP_QR_ATTACH_EXPLAIN'                => 'Allow attachments in the Quick Reply form.',
+	'ACP_QR_ATTACH_EXPLAIN'                => 'Allow attachments in quick reply form.',
 	'ACP_QR_BBCODE'                        => 'Display BBcode buttons',
-	'ACP_QR_BBCODE_EXPLAIN'                => 'Enable BBCode buttons in the Quick Reply form.',
+	'ACP_QR_BBCODE_EXPLAIN'                => 'Enable BBCode buttons in quick reply form.',
 	'ACP_QR_CAPSLOCK'                      => 'Enable text case transformations',
 	'ACP_QR_COLOUR_NICKNAME'               => 'Add colour when refer by username',
 	'ACP_QR_COMMA'                         => 'Add comma after username',
 	'ACP_QR_COMMA_EXPLAIN'                 => 'Automatically add a comma after the username when using “Refer by username”.',
+	'ACP_QR_CTRLENTER_NOTICE'              => 'Enable “Ctrl+Enter” tooltip in quick reply form',
+	'ACP_QR_CTRLENTER_NOTICE_EXPLAIN'      => 'The tooltip will be shown after hovering the cursor over the “Submit” button in quick reply form. Disabling this setting does not disable “Ctrl+Enter” functionality.',
 	'ACP_QR_ENABLE_AJAX_SUBMIT'            => 'Enable Ajax posting in all forums',
 	'ACP_QR_ENABLE_AJAX_SUBMIT_EXPLAIN'    => 'Allow Ajax posting in all forums right away.',
 	'ACP_QR_ENABLE_RE'                     => 'Enable “Re:”',
 	'ACP_QR_ENABLE_RE_EXPLAIN'             => 'Automatically add prefix “Re:” in the “Post subject”
-												in the Quick Reply and the Full Reply form.',
+												in quick reply and full reply forms.',
 	'ACP_QR_ENABLE_QUICK_REPLY'            => 'Enable quick reply in all forums',
 	'ACP_QR_ENABLE_QUICK_REPLY_EXPLAIN'    => 'Allow quick reply in all forums right away.',
 	'ACP_QR_FORM_TYPE'                     => 'Quick reply form type',
@@ -111,5 +113,5 @@ $lang = array_merge($lang, array(
 	'ACP_QR_SHOW_SUBJECTS'                 => 'Show posts subjects in topics',
 	'ACP_QR_SHOW_SUBJECTS_IN_SEARCH'       => 'Show posts subjects in search results',
 	'ACP_QR_SMILIES'                       => 'Display smilies',
-	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smiles in the Quick Reply form.',
+	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smilies in quick reply form.',
 ));

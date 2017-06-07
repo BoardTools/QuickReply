@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+* @copyright (c) Tatiana5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */

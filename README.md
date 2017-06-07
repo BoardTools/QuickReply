@@ -4,6 +4,10 @@ Extended possibilities to use the QuickReply feature.
 
 [![Build Status](https://travis-ci.org/BoardTools/QuickReply.svg?branch=master)](https://travis-ci.org/BoardTools/QuickReply)
 
+## General overview and features
+You can find general description of extension's features as well as a demo, up-to-date download links and the list of supported versions on extension's webpage:
+### http://boardtools.github.io/QuickReply/
+
 ## Quick Installation
 You can quickly install this extension on the latest version of [phpBB 3.1](https://www.phpbb.com/downloads/) or on the latest development version of [phpBB 3.1-dev](https://github.com/phpbb/phpbb3) by doing the following:
 
@@ -32,4 +36,4 @@ You can configure QuickReply by navigating in the ACP to `Extensions` -> `Quick 
 ## License
 [GNU General Public License v2](http://opensource.org/licenses/GPL-2.0)
 
-© 2014 - 2016 Tatiana5 and LavIgor
+© 2014 - 2017 Tatiana5 and LavIgor

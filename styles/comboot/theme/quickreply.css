@@ -23,8 +23,18 @@ a span.imageset.icon_topic_latest:before {
 	padding-top: 2px;
 }
 
+.btn.qr-quickquote {
+	background-color: #aaa;
+	border-color: #aaa;
+}
+
 #preview h3 {
 	margin: 0;
+}
+
+#preview_close {
+	top: 15px;
+	right: 18px;
 }
 
 .qr_dropdown.popover{
@@ -76,7 +86,8 @@ a span.imageset.icon_topic_latest:before {
 
 /* Fixed form style. */
 .qr_fixed_form #attach-tab,
-.qr_fixed_form > .panel > .panel-heading {
+.qr_fixed_form > .panel > .panel-heading,
+.qr_extended_form > .panel > .panel-heading span.clickable {
 	display: none;
 }
 

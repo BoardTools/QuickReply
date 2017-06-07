@@ -1,7 +1,24 @@
 /* This file is common and should be inherited by all styles. */
 /* Styling for some features of QuickReply Reloaded. */
-.qr_quickquote {
+.qr_quickquote, .qr_quicknick_trigger {
 	cursor: pointer;
+}
+
+#preview {
+	position: relative;
+}
+
+#preview_close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 1.2em;
+	cursor: pointer;
+	z-index: 50;
+}
+
+#preview_close:hover {
+	opacity: 0.5;
 }
 
 #qr_loading_text {
@@ -62,7 +79,7 @@
 }
 
 #qr_postform.no_transition * {
-	transition-duration: 0s !important;
+	transition: none !important;
 }
 
 #qr_postform textarea::-webkit-input-placeholder {
@@ -117,6 +134,7 @@
 	width: 100%;
 	box-sizing: border-box;
 	overflow-y: scroll;
+	resize: none;
 }
 
 #qr_postform.qr_fixed_form #message-box textarea.qr_fixed_textarea {
@@ -125,18 +143,13 @@
 	transition: height 0.5s ease;
 }
 
-#qr_postform.qr_extended_form #message-box textarea.qr_fixed_textarea {
-	transition: height 0s;
-}
-
 .qr_fixed_form #attach-panel,
 .qr_fixed_form #format-buttons,
 .qr_fixed_form #abbc3_buttons,
 .qr_fixed_form #register-and-translit,
 .qr_fixed_form #qr_captcha_container,
 .qr_fixed_form .quickreply-title,
-.qr_fixed_form .additional-element,
-.qr_fixed_form .submit-buttons {
+.qr_fixed_form .additional-element {
 	display: none;
 	min-height: 0;
 }
@@ -148,7 +161,8 @@
 }
 
 #qr_text_action_box i,
-#qr_action_box i {
+#qr_action_box i,
+#qr_show_fixed_form i {
 	box-sizing: content-box;
 	font-size: 16px;
 	border: 1px solid;
@@ -171,17 +185,45 @@
 	height: 0;
 }
 
-#qr_action_box i {
+#qr_action_box_container {
 	position: absolute;
 	right: 25px;
+	width: 30px;
 }
 
-#qr_action_box .qr_fullscreen_button {
-	top: 3px;
+#qr_show_fixed_form {
+	display: inline-block;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 41;
+	font-size: 16px;
+	font-weight: bold;
+	color: #1f4e79;
+	background-color: #FFF;
+	box-shadow: 0 0 15px -3px #CCC;
+	border-radius: 0 16px 0 0;
+	border: 3px solid #FFF;
+	transition: all 0.3s ease;
+	cursor: pointer;
+	overflow: hidden;
+	width: auto;
 }
 
-#qr_action_box .qr_attach_button {
-	top: 38px;
+#qr_show_fixed_form i {
+	float: left;
+	margin: 1px;
+}
+
+#qr_show_fixed_form span {
+	display: block;
+	float: left;
+	margin: 4px -1000px 0 50px;
+	transition: all 0.3s ease;
+}
+
+#qr_show_fixed_form:hover span {
+	margin: 4px 5px 0 5px;
 }
 
 .qr_fixed_form #smiley-box {
@@ -221,10 +263,6 @@
 	overflow-y: hidden;
 }
 
-.qr_compact_form.qr_no_compact {
-	display: none !important;
-}
-
 #qr_postform.qr_compact_form #message-box textarea.qr_fixed_textarea {
 	height: 48px !important;
 }
@@ -243,10 +281,11 @@
 	overflow-y: auto;
 }
 
-#qr_postform.qr_fullscreen_form textarea {
+#qr_postform.qr_fullscreen_form #message-box textarea {
 	min-height: 115px;
 	max-height: 50%;
 	transition: height 0.5s ease;
+	resize: vertical;
 }
 
 #qr_postform.qr_fixed_form.qr_fullscreen_form #smiley-box {
@@ -262,12 +301,6 @@
 	display: none;
 }
 
-#qr_action_box .qr_smiley_button,
 .qr_fullscreen_form #qr_action_box .qr_attach_button {
 	display: none;
-}
-
-.qr_fullscreen_form #qr_action_box .qr_smiley_button {
-	display: inline-block;
-	top: 38px;
 }

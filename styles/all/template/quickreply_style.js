@@ -1,4 +1,4 @@
-/* global quickreply, pageJump */
+/* global quickreply */
 /**
  * This file is made for prosilver-based styles.
  * Other styles may require some changes, copy this file
@@ -9,6 +9,7 @@
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
+	'use strict';
 
 	// Style-specific functions and features of QuickReply.
 	quickreply.style = {};
@@ -17,14 +18,14 @@
 	 * Sets the correct ID for the quick reply textarea.
 	 */
 	quickreply.style.setTextareaId = function() {
-		$("#message-box").find("textarea").first().attr('id', 'message');
+		quickreply.$.messageBox.find("textarea").first().attr('id', 'message');
 	};
 
 	/**
 	 * Initializes Ajax preview - creates preview container.
 	 */
 	quickreply.style.initPreview = function() {
-		$(quickreply.editor.mainForm).before('<div id="preview" class="post profile_hidden bg2" style="display: none;"><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
+		quickreply.$.mainForm.before('<div id="preview" class="post profile_hidden bg2" style="display: none;"><i id="preview_close" class="fa fa-times"></i><div class="inner"><div class="postbody"><h3></h3><div class="content"></div></div></div></div>');
 	};
 
 	/**
@@ -33,10 +34,10 @@
 	 * @param {jQuery} elements
 	 */
 	quickreply.style.markRead = function(elements) {
-		var unread_posts = elements.find('.unreadpost');
-		if (unread_posts.length) {
-			var read_post_img = $('#qr_read_post_img').html();
-			unread_posts.removeClass('unreadpost').find('.author span.imageset:first').replaceWith(read_post_img);
+		var $unreadPosts = elements.find('.unreadpost');
+		if ($unreadPosts.length) {
+			var readPostImg = $('#qr_read_post_img').html();
+			$unreadPosts.removeClass('unreadpost').find('.author span.imageset:first').replaceWith(readPostImg);
 		}
 	};
 
@@ -57,9 +58,10 @@
 	 * Used in fixed form mode.
 	 */
 	quickreply.style.setAdditionalElements = function() {
-		$('#message-box').siblings(':visible')
+		quickreply.$.messageBox.siblings(':visible')
 			.not('.submit-buttons, #qr_action_box, #qr_text_action_box')
 			.not('#qr_captcha_container, #smiley-box, #register-and-translit')
+			.not('script, [type=hidden]')
 			.addClass('additional-element').hide();
 	};
 
@@ -70,7 +72,7 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.formEditorElements = function(selectStandard) {
-		var $qrForm = $(quickreply.editor.mainForm),
+		var $qrForm = quickreply.$.mainForm,
 			formatButtons = (quickreply.plugins.abbc3) ? '#abbc3_buttons' : '#format-buttons',
 			elementsArray = [
 				'#attach-panel',
@@ -98,9 +100,9 @@
 	 * when temporary container with the new data is available.
 	 */
 	quickreply.style.handlePagination = function() {
-		var reply_pagination = $('#qr_pagination');
-		quickreply.style.getPagination().html(reply_pagination.html());
-		reply_pagination.remove();
+		var $replyPagination = $('#qr_pagination');
+		quickreply.style.getPagination().html($replyPagination.html());
+		$replyPagination.remove();
 	};
 
 	/**
@@ -121,13 +123,7 @@
 	 */
 	quickreply.style.bindPagination = function() {
 		if (quickreply.settings.saveReply) {
-			$('.action-bar .pagination a:not(.dropdown-trigger, .mark)').click(function(event) {
-				event.preventDefault();
-				//$(quickreply.editor.mainForm).off('submit').attr('action', $(this).attr('href')).submit();
-				quickreply.ajaxReload.loadPage($(this).attr('href'));
-			});
-
-			$('.action-bar .pagination a.mark:not([href="#unread"])').click(function(event) {
+			$('.action-bar .pagination a:not(.dropdown-trigger, .mark[href="#unread"])').click(function(event) {
 				event.preventDefault();
 				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});
@@ -135,31 +131,19 @@
 
 		$('.action-bar .pagination a.mark[href="#unread"]').click(function(event) {
 			event.preventDefault();
-			var unread_posts = $('.unreadpost');
-			quickreply.functions.softScroll((unread_posts.length) ? unread_posts.first() : $('#qr_posts'));
+			var $unreadPosts = $('.unreadpost');
+			quickreply.functions.softScroll(($unreadPosts.length) ? $unreadPosts.first() : quickreply.$.qrPosts);
 		});
 
 		$('.action-bar .pagination .page-jump-form :button').click(function() {
 			var $input = $(this).siblings('input.inputbox');
-			if (!quickreply.settings.saveReply) {
-				pageJump($input);
-			} else if (quickreply.plugins.seo) {
-				quickreply.functions.seoPageJump($input);
-			} else {
-				quickreply.functions.pageJump($input);
-			}
+			quickreply.functions.pageJump($input);
 		});
 
 		$('.action-bar .pagination .page-jump-form input.inputbox').on('keypress', function(event) {
 			if (event.which === 13 || event.keyCode === 13) {
 				event.preventDefault();
-				if (!quickreply.settings.ajaxPagination) {
-					pageJump($(this));
-				} else if (quickreply.plugins.seo) {
-					quickreply.functions.seoPageJump($(this));
-				} else {
-					quickreply.functions.pageJump($(this));
-				}
+				quickreply.functions.pageJump($(this));
 			}
 		});
 
@@ -186,13 +170,20 @@
 	};
 
 	/**
+	 * Hides the subject box from the form.
+	 */
+	quickreply.style.hideSubjectBox = function() {
+		$("#subject").closest("dl").remove();
+	};
+
+	/**
 	 * Save message for the full reply form.
 	 */
 	quickreply.style.setPostReplyHandler = function() {
 		$('.action-bar .buttons').find('.reply-icon, .locked-icon').click(function(e) {
 			e.preventDefault();
 			$(window).off('beforeunload.quickreply');
-			$(quickreply.editor.mainForm).off('submit').find('#qr_full_editor').off('click').click();
+			quickreply.$.mainForm.off('submit').find('#qr_full_editor').off('click').click();
 		});
 	};
 
@@ -217,16 +208,9 @@
 	 * @returns {jQuery}
 	 */
 	quickreply.style.getQuoteButtons = function(elements, type) {
-		var container = (type === 'last') ? elements.find('.post:last-child') : elements,
+		var container = (type === 'last') ? elements.find('.post-container:last-child') : elements,
 			buttons = container.find('.post-buttons .quote-icon');
 		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons; //@TODO - it is not work. Full quote.
-	};
-
-	/**
-	 * Hides the subject box from the form.
-	 */
-	quickreply.style.hideSubjectBox = function() {
-		$("#subject").closest("dl").hide();
 	};
 
 	/**
@@ -237,6 +221,15 @@
 	 */
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
 		elements.find('.post-buttons .responsive-menu').on('click', '.icon.fa-quote-left, .icon.fa-quote-left + span', fn); // @TODO Get link (parent) instead only icon and text
+	};
+
+	/**
+	 * Sets up non-responsive quote buttons.
+	 *
+	 * @param {jQuery} elements jQuery container
+	 */
+	quickreply.style.setSkipResponsiveForQuoteButtons = function(elements) {
+		quickreply.style.getQuoteButtons(elements).closest('li').attr('data-skip-responsive', 'true');
 	};
 
 	/**
@@ -269,6 +262,15 @@
 		elements.removeClass('qr-quickquote')
 			.attr('title', quickreply.language.REPLY_WITH_QUOTE)
 			.children('span').text(quickreply.language.BUTTON_QUOTE);
+	};
+
+	/**
+	 * Gets PM link anchor element for the specified profile.
+	 *
+	 * @param {jQuery} $nickname Profile nickname element
+	 */
+	quickreply.style.getPMLink = function($nickname) {
+		return $nickname.parents('.post').find('.contact-icon.pm-icon').parent('a');
 	};
 
 	/**
@@ -344,15 +346,25 @@
 			);
 		}
 
-		listElements.push(
-			quickreply.functions.makeLink({
-				href: viewProfileURL,
-				className: "qr_profile",
-				title: quickreply.language.PROFILE,
-				text: quickreply.language.PROFILE
-			})
-		);
+		if (viewProfileURL) {
+			listElements.push(
+				quickreply.functions.makeLink({
+					href: viewProfileURL,
+					className: "qr_profile",
+					title: quickreply.language.PROFILE,
+					text: quickreply.language.PROFILE
+				})
+			);
+		}
 
 		return quickreply.style.createDropdown(listElements, pageX, pageY);
+	};
+
+	/**
+	 * Calculates page bottom value for quick reply form.
+	 * Fixed footer elements affect this value.
+	 */
+	quickreply.style.getPageBottomValue = function() {
+		return 0;
 	};
 })(jQuery, window, document);

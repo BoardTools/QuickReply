@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2017 Tatiana5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -95,16 +95,35 @@ class listener_helper
 		return false;
 	}
 
+	/**
+	 * Checks whether quick reply is allowed in the current forum
+	 *
+	 * @param array $topic_data Array with topic data
+	 * @return bool
+	 */
 	public function qr_is_enabled_in_forum($topic_data)
 	{
 		return $this->config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
 	}
 
+	/**
+	 * Checks whether quick reply should be visible for current user in the specified forum
+	 *
+	 * @param int $forum_id Forum ID
+	 * @return bool
+	 */
 	public function can_view_qr($forum_id)
 	{
 		return ($this->user->data['is_registered'] || $this->config['qr_allow_for_guests']) && $this->auth->acl_get('f_reply', $forum_id);
 	}
 
+	/**
+	 * Checks whether current user can post in the specified forum
+	 *
+	 * @param array $topic_data Array with topic data
+	 * @param int   $forum_id   Forum ID
+	 * @return bool
+	 */
 	public function can_post($topic_data, $forum_id)
 	{
 		return (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $this->auth->acl_get('m_edit', $forum_id));
@@ -147,6 +166,12 @@ class listener_helper
 		return $this->check_acl_perms($acl_perms);
 	}
 
+	/**
+	 * Checks ACL permissions
+	 *
+	 * @param array $acl_perms Array with ACL options to check (key => forum ID)
+	 * @return bool
+	 */
 	public function check_acl_perms($acl_perms)
 	{
 		if (!sizeof($acl_perms))
@@ -190,6 +215,13 @@ class listener_helper
 		);
 	}
 
+	/**
+	 * Sets additional form parameters
+	 *
+	 * @param int   $forum_id         Forum ID
+	 * @param array $topic_data       Array with topic data
+	 * @param array $qr_hidden_fields Array of hidden fields for quick reply form
+	 */
 	public function set_form_parameters($forum_id, $topic_data, $qr_hidden_fields)
 	{
 		add_form_key('posting');
@@ -237,6 +269,11 @@ class listener_helper
 		$this->template->assign_vars($this->template_variables);
 	}
 
+	/**
+	 * Assigns QuickReply related settings as template variables
+	 *
+	 * @param int $forum_id Forum ID
+	 */
 	public function template_variables_for_qr($forum_id)
 	{
 		$this->template_variables += array(
@@ -254,6 +291,7 @@ class listener_helper
 			'S_QR_FULL_QUOTE_ALLOWED' => $this->auth->acl_get('f_qr_full_quote', $forum_id),
 			'S_QR_LAST_QUOTE'         => $this->config['qr_last_quote'],
 			'S_QR_SAVE_REPLY'         => $this->user->data['ajax_pagination'],
+			'S_QR_CTRL_ENTER_NOTICE'  => $this->config['qr_ctrlenter'],
 			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],
 
 			'MESSAGE'       => $this->request->variable('message', '', true),
