@@ -153,23 +153,6 @@
 		};
 
 		/**
-		 * The function for handling Ajax requests.
-		 *
-		 * @param {string}   url               Requested URL.
-		 * @param {object}   [request_data]    Optional object with data parameters.
-		 * @param {function} [result_function] The function to be called after successful result.
-		 * @param {boolean}  [scroll_to_last]  Whether we need to scroll to the last post.
-		 *
-		 * @deprecated 1.1.0 - to be removed in 2.0.0
-		 */
-		quickreply.functions.qr_ajax_reload = function(url, request_data, result_function, scroll_to_last) {
-			quickreply.ajaxReload.start(url, request_data, {
-				scroll: (scroll_to_last) ? 'last' : '',
-				callback: (typeof result_function === 'function') ? result_function : null
-			});
-		};
-
-		/**
 		 * pageJump function for QuickReply.
 		 *
 		 * @param {jQuery} $item
@@ -314,16 +297,18 @@
 			var $this = $(this),
 				filterSkip = '.breadcrumbs, [data-skip-responsive]',
 				filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
-				persist = $this.attr('id') === 'nav-main',
-				allLinks = $this.children(),
-				links = allLinks.not(filterSkip),
-				html = '<li class="responsive-menu" style="display: none;"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-				filterLastList = links.filter(filterLast),
-				slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
+				$linksAll = $this.children(),
+				$linksNotSkip = $linksAll.not(filterSkip), // All items that can potentially be hidden
+				$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
+				$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
+				persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
+				html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+				slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
-			if (!persist) {
-				if (links.is('.rightside')) {
-					links.filter('.rightside:first').before(html);
+			// Add a hidden drop-down menu to each links list (except those that already have one)
+			if (!persistent) {
+				if ($linksNotSkip.is('.rightside')) {
+					$linksNotSkip.filter('.rightside:first').before(html);
 					$this.children('.responsive-menu').addClass('rightside');
 				} else {
 					$this.append(html);
@@ -406,10 +391,10 @@
 					$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
 					if ($this.hasClass('post-buttons')) {
-						$('.button', menu).removeClass('button');
-						$('.sr-only', menu).removeClass('sr-only');
-						$('.js-responsive-menu-link', item).addClass('button').addClass('button-icon-only');
-						$('.js-responsive-menu-link .icon', item).removeClass('fa-bars').addClass('fa-ellipsis-h');
+						$('.button', $menuContents).removeClass('button');
+						$('.sr-only', $menuContents).removeClass('sr-only');
+						$('.js-responsive-menu-link').addClass('button').addClass('button-icon-only');
+						$('.js-responsive-menu-link .icon').removeClass('fa-bars').addClass('fa-ellipsis-h');
 					}
 					copied1 = true;
 				}
@@ -462,8 +447,8 @@
 				}
 			}
 
-			if (!persist) {
-				phpbb.registerDropdown(item.find('a.js-responsive-menu-link'), item.find('.dropdown'));
+			if (!persistent) {
+				phpbb.registerDropdown($menu.find('a.js-responsive-menu-link'), $menu.find('.dropdown'), false);
 			}
 
 			// If there are any images in the links list, run the check again after they have loaded

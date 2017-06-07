@@ -492,17 +492,6 @@
 
 	quickreply.plugins.quickNick = new QuickNick();
 
-	/**
-	 * Inserts the nickname of the specified user to quick reply textarea.
-	 *
-	 * @param {jQuery} link jQuery element for the user profile link
-	 *
-	 * @see {@link QuickNick.insert} - call <code>quickreply.plugins.quickNick.insert</code> instead
-	 *
-	 * @deprecated 1.1.0 - to be removed in 2.0.0
-	 */
-	quickreply.functions.quickNick = quickreply.plugins.quickNick.insert;
-
 	if (quickreply.settings.quickNick || quickreply.settings.quickNickString) {
 		quickreply.plugins.quickNick.init();
 

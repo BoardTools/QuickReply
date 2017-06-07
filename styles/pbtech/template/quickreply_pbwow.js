@@ -12,7 +12,7 @@ jQuery(function($) {
 				pm_button = (quickreply.settings.quickNickPM && qr_pm_link.length) ? '<a class="icon-pm" href="' + qr_pm_link.attr('href') + '" title="' + quickreply.language.REPLY_IN_PM + '"></a>' : '';
 			$this.append(pm_button).find('.icon-profile').after(refer_button);
 			$this.find('.icon-refer').click(function() {
-				quickreply.functions.quickNick(link);
+				quickreply.plugins.quickNick.insert(link);
 				link.click();
 				return false;
 			});
