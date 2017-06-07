@@ -915,8 +915,8 @@
 				return;
 			}
 			self.$.not('.qr_fullscreen_form')
-				.find('.qr_smiley_button').delay(100).fadeIn().end()
-				.find('.qr_attach_button').delay(200).fadeIn().end()
+				.find('.qr_smiley_button').delay(qrSlideInterval / 6).fadeIn().end()
+				.find('.qr_attach_button').delay(qrSlideInterval / 3).fadeIn().end()
 				.removeClass('qr_compact_form').css('overflow', 'hidden')
 				.find('#qr_text_action_box, #qr_captcha_container, .submit-buttons')
 				.finish().slideDown(qrSlideInterval).promise().done(function() {
@@ -964,11 +964,6 @@
 
 			quickreply.style.setAdditionalElements();
 
-			// If there are no additional elements, hide the button.
-			if (!$('.additional-element').length) {
-				$('.qr_more_actions_button').hide();
-			}
-
 			if (quickreply.settings.attachBox) {
 				initAttachNotice();
 				bindRefreshUploader();
@@ -1015,8 +1010,9 @@
 			});
 			addButtonTrigger('.qr_more_actions_button', '.qr_fixed_form .additional-element');
 
+			// If there are no additional elements, hide the button.
 			$(window).on('load', function() {
-				if (!$('.qr_fixed_form .additional-element').length) {
+				if (!self.$.find('.additional-element').length) {
 					$('.qr_more_actions_button').css('visibility', 'hidden');
 				}
 			});
@@ -1256,6 +1252,7 @@
 
 			$('.qr_fullscreen_button').toggleClass('fa-arrows-alt fa-times')
 				.attr('title', quickreply.language.FULLSCREEN_EXIT);
+			self.$.find('.qr_smiley_button').delay(qrSlideInterval / 10).fadeIn().end();
 			quickreply.$.textarea.removeClass('qr_fixed_textarea');
 
 			$(document).on('keydown.quickreply.fullscreen', function(e) {
