@@ -290,7 +290,7 @@ class ajax_helper
 
 		$lastclick = $this->request->variable('lastclick', time());
 
-		return $this->qr_merged = ($post_time != $lastclick);
+		return $this->qr_merged = ($post_time > $lastclick);
 	}
 
 	/**

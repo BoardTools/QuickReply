@@ -142,6 +142,8 @@ class listener implements EventSubscriberInterface
 		$post_list = $event['post_list'];
 		$topic_id = $topic_data['topic_id'];
 
+		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
+
 		// Mark post notifications read for this user in this topic
 		$this->helper->notifications_helper->mark_qr_notifications_read($post_list);
 
