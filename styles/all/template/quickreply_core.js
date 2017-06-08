@@ -133,11 +133,9 @@
 		quickreply.functions.alert = function(title, text) {
 			quickreply.functions.clearLoadingTimeout();
 
-			var alert = phpbb.alert(title, text);
+			var $alert = phpbb.alert(title, text);
 			qrAlertTimer = setTimeout(function() {
-				$('#darkenwrapper').fadeOut(phpbb.alertTime, function() {
-					alert.hide();
-				});
+				phpbb.alert.close($alert, true);
 			}, 5000);
 		};
 
@@ -932,7 +930,7 @@
 			if (!$pageBody.length || self.is('extended') || self.is('fullscreen')) {
 				return;
 			}
-			self.$.css('width', $pageBody.width());
+			self.$.css('width', (isMobile()) ? '100%' : $pageBody.width());
 		}
 
 		/**
@@ -1525,6 +1523,7 @@
 			if (typeof res.MESSAGE_TITLE !== 'undefined') {
 				quickreply.loading.stop(true);
 			} else {
+				// Prevent default fading out of #darkenwrapper element.
 				quickreply.loading.proceed();
 			}
 
@@ -1547,8 +1546,9 @@
 					quickreply.ajaxReload.start(
 						res.url.replace(/&amp;/ig, '&'), getReplyData(res.merged), {
 							scroll: 'unread',
+							loading: true,
 							callback: function() {
-								quickreply.loading.proceed();
+								quickreply.loading.stop(true);
 								quickreply.functions.alert(
 									quickreply.language.INFORMATION, quickreply.language.POST_REVIEW
 								);
@@ -1662,7 +1662,10 @@
 			if (typeof callback === "function") {
 				callback(getScrollElement(elements));
 			}
-			quickreply.loading.stop();
+
+			if (!params.loading) {
+				quickreply.loading.stop();
+			}
 		}
 
 		/**
@@ -1695,6 +1698,7 @@
 			};
 			params = {
 				scroll: '',
+				loading: false,
 				callback: null
 			};
 			requestMethod = 'GET';
@@ -1761,6 +1765,7 @@
 
 		/**
 		 * Inserts new posts to the end of the page.
+		 * Triggers qr_completed event on qrPosts container when it is ready.
 		 *
 		 * @param {string} content HTML string with posts' content
 		 */
@@ -1808,6 +1813,7 @@
 
 		/**
 		 * Updates qrPosts container with the given content.
+		 * Triggers qr_completed event on qrPosts container when it is ready.
 		 *
 		 * @param {string} content HTML string with posts' content
 		 */
@@ -1865,6 +1871,9 @@
 		 */
 		function resultSuccess(res) {
 			if (res.result) {
+				if (typeof params.callback === "function") {
+					quickreply.$.qrPosts.one('qr_completed', params.callback);
+				}
 				if (res.insert) {
 					if (res.merged) {
 						prepareMergedPost();
@@ -1872,9 +1881,6 @@
 					insertPosts(res.result);
 				} else {
 					updatePostsContainer(res.result);
-				}
-				if (typeof params.callback === "function") {
-					params.callback();
 				}
 			} else if (res.captcha_refreshed) {
 				$('#qr_captcha_container').slideUp(qrSlideInterval, function() {
@@ -1923,6 +1929,8 @@
 		 * @param {object}   [requestData]            Optional data object
 		 * @param {object}   [requestParams]          Optional object with parameters
 		 * @param {function} [requestParams.callback] The function to be called after successful result
+		 * @param {boolean}  [requestParams.loading]  True if the loading indication should continue after
+		 *                                            successful result (use callback function for stopping it)
 		 * @param {string}   [requestParams.scroll]   'last' - if we need to scroll to the last post,
 		 *                                            'unread' - if we need to scroll to the first unread post
 		 */
