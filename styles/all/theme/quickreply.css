@@ -13,17 +13,8 @@
 	padding-bottom: 5px;
 }
 
-.quote-icon.qr-quickquote::before {
-	background-position: -122px -21px;
-}
-
-.qr_time {
-	display: none;
-}
-
-/* Temporary fix */
-.icon.fa-quote-left + span {
-	display: inline-block;
+.button.qr-quickquote .icon {
+	color: #0A8ED0;
 }
 
 /* Fixed form style. */

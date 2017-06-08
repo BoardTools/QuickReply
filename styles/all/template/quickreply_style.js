@@ -209,8 +209,8 @@
 	 */
 	quickreply.style.getQuoteButtons = function(elements, type) {
 		var container = (type === 'last') ? elements.find('.post-container:last-child') : elements,
-			buttons = container.find('.post-buttons .quote-icon');
-		return (!type) ? buttons.not('.responsive-menu .quote-icon') : buttons; //@TODO - it is not work. Full quote.
+			buttons = container.find('.post-buttons .fa-quote-left').parent('a');
+		return (!type) ? buttons.not('.responsive-menu a:has(.fa-quote-left)') : buttons;
 	};
 
 	/**
@@ -220,7 +220,7 @@
 	 * @param {function} fn       Event handler function
 	 */
 	quickreply.style.responsiveQuotesOnClick = function(elements, fn) {
-		elements.find('.post-buttons .responsive-menu').on('click', '.icon.fa-quote-left, .icon.fa-quote-left + span', fn); // @TODO Get link (parent) instead only icon and text
+		elements.find('.post-buttons .responsive-menu').on('click', 'a:has(.fa-quote-left)', fn);
 	};
 
 	/**

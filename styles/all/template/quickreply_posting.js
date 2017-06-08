@@ -89,9 +89,9 @@
 	}
 
 	if (!quickreply.posting.settings.fullQuoteAllowed) {
-		quickQuoteButtons = postsContainer.find('.post-buttons .quote-icon');
+		quickQuoteButtons = postsContainer.find('.post-buttons .fa-quote-left').parent('a');
 	} else if (!quickreply.posting.settings.lastQuote) {
-		quickQuoteButtons = postsContainer.find('.post:first-of-type .post-buttons .quote-icon');
+		quickQuoteButtons = postsContainer.find('.post:first-of-type .post-buttons .fa-quote-left').parent('a');
 	}
 
 	if (quickQuoteButtons && quickQuoteButtons.length) {
