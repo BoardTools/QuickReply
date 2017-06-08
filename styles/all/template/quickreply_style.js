@@ -34,11 +34,7 @@
 	 * @param {jQuery} elements
 	 */
 	quickreply.style.markRead = function(elements) {
-		var $unreadPosts = elements.find('.unreadpost');
-		if ($unreadPosts.length) {
-			var readPostImg = $('#qr_read_post_img').html();
-			$unreadPosts.removeClass('unreadpost').find('.author span.imageset:first').replaceWith(readPostImg);
-		}
+		elements.find('.unreadpost').removeClass('unreadpost').find('.icon.icon-red').removeClass('icon-red');
 	};
 
 	/**
@@ -180,7 +176,7 @@
 	 * Save message for the full reply form.
 	 */
 	quickreply.style.setPostReplyHandler = function() {
-		$('.action-bar .buttons').find('.reply-icon, .locked-icon').click(function(e) {
+		$('.action-bar .button').has('.fa-reply, .fa-lock').click(function(e) {
 			e.preventDefault();
 			$(window).off('beforeunload.quickreply');
 			quickreply.$.mainForm.off('submit').find('#qr_full_editor').off('click').click();
@@ -238,7 +234,7 @@
 	 * @returns {boolean}
 	 */
 	quickreply.style.isLastPage = function() {
-		var paginationContainer = $('.action-bar.top .pagination ul');
+		var paginationContainer = $('.action-bar.bar-top .pagination ul');
 		return (paginationContainer.find('li').last().hasClass('active') || typeof paginationContainer.html() === "undefined");
 	};
 
