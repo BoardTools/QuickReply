@@ -235,7 +235,7 @@
 	 */
 	quickreply.style.isLastPage = function() {
 		var paginationContainer = $('.action-bar.bar-top .pagination ul');
-		return (paginationContainer.find('li').last().hasClass('active') || typeof paginationContainer.html() === "undefined");
+		return (paginationContainer.find('li').last().hasClass('active') || !paginationContainer.length);
 	};
 
 	/**
