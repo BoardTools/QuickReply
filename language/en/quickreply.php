@@ -23,7 +23,6 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'QR_ATTACH_NOTICE'                 => 'This reply contains at least one attachment.',
 	'QR_BBCODE'                        => 'BBCode',
-	'QR_BBPOST'                        => 'Source of the post',
 	'QR_CANCEL_SUBMISSION'             => 'Cancel submission',
 	'QR_CTRL_ENTER'                    => 'You may also submit your reply by simultaneous pressing Ctrl and Enter keys on your keyboard.',
 	'QR_FORM_HIDE'                     => 'Collapse quick reply form',

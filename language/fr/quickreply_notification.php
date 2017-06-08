@@ -27,5 +27,5 @@ $lang = array_merge($lang, array(
 
 	'NOTIFICATION_TYPE_QUICKNICK' => 'You have been mentioned in the message',
 
-	'QR_BBPOST' => 'Source of the post',
+	'QR_BBPOST' => 'Source du message',
 ));

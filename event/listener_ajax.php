@@ -105,8 +105,6 @@ class listener_ajax implements EventSubscriberInterface
 				$this->ajax_helper->output_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
 			}
 		}
-		// This is needed to be added here for BBCode QR_BBPOST.
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
 
 	/**
@@ -171,8 +169,6 @@ class listener_ajax implements EventSubscriberInterface
 				$this->ajax_helper->send_form_token();
 			}
 		}
-		// This is needed for BBCode QR_BBPOST.
-		$this->user->add_lang_ext('boardtools/quickreply', 'quickreply');
 	}
 
 	/**
