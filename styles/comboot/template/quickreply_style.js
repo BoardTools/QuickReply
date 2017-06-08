@@ -26,7 +26,7 @@
 	 */
 	quickreply.style.setTextareaId = function() {
 		$("#message").closest(".form-group").remove();
-		$("#qr_message").attr("id", "message");
+		$("#qr_message_temp").attr("id", "message");
 	};
 
 	/**
