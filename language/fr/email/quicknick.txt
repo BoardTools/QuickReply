@@ -1,19 +1,19 @@
-Subject: Topic reply notification - "{TOPIC_TITLE}"
+Subject: Notification de nouveau message dans le sujet - « {TOPIC_TITLE} »
 
-Hello {USERNAME},
+Bonjour {USERNAME},
 
-You are receiving this notification because "{AUTHOR_NAME}" addresed you in the topic "{TOPIC_TITLE}" at "{SITENAME}". You can use the following link to view the reply made.
+Vous recevez cette notification car vous avez été mentionné par « {AUTHOR_NAME} » dans le sujet « {TOPIC_TITLE} » sur « {SITENAME} ». Vous pouvez utiliser le lien suivant pour consulter le message.
 
-If you want to view the post, click the following link:
+Pour consulter le message, cliquez sur le lien suivant :
 {U_VIEW_POST}
 
-If you want to view the topic, click the following link:
+Pour consulter le sujet dans son ensemble, cliquez sur le lien suivant :
 {U_TOPIC}
 
-If you want to view the forum, click the following link:
+Pour visiter le forum, cliquez sur le lien suivant :
 {U_FORUM}
 
-If you no longer wish to receive updates about replies quoting you, please update your notification settings here:
+Si vous ne souhaitez plus recevoir de notifications concernant les messages vous mentionnant, vous pouvez cliquer sur le lien suivant pour modifier vos paramètres de notification :
 
 {U_NOTIFICATION_SETTINGS}
 

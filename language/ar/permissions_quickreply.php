@@ -26,4 +26,5 @@ $lang = array_merge($lang, array(
 	//
 	'ACL_A_QUICKREPLY'        => 'يستطيع تعديل إعدادات الرد السريع',
 	'ACL_F_QR_CHANGE_SUBJECT' => 'يستطيع تعديل عنوان المُشاركة',
+	'ACL_F_QR_FULL_QUOTE'     => 'Can use full quote in topics<br /><em>It will be suggested to use quick quote if the user does not have this permission and quick quote feature is enabled.</em>',
 ));

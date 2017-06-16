@@ -182,8 +182,8 @@
 	quickreply.style.setPostReplyHandler = function() {
 		$('.action-bar .buttons').find('.reply-icon, .locked-icon').click(function(e) {
 			e.preventDefault();
-			$(window).off('beforeunload.quickreply');
-			quickreply.$.mainForm.off('submit').find('#qr_full_editor').off('click').click();
+			quickreply.form.prepareForStandardSubmission();
+			quickreply.$.mainForm.find('#qr_full_editor').off('click').click();
 		});
 	};
 

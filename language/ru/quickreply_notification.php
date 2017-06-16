@@ -21,11 +21,15 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'NOTIFICATION_QUICKNICK'	=> array(
-		1	=> '<strong>Обращение по никнейму</strong> от пользователя %1$s в сообщении:',
-		2	=> '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
-		3	=> '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
+	// PLURALS-START
+	'NOTIFICATION_QUICKNICK' => array(
+		1 => '<strong>Обращение по никнейму</strong> от пользователя %1$s в сообщении:',
+		2 => '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
+		3 => '<strong>Обращение по никнейму</strong> от пользователей %1$s в сообщении:',
 	),
+	// PLURALS-END
 
-	'NOTIFICATION_TYPE_QUICKNICK'	=> 'К вам обратились по никнейму в сообщении',
+	'NOTIFICATION_TYPE_QUICKNICK' => 'К вам обратились по никнейму в сообщении',
+
+	'QR_BBPOST' => 'Источник цитаты',
 ));

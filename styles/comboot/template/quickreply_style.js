@@ -185,8 +185,8 @@
 	quickreply.style.setPostReplyHandler = function() {
 		$('.row:has(.pagination)').find('.fa-lock, .fa-pencil-square-o').closest('a').click(function(e) {
 			e.preventDefault();
-			$(window).off('beforeunload.quickreply');
-			quickreply.$.mainForm.off('submit').find('[name="preview"]').off('click').click();
+			quickreply.form.prepareForStandardSubmission();
+			quickreply.$.mainForm.find('[name="preview"]').off('click').click();
 		});
 	};
 

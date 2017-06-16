@@ -582,7 +582,7 @@
 		 * Initializes loading container.
 		 */
 		this.init = function() {
-			$('#page-footer').append('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
+			$('#darkenwrapper').after('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
 				quickreply.language.loading.text + '</span><div id="qr_loading_explain"></div>' +
 				'<div id="qr_loading_cancel"><span>' + quickreply.language.CANCEL_SUBMISSION + '</span></div></div>');
 
@@ -739,7 +739,10 @@
 			setDelayForAttachments();
 
 			// Prevent topic_review false positive - we use our own function for checking new posts.
-			self.$.find('input[name=topic_cur_post_id]').val(0);
+			if (quickreply.settings.ajaxSubmit) {
+				var $topicPostId = self.$.find('input[name="topic_cur_post_id"]');
+				$topicPostId.attr('data-qr-topic-post', $topicPostId.val()).val('0');
+			}
 		};
 
 		/**
@@ -761,7 +764,25 @@
 			formSubmitButtons.prepend(qrFields);
 
 			// Prevent topic_review false positive - we use our own function for checking new posts.
-			self.$.find('input[name=topic_cur_post_id]').val(0);
+			if (quickreply.settings.ajaxSubmit) {
+				var $topicPostId = self.$.find('input[name="topic_cur_post_id"]');
+				$topicPostId.attr('data-qr-topic-post', $topicPostId.val()).val('0');
+			}
+		};
+
+		/**
+		 * Turns off QuickReply-related handlers and restores
+		 * the actual value of topic_cur_post_id form field.
+		 * Should be called before non-Ajax form submissions.
+		 */
+		this.prepareForStandardSubmission = function() {
+			var $topicPostId = quickreply.$.mainForm.find('input[name="topic_cur_post_id"]');
+			if ($topicPostId.val() === '0') {
+				$topicPostId.val($topicPostId.attr('data-qr-topic-post'));
+			}
+
+			$(window).off('beforeunload.quickreply');
+			quickreply.$.mainForm.off('submit');
 		};
 
 		/**
@@ -1904,8 +1925,8 @@
 		 * @param {string} url Requested URL
 		 */
 		function standardReload(url) {
-			$(window).off('beforeunload.quickreply');
-			quickreply.$.mainForm.off('submit').attr('action', url).submit();
+			quickreply.form.prepareForStandardSubmission();
+			quickreply.$.mainForm.attr('action', url).submit();
 		}
 
 		/**
