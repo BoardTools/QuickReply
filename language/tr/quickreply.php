@@ -60,9 +60,9 @@ $lang = array_merge($lang, array(
 	// begin mod CapsLock Transform
 	'QR_TRANSFORM_TEXT'                => 'Change Text Case',
 	'QR_TRANSFORM_TEXT_TOOLTIP'        => 'Press a button to change the case of the selected text',
-	'QR_TRANSFORM_TEXT_LOWER'          => '▼ abc',
-	'QR_TRANSFORM_TEXT_UPPER'          => '▲ ABC',
-	'QR_TRANSFORM_TEXT_INVERS'         => '▼▲ aBC',
+	'QR_TRANSFORM_TEXT_LOWER'          => '&#9660; abc',
+	'QR_TRANSFORM_TEXT_UPPER'          => '&#9650; ABC',
+	'QR_TRANSFORM_TEXT_INVERS'         => '&#9660;&#9650; aBC',
 	'QR_TRANSFORM_TEXT_LOWER_TOOLTIP'  => 'küçük harf',
 	'QR_TRANSFORM_TEXT_UPPER_TOOLTIP'  => 'BÜYÜK HARF',
 	'QR_TRANSFORM_TEXT_INVERS_TOOLTIP' => 'kÜÇÜK/bÜYÜK hARF dEĞİŞTİR',

@@ -21,12 +21,11 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	// PLURALS-START
+	// Translate according to plural rules.
 	'NOTIFICATION_QUICKNICK' => array(
 		1 => '<strong>Mentionné</strong> par %1$s dans le message :',
 		2 => '<strong>Mentionné</strong> par %1$s dans le message :',
 	),
-	// PLURALS-END
 
 	'NOTIFICATION_TYPE_QUICKNICK' => 'Vous avez été mentionné dans le message',
 
