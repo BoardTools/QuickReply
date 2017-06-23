@@ -59,9 +59,14 @@
 	var qrStopHistory = false, qrReplaceHistory = false;
 	if (quickreply.settings.ajaxSubmit || quickreply.settings.ajaxPagination) {
 		$(window).on("popstate", function(e) {
+			var state = e.originalEvent.state;
+			if (!state) {
+				return;
+			}
+
 			qrStopHistory = true;
-			document.title = e.originalEvent.state.title;
-			quickreply.ajaxReload.start(e.originalEvent.state.url);
+			document.title = state.title;
+			quickreply.ajaxReload.start(state.url);
 		});
 
 		/* Workaround for browser's cache. */
