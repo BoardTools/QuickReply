@@ -4,8 +4,12 @@
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
 	'use strict';
 
-	var qrSlideInterval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0,
-		qrAlertTimer = null,
+	var qrAlertTimer = null,
+		qrBoxShadowHeight = 15,
+		qrCompactHeight = 48,
+		qrDefaultStyle = 'height: 9em;',
+		qrSlideInterval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0,
+		qrSmileyBoxAnimationInterval = 500,
 		$body = $('body');
 
 	/***********************/
@@ -59,9 +63,14 @@
 	var qrStopHistory = false, qrReplaceHistory = false;
 	if (quickreply.settings.ajaxSubmit || quickreply.settings.ajaxPagination) {
 		$(window).on("popstate", function(e) {
+			var state = e.originalEvent.state;
+			if (!state) {
+				return;
+			}
+
 			qrStopHistory = true;
-			document.title = e.originalEvent.state.title;
-			quickreply.ajaxReload.start(e.originalEvent.state.url);
+			document.title = state.title;
+			quickreply.ajaxReload.start(state.url);
 		});
 
 		/* Workaround for browser's cache. */
@@ -567,7 +576,7 @@
 		 * Initializes loading container.
 		 */
 		this.init = function() {
-			$('#page-footer').append('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
+			$('#darkenwrapper').after('<div id="qr_loading_text"><i class="fa fa-refresh fa-spin"></i><span>' +
 				quickreply.language.loading.text + '</span><div id="qr_loading_explain"></div>' +
 				'<div id="qr_loading_cancel"><span>' + quickreply.language.CANCEL_SUBMISSION + '</span></div></div>');
 
@@ -724,7 +733,10 @@
 			setDelayForAttachments();
 
 			// Prevent topic_review false positive - we use our own function for checking new posts.
-			self.$.find('input[name=topic_cur_post_id]').val(0);
+			if (quickreply.settings.ajaxSubmit) {
+				var $topicPostId = self.$.find('input[name="topic_cur_post_id"]');
+				$topicPostId.attr('data-qr-topic-post', $topicPostId.val()).val('0');
+			}
 		};
 
 		/**
@@ -746,7 +758,25 @@
 			formSubmitButtons.prepend(qrFields);
 
 			// Prevent topic_review false positive - we use our own function for checking new posts.
-			self.$.find('input[name=topic_cur_post_id]').val(0);
+			if (quickreply.settings.ajaxSubmit) {
+				var $topicPostId = self.$.find('input[name="topic_cur_post_id"]');
+				$topicPostId.attr('data-qr-topic-post', $topicPostId.val()).val('0');
+			}
+		};
+
+		/**
+		 * Turns off QuickReply-related handlers and restores
+		 * the actual value of topic_cur_post_id form field.
+		 * Should be called before non-Ajax form submissions.
+		 */
+		this.prepareForStandardSubmission = function() {
+			var $topicPostId = quickreply.$.mainForm.find('input[name="topic_cur_post_id"]');
+			if ($topicPostId.val() === '0') {
+				$topicPostId.val($topicPostId.attr('data-qr-topic-post'));
+			}
+
+			$(window).off('beforeunload.quickreply');
+			quickreply.$.mainForm.off('submit');
 		};
 
 		/**
@@ -797,7 +827,7 @@
 			} else {
 				$('#smiley-box').stop().animate({
 					right: '0'
-				}, 500);
+				}, qrSmileyBoxAnimationInterval);
 			}
 			self.$.addClass('with_smileys');
 			smileyBoxDisplayed = true;
@@ -812,7 +842,7 @@
 			} else {
 				$('#smiley-box').stop().animate({
 					right: '-1000px'
-				}, 500);
+				}, qrSmileyBoxAnimationInterval);
 				self.$.off('fullscreen.quickreply.smilies');
 				quickreply.$.textarea.off('mousemove.quickreply.smilies');
 			}
@@ -1093,7 +1123,7 @@
 
 			if (scrollBottom - formHeight >= formOffset && !self.is('extended')) {
 				setExtended();
-			} else if (scrollBottom - (self.is('hidden') ? 0 : 48) < formOffset && self.is('extended')) {
+			} else if (scrollBottom - (self.is('hidden') ? 0 : qrCompactHeight) < formOffset && self.is('extended')) {
 				exitExtended();
 			}
 		}
@@ -1164,7 +1194,7 @@
 		function setHidden(immediate) {
 			var slideInterval = (immediate) ? 0 : qrSlideInterval;
 			self.$.finish().animate({
-				bottom: -self.$.height() + 'px'
+				bottom: -self.$.height() - qrBoxShadowHeight + 'px'
 			}, slideInterval).addClass('qr_hidden_form');
 			$('#qr_show_fixed_form').show();
 			checkExtended();
@@ -1316,7 +1346,7 @@
 		 */
 		this.refresh = function() {
 			$('input[name="post"]').removeAttr('data-clicked');
-			quickreply.$.textarea.val('').attr('style', 'height: 9em;');
+			quickreply.$.textarea.val('').attr('style', qrDefaultStyle);
 
 			if ($('#preview').is(':visible')) {
 				quickreply.preview.set(); // Hide preview.
@@ -1889,8 +1919,8 @@
 		 * @param {string} url Requested URL
 		 */
 		function standardReload(url) {
-			$(window).off('beforeunload.quickreply');
-			quickreply.$.mainForm.off('submit').attr('action', url).submit();
+			quickreply.form.prepareForStandardSubmission();
+			quickreply.$.mainForm.attr('action', url).submit();
 		}
 
 		/**

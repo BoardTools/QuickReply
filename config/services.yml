@@ -22,7 +22,7 @@ services:
             - @boardtools.quickreply.listener_helper
         tags:
             - { name: event.listener }
-    
+
     boardtools.quickreply.listener_cp:
         class: boardtools\quickreply\event\listener_cp
         arguments:
@@ -31,14 +31,6 @@ services:
             - @boardtools.quickreply.cp_helper
         tags:
             - { name: event.listener }
-
-    boardtools.quickreply.captcha_helper:
-        class: boardtools\quickreply\functions\captcha_helper
-        arguments:
-            - @config
-            - @template
-            - @request
-            - @captcha.factory
 
     boardtools.quickreply.ajax_helper:
         class: boardtools\quickreply\functions\ajax_helper
@@ -61,6 +53,14 @@ services:
             - @user
             - @request
 
+    boardtools.quickreply.captcha_helper:
+        class: boardtools\quickreply\functions\captcha_helper
+        arguments:
+            - @config
+            - @template
+            - @request
+            - @captcha.factory
+
     boardtools.quickreply.cp_helper:
         class: boardtools\quickreply\functions\cp_helper
         arguments:
@@ -80,21 +80,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    boardtools.quickreply.notifications_helper:
-        class: boardtools\quickreply\functions\notifications_helper
-        arguments:
-            - @auth
-            - @user
-            - @notification_manager
-
-    boardtools.quickreply.plugins_helper:
-        class: boardtools\quickreply\functions\plugins_helper
-        arguments:
-            - @auth
-            - @config
-            - @user
-            - @ext.manager
-
     boardtools.quickreply.listener_helper:
         class: boardtools\quickreply\functions\listener_helper
         arguments:
@@ -110,17 +95,24 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
+    boardtools.quickreply.notifications_helper:
+        class: boardtools\quickreply\functions\notifications_helper
+        arguments:
+            - @auth
+            - @user
+            - @notification_manager
+
+    boardtools.quickreply.plugins_helper:
+        class: boardtools\quickreply\functions\plugins_helper
+        arguments:
+            - @auth
+            - @config
+            - @user
+            - @ext.manager
+
     boardtools.quickreply.notification.type.quicknick:
         class: boardtools\quickreply\notification\quicknick
         shared: false # service MUST not be shared for this to work!
         parent: notification.type.quote
         tags:
             - { name: notification.type }
-
-    boardtools.quickreply.acp_module_helper:
-        class: boardtools\quickreply\functions\acp_module_helper
-        arguments:
-            - @config
-            - @template
-            - @user
-            - @request

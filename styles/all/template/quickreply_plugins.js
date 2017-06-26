@@ -387,7 +387,9 @@
 		 * @returns {boolean}
 		 */
 		function quickNickIsDropdown() {
-			return !!(quickreply.settings.quickNick && !quickreply.settings.quickNickUserType);
+			return !!(quickreply.settings.quickNick && (
+				quickreply.settings.quickNickString || !quickreply.settings.quickNickUserType
+			));
 		}
 
 		/**

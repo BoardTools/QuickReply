@@ -38,7 +38,7 @@ class quickreply_qn_module extends acp_module_helper
 				//
 				'legend2'              => 'ACP_QR_LEGEND_QUICKNICK',
 				'qr_quicknick'         => array('lang' => 'ACP_QR_QUICKNICK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
-				'qr_quicknick_string'  => array('lang' => 'ACP_QR_QUICKNICK_STRING', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_quicknick_string'  => array('lang' => 'ACP_QR_QUICKNICK_STRING', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_quicknick_ref'     => array('lang' => 'ACP_QR_QUICKNICK_REF', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_comma'             => array('lang' => 'ACP_QR_COMMA', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_color_nickname'    => array('lang' => 'ACP_QR_COLOUR_NICKNAME', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),

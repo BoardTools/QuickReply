@@ -185,8 +185,8 @@
 	quickreply.style.setPostReplyHandler = function() {
 		$('.row:has(.pagination)').find('.fa-lock, .fa-pencil-square-o').closest('a').click(function(e) {
 			e.preventDefault();
-			$(window).off('beforeunload.quickreply');
-			quickreply.$.mainForm.off('submit').find('[name="preview"]').off('click').click();
+			quickreply.form.prepareForStandardSubmission();
+			quickreply.$.mainForm.find('[name="preview"]').off('click').click();
 		});
 	};
 
@@ -377,14 +377,19 @@
 
 	// Style-specific functions.
 	function qrSetPosition() {
-		quickreply.$.mainForm.add('#qr_show_fixed_form').css('bottom', $('#footer-nav').height());
+		var $qrFooterElements = $('#qr_show_fixed_form');
+		if (!quickreply.form.is('hidden')) {
+			$qrFooterElements = $qrFooterElements.add(quickreply.$.mainForm);
+		}
+		$qrFooterElements.css('bottom', $('#footer-nav').height());
+
 		if (quickreply.form.is('fullscreen')) {
 			quickreply.$.mainForm.css('padding-top', 0).css('height', '').css('top', $('#header-nav').height());
 		}
 	}
 
 	$(window).on('load resize', qrSetPosition);
-	quickreply.$.mainForm.on('fullscreen-before', function() {
+	$(quickreply.editor.mainForm).on('fullscreen-before', function() {
 		quickreply.$.mainForm.css('padding-top', $('#header-nav').height());
 	}).on('fullscreen', qrSetPosition).on('fullscreen-exit', function() {
 		quickreply.$.mainForm.css('top', 'auto');
@@ -469,7 +474,7 @@
 
 	if (quickreply.settings.formType === 0) {
 		// Hide quick reply form after posting a reply.
-		$("#qr_postform").on("ajax_submit_success", function() {
+		$(quickreply.editor.mainForm).on("ajax_submit_success", function() {
 			var $this = quickreply.$.mainForm.find('.panel-heading span.clickable');
 			if (!$this.hasClass('panel-collapsed')) {
 				$this.parents('.panel-collapsible').find('.panel-body, .panel-footer').slideUp();

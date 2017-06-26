@@ -75,7 +75,7 @@ quickreply.functions = {
 		color = color.replace(/\s/g, "");
 		var colorRGB = color.match(/^rgb\((\d{1,3}[%]?),(\d{1,3}[%]?),(\d{1,3}[%]?)\)$/i), colorHEX = '';
 		for (var i = 1; i <= 3; i++) {
-			colorHEX += Math.round((colorRGB[i][colorRGB[i].length - 1] == "%" ? 2.55 : 1) *
+			colorHEX += Math.round((colorRGB[i][colorRGB[i].length - 1] === "%" ? 2.55 : 1) *
 				parseInt(colorRGB[i])).toString(16).replace(/^(.)$/, '0$1');
 		}
 		return "#" + colorHEX;
@@ -149,10 +149,10 @@ quickreply.language = {
 
 // Language arrays for translit feature.
 quickreply.translit = {
-	foreign_lang: {QR_FOREIGN_LANG},
-	this_lang: {QR_THIS_LANG},
-	foreign_lang_cap: {QR_FOREIGN_LANG_CAP},
-	this_lang_cap: {QR_THIS_LANG_CAP}
+	langFrom: '{LA_QR_TRANSLIT_FROM}'.split(','),
+	langTo: '{LA_QR_TRANSLIT_TO}'.split(','),
+	langFromCaps: '{LA_QR_TRANSLIT_FROM_CAPS}'.split(','),
+	langToCaps: '{LA_QR_TRANSLIT_TO_CAPS}'.split(',')
 };
 <!-- ENDIF -->
 

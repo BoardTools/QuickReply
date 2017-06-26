@@ -26,4 +26,5 @@ $lang = array_merge($lang, array(
 	//
 	'ACL_A_QUICKREPLY'        => 'Peut modifier les paramètres de la réponse rapide.',
 	'ACL_F_QR_CHANGE_SUBJECT' => 'Peut modifier le sujet du message.',
+	'ACL_F_QR_FULL_QUOTE'     => 'Peut utiliser la citation complète dans les sujets.<br /><em>Si la citation rapide est activée, celle-ci sera suggérée si l’utilisateur n’a pas les permissions sur la citation complète.</em>',
 ));
