@@ -4,8 +4,12 @@
 	// https://www.phpbb.com/community/viewtopic.php?p=13589106#p13589106
 	'use strict';
 
-	var qrSlideInterval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0,
-		qrAlertTimer = null,
+	var qrAlertTimer = null,
+		qrBoxShadowHeight = 15,
+		qrCompactHeight = 48,
+		qrDefaultStyle = 'height: 9em;',
+		qrSlideInterval = (quickreply.settings.softScroll) ? quickreply.settings.scrollInterval : 0,
+		qrSmileyBoxAnimationInterval = 500,
 		$body = $('body');
 
 	/***********************/
@@ -838,7 +842,7 @@
 			} else {
 				$('#smiley-box').stop().animate({
 					right: '0'
-				}, 500);
+				}, qrSmileyBoxAnimationInterval);
 			}
 			self.$.addClass('with_smileys');
 			smileyBoxDisplayed = true;
@@ -853,7 +857,7 @@
 			} else {
 				$('#smiley-box').stop().animate({
 					right: '-1000px'
-				}, 500);
+				}, qrSmileyBoxAnimationInterval);
 				self.$.off('fullscreen.quickreply.smilies');
 				quickreply.$.textarea.off('mousemove.quickreply.smilies');
 			}
@@ -1134,7 +1138,7 @@
 
 			if (scrollBottom - formHeight >= formOffset && !self.is('extended')) {
 				setExtended();
-			} else if (scrollBottom - (self.is('hidden') ? 0 : 48) < formOffset && self.is('extended')) {
+			} else if (scrollBottom - (self.is('hidden') ? 0 : qrCompactHeight) < formOffset && self.is('extended')) {
 				exitExtended();
 			}
 		}
@@ -1205,7 +1209,7 @@
 		function setHidden(immediate) {
 			var slideInterval = (immediate) ? 0 : qrSlideInterval;
 			self.$.finish().animate({
-				bottom: -self.$.height() + 'px'
+				bottom: -self.$.height() - qrBoxShadowHeight + 'px'
 			}, slideInterval).addClass('qr_hidden_form');
 			$('#qr_show_fixed_form').show();
 			checkExtended();
@@ -1357,7 +1361,7 @@
 		 */
 		this.refresh = function() {
 			$('input[name="post"]').removeAttr('data-clicked');
-			quickreply.$.textarea.val('').attr('style', 'height: 9em;');
+			quickreply.$.textarea.val('').attr('style', qrDefaultStyle);
 
 			if ($('#preview').is(':visible')) {
 				quickreply.preview.set(); // Hide preview.
