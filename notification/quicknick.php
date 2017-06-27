@@ -56,7 +56,7 @@ class quicknick extends \phpbb\notification\type\quote
 	private function get_mentioned_users($xml)
 	{
 		$usernames = array();
-		if (strpos($xml, '<REF ') === false)
+		if (!preg_match('/<REF[ >]/', $xml))
 		{
 			return $usernames;
 		}
@@ -66,7 +66,8 @@ class quicknick extends \phpbb\notification\type\quote
 		$xpath = new \DOMXPath($dom);
 		foreach ($xpath->query('//REF') as $username)
 		{
-			$usernames[] = $username->textContent;
+			preg_match('#^\[ref(.*?)\](.+)\[\/ref\]$#ui', $username->textContent, $matches);
+			$usernames[] = $matches[2];
 		}
 
 		return $usernames;

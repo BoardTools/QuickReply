@@ -34,7 +34,7 @@
 	 * @param {jQuery} elements
 	 */
 	quickreply.style.markRead = function(elements) {
-		elements.find('.unreadpost').removeClass('unreadpost').find('.icon.icon-red').removeClass('icon-red');
+		elements.find('.unreadpost').removeClass('unreadpost').find('.icon.icon-red').removeClass('icon-red').addClass('icon-lightgray');
 	};
 
 	/**
