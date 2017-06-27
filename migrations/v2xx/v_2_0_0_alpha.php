@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) 2014 - 2016 Tatiana5 and LavIgor
+* @copyright (c) Tatiana5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -11,6 +11,11 @@ namespace boardtools\quickreply\migrations\v2xx;
 
 class v_2_0_0_alpha extends \phpbb\db\migration\migration
 {
+	public function effectively_installed()
+	{
+		return isset($this->config['qr_version']) && version_compare($this->config['qr_version'], '2.0.0-alpha', '>=');
+	}
+
 	public static function depends_on()
 	{
 		return array('\boardtools\quickreply\migrations\v2xx\v_2_0_0_dev2');
