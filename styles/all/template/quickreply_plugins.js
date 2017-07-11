@@ -117,7 +117,7 @@
 		self._insertQuote = function() {
 			var postAuthor = $('#qr_author_p' + self._postID),
 				username = postAuthor.text(),
-				userID = postAuthor.attr('data-url').replace(/(.)*[?&]u=/, ''),
+				userID = postAuthor.attr('data-id'),
 				postTime = $('#qr_time' +  self._postID).text();
 
 			if (self._selection) {
