@@ -1,4 +1,4 @@
-/* global quickreply, grecaptcha, insert_text, split_lines */
+/* global quickreply, grecaptcha, hljs, insert_text, split_lines */
 /* jshint -W040 */
 ;(function($, window, document) {
 	// do stuff here and use $, window and document safely
@@ -546,4 +546,20 @@
 			});
 		});
 	}
+
+	/***********************/
+	/* highlight.js Plugin */
+	/***********************/
+	$(window).on('load', function() {
+		if (hljs && hljs.highlightBlock) {
+			var qrHighlightCode = function(e, elements) {
+				elements.find('pre code').each(function(i, block) {
+					hljs.highlightBlock(block);
+				});
+			};
+
+			quickreply.$.qrPosts.on('qr_completed', qrHighlightCode);
+			quickreply.$.mainForm.on('ajax_submit_preview', qrHighlightCode);
+		}
+	});
 })(jQuery, window, document);
