@@ -52,7 +52,10 @@ abstract class acp_module_helper
 		global $config, $template, $user, $request;
 
 		$this->config = $config;
-		$this->new_config = $config;
+		foreach ($config as $key => $value)
+		{
+			$this->new_config[$key] = $value;
+		}
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
