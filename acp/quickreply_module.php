@@ -76,7 +76,10 @@ class quickreply_module
 			$user->add_lang($display_vars['lang']);
 		}
 
-		$this->new_config = $config;
+		foreach ($config as $key => $value)
+		{
+			$this->new_config[$key] = $value;
+		}
 		$cfg_array = ($request->is_set('config')) ? $request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
