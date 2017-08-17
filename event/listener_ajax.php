@@ -68,7 +68,7 @@ class listener_ajax implements EventSubscriberInterface
 			'core.posting_modify_submission_errors' => 'detect_new_posts',
 			'core.posting_modify_template_vars'     => 'ajax_preview',
 			'core.submit_post_end'                  => array('ajax_submit', -2),
-			'rxu.postsmerging.posts_merging_end'    => 'ajax_submit',
+			'rxu.postsmerging.posts_merging_end'    => array('ajax_submit', -2),
 		);
 	}
 
