@@ -123,8 +123,8 @@ class cp_helper
 	public function qr_init_forums_data($forum_data)
 	{
 		return array(
-			'qr_ajax_submit' => $forum_data['qr_ajax_submit'],
-			'qr_form_type'   => $forum_data['qr_form_type'],
+			'qr_ajax_submit' => (isset($forum_data['qr_ajax_submit'])) ? $forum_data['qr_ajax_submit'] : 0,
+			'qr_form_type'   => (isset($forum_data['qr_form_type'])) ? $forum_data['qr_form_type'] : 0,
 		);
 	}
 }
