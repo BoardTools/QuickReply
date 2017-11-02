@@ -551,7 +551,7 @@
 	/* highlight.js Plugin */
 	/***********************/
 	$(window).on('load', function() {
-		if (hljs && hljs.highlightBlock) {
+		if (typeof hljs !== 'undefined' && hljs.highlightBlock) {
 			var qrHighlightCode = function(e, elements) {
 				elements.find('pre code').each(function(i, block) {
 					hljs.highlightBlock(block);
