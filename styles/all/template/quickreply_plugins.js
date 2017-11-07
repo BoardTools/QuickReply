@@ -124,7 +124,8 @@
 				quickreply.form.show();
 
 				if (quickreply.settings.allowBBCode) {
-					insert_text('[quote=' + username + ' post_id=' + self._postID + ' time=' + postTime + ' user_id=' + userID + ']' + self._selection + '[/quote]\r');
+					//insert_text('[quote=' + username + ' post_id=' + self._postID + ' time=' + postTime + ' user_id=' + userID + ']' + self._selection + '[/quote]\r');
+					insert_text(generateQuote(self._selection, {post_id: self._postID, time: postTime, user_id: userID, author: username}));
 				} else {
 					insert_text(username + ' ' + quickreply.language.WROTE + ':' + '\n');
 
