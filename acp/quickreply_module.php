@@ -22,6 +22,8 @@ class quickreply_module extends acp_module_helper
 
 		$this->db = $db;
 
+		$this->ext_name ='boardtools/quickreply';
+		$this->ext_langname = 'quickreply';
 		$this->tpl_name = 'acp_quickreply';
 		$this->form_key = 'config_quickreply';
 		add_form_key($this->form_key);
