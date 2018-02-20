@@ -40,15 +40,48 @@ class plugins_helper
 	}
 
 	/**
+	 * Returns whether posts merging is allowed in current topic.
+	 * Used only when PostsMerging extension is enabled.
+	 *
+	 * @param int $forum_id Current forum ID
+	 * @param int $topic_id Current topic ID
+	 * @return bool
+	 */
+	private function posts_merging_allowed($forum_id, $topic_id)
+	{
+		return $this->auth->acl_get('u_postsmerging') &&
+			$this->auth->acl_get('u_postsmerging_ignore') &&
+			$this->auth->acl_get('f_noapprove', $forum_id) &&
+			!$this->excluded_from_merge($forum_id, $topic_id);
+	}
+
+	/**
+	 * Returns whether the current topic is excluded from posts merging.
+	 * Used only when PostsMerging extension is enabled.
+	 *
+	 * @param int $forum_id Current forum ID
+	 * @param int $topic_id Current topic ID
+	 * @return bool
+	 */
+	private function excluded_from_merge($forum_id, $topic_id)
+	{
+		return (in_array($forum_id, explode(',', $this->config['merge_no_forums']))
+			|| in_array($topic_id, explode(',', $this->config['merge_no_topics'])));
+	}
+
+	/**
 	 * Returns template variables for supported extensions for quick reply.
 	 *
+	 * @param int $forum_id Current forum ID
+	 * @param int $topic_id Current topic ID
 	 * @return array
 	 */
-	public function template_variables_for_extensions()
+	public function template_variables_for_extensions($forum_id, $topic_id)
 	{
 		$template_variables = array();
 		if (
 			$this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') &&
+			$this->posts_merging_allowed($forum_id, $topic_id) &&
 			$this->user->data['is_registered'] &&
 			$this->config['merge_interval']
 		)

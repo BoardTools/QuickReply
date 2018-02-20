@@ -258,13 +258,14 @@ class listener_helper
 	 * Assign template variables if quick reply is enabled
 	 *
 	 * @param int $forum_id Forum ID
+	 * @param int $topic_id Topic ID
 	 */
-	public function assign_template_variables_for_qr($forum_id)
+	public function assign_template_variables_for_qr($forum_id, $topic_id)
 	{
 		$this->template_variables_for_qr($forum_id);
-		$this->template_variables += $this->form_helper->form_template_variables;
-		$this->template_variables += $this->plugins_helper->template_variables_for_plugins($forum_id);
-		$this->template_variables += $this->plugins_helper->template_variables_for_extensions();
+		$this->template_variables += $this->form_helper->form_template_variables
+			+ $this->plugins_helper->template_variables_for_plugins($forum_id)
+			+ $this->plugins_helper->template_variables_for_extensions($forum_id, $topic_id);
 
 		$this->template->assign_vars($this->template_variables);
 	}

@@ -156,7 +156,7 @@ class listener implements EventSubscriberInterface
 
 			$this->helper->form_helper->prepare_qr_form($forum_id, $topic_id);
 
-			$this->helper->assign_template_variables_for_qr($forum_id);
+			$this->helper->assign_template_variables_for_qr($forum_id, $topic_id);
 
 			$add_re = ($this->config['qr_enable_re']) ? 'Re: ' : '';
 			$this->template->assign_var('SUBJECT', $this->request->variable('subject', $add_re . censor_text($topic_data['topic_title']), true));
