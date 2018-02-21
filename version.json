@@ -1,9 +1,9 @@
 {
     "unstable": {
         "2.0": {
-            "current": "2.0.0-beta",
-            "announcement": "https://boardtools.ru/QuickReply/#v2.0.0-beta1",
-            "download": "https://boardtools.ru/download/QuickReply/v2.0.0-beta1.zip",
+            "current": "2.0.0-beta2",
+            "announcement": "https://boardtools.ru/QuickReply/#v2.0.0-beta2",
+            "download": "https://boardtools.ru/download/QuickReply/v2.0.0-beta2.zip",
             "eol": null,
             "security": false
         },
