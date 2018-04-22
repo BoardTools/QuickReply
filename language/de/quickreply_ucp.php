@@ -21,10 +21,10 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, array(
-	'QR_CHANGE_QUICKNICK_STRING' => 'Switch dropdown menu when you click on the nickname to link “Refer by username” under avatar',
+	'QR_CHANGE_QUICKNICK_STRING' => 'Dropdown-Menü wechseln, wenn du auf den Nicknamen klickst, um auf „Auf Benutzernamen verweisen“ unter Avatar zu linken.',
 	'QR_ENABLE_AJAX_PAGINATION'  => 'Lade das Schnellantwort Formular nicht neu wenn im Thema navigiert wird',
-	'QR_ENABLE_SCROLL'           => 'Aktiviere das Auto Scroll Feature wenn in einem Thema navigiert wird',
-	'QR_ENABLE_SOFT_SCROLL'      => 'Aktiviere sanftes Scrollen und Animationen wenn ein Thema navigiert wird oder nach einer Schnellantwort',
-	'QR_ENABLE_WARNING'          => 'Warn if the entered quick reply can be lost',
-	'QR_FIX_EMPTY_FORM'          => 'Allow to fix quick reply form when it is empty',
+	'QR_ENABLE_SCROLL'           => 'Aktiviere das Auto Scroll-Feature wenn in einem Thema navigiert wird',
+	'QR_ENABLE_SOFT_SCROLL'      => 'Aktiviere sanftes Scrollen und Animationen wenn im Thema navigiert wird und nach einer Schnellantwort',
+	'QR_ENABLE_WARNING'          => 'Warne, wenn eine eingegebene Schnellantwort verloren gehen könnte',
+	'QR_FIX_EMPTY_FORM'          => 'Erlaube, das Schnellantwortformular zu fixieren, wenn es leer ist',
 ));

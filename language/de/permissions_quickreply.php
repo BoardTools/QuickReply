@@ -24,7 +24,7 @@ $lang = array_merge($lang, array(
 	'ACP_QUICKREPLY'          => 'Schnellantwort',
 	'ACP_QUICKREPLY_EXPLAIN'  => 'Schnellantwort Einstellungen',
 	//
-	'ACL_A_QUICKREPLY'        => 'Kann die Einstellungen von den Schnellantworten ändern',
-	'ACL_F_QR_CHANGE_SUBJECT' => 'Kann den Titel des Beitrags ändern',
-	'ACL_F_QR_FULL_QUOTE'     => 'Can use full quote in topics<br /><em>It will be suggested to use quick quote if the user does not have this permission and quick quote feature is enabled.</em>',
+	'ACL_A_QUICKREPLY'        => 'Kann die Einstellungen der Schnellantwort ändern',
+	'ACL_F_QR_CHANGE_SUBJECT' => 'Kann den Beitragstitel ändern',
+	'ACL_F_QR_FULL_QUOTE'     => 'Kann Komplettzitat in Themen benutzen <br><em>Es wird vorgeschlagen, Schnellzitate zu verwenden, wenn der Benutzer diese Berechtigung nicht besitzt, und die Funktion für Schnellzitate aktiviert ist.</em>',
 ));

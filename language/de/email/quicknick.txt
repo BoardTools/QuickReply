@@ -1,19 +1,19 @@
-Subject: Beitrags Antwort Benachrichtigung - "{TOPIC_TITLE}"
+Subject: Beitragsantwort Benachrichtigung - "{TOPIC_TITLE}"
 
 Hallo {USERNAME},
 
-Du erhälst diese Benachrichtigung weil "{AUTHOR_NAME}" dich im Thema "{TOPIC_TITLE}" im "{SITENAME}" erwähnt hat. Du kannst die folgenden Links nutzen um die Antwort zu sehen.
+Du erhältst diese Benachrichtigung, weil "{AUTHOR_NAME}" dich im Thema "{TOPIC_TITLE}" im Forum "{SITENAME}" erwähnt hat. Du kannst die folgenden Links nutzen um die Antwort zu sehen.
 
-If you want to view the post, click the following link:
+Wenn du den Beitrag sehen möchtest, klicke auf den folgenden Link:
 {U_VIEW_POST}
 
-If you want to view the topic, click the following link:
+Wenn du das Thema besuchen möchtest, klicke auf den folgenden Link:
 {U_TOPIC}
 
-If you want to view the forum, click the following link:
+Wenn du das Forum besuchen möchtest, klicke auf den folgenden Link:
 {U_FORUM}
 
-If you no longer wish to receive updates about replies mentioning you, please update your notification settings here:
+Wenn du nicht länger Aktualisierungen über Antworten, die dich erwähnen, erhalten möchtest, bitte aktualisiere deine Benachrichtigungseinstellungen hier:
 
 {U_NOTIFICATION_SETTINGS}
 
