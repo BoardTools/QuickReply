@@ -134,6 +134,16 @@ class listener_ajax implements EventSubscriberInterface
 				)));
 			}
 
+			//Fix 3.2.4+, add lastclick
+			if (phpbb_version_compare($this->config['version'], '3.2.4', '>='))
+			{
+				$qr_hidden_fields = array(
+					'lastclick'				=> (int) time(),
+				);
+
+				$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields($qr_hidden_fields));
+			}
+
 			$this->template->assign_vars($this->ajax_helper->template_variables_for_ajax($topic_data));
 		}
 	}
