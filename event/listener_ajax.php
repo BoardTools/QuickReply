@@ -134,11 +134,11 @@ class listener_ajax implements EventSubscriberInterface
 				)));
 			}
 
-			//Fix 3.2.4+, add lastclick
+			// Add lastclick for phpBB 3.2.4+
 			if (phpbb_version_compare($this->config['version'], '3.2.4', '>='))
 			{
 				$qr_hidden_fields = array(
-					'lastclick'				=> (int) time(),
+					'lastclick' => (int) time(),
 				);
 
 				$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields($qr_hidden_fields));
