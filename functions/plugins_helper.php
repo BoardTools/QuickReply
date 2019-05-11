@@ -86,7 +86,8 @@ class plugins_helper
 			$this->config['merge_interval']
 		)
 		{
-			// Always show the checkbox if PostsMerging extension is installed.
+			// Always show the checkbox if PostsMerging extension is installed and
+			// the user has the permission to use this option in current topic.
 			$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
 			$template_variables += array('POSTS_MERGING_OPTION' => true);
 		}
