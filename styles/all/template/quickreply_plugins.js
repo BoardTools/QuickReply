@@ -52,12 +52,49 @@
 			if (evt.type === 'touchstart') {
 				evt.pageX = evt.originalEvent.touches[0].pageX;
 				evt.pageY = evt.originalEvent.touches[0].pageY;
+			} else if (evt.type === 'selectionchange') {
+				return self._getSelectionCoords();
 			}
 
 			return {
 				x: evt.pageX || evt.clientX + document.documentElement.scrollLeft, // FF || IE
 				y: evt.pageY || evt.clientY + document.documentElement.scrollTop
 			};
+		};
+
+		/**
+		 * Returns an object containing the coordinates for the end of current text selection.
+		 * Original author: Tim Down (https://stackoverflow.com/a/6847328)
+		 *
+		 * @returns {{x: number, y: number}}
+		 */
+		self._getSelectionCoords = function() {
+			var sel = document.selection, range, rects, rect;
+			var x = 0, y = 0;
+
+			if (sel) {
+				if (sel.type !== "Control") {
+					range = sel.createRange();
+					range.collapse(false);
+					x = range.boundingLeft;
+					y = range.boundingBottom;
+				}
+			} else if (window.getSelection) {
+				sel = window.getSelection();
+				if (sel.rangeCount) {
+					range = sel.getRangeAt(sel.rangeCount - 1).cloneRange();
+					if (range.getClientRects) {
+						range.collapse(false);
+						rects = range.getClientRects();
+						if (rects.length > 0) {
+							rect = rects[rects.length - 1];
+							x = rect.left;
+							y = rect.bottom;
+						}
+					}
+				}
+			}
+			return { x: x ? x + $(document).scrollLeft() : 0, y: y ? y + $(document).scrollTop() : 0 };
 		};
 
 		/**
@@ -204,6 +241,11 @@
 			}
 
 			var coordinates = self._getCoordinates(evt);
+			if (!coordinates.x && !coordinates.y) {
+				// Prevent possible positioning bugs (e.g. in IE8)
+				return;
+			}
+
 			// Which mouse button is pressed?
 			var key = evt.button || evt.which || null; // IE || FF || Unknown
 
@@ -211,11 +253,12 @@
 
 			setTimeout(function() { // Timeout prevents popup when clicking on selected text
 				self._getSelection();
+				self._removeDropdown();
 
 				if (self._selection && key <= 1) { // If text selected && right mouse button not pressed
-					self._removeDropdown();
-					self._setDropdown(quickreply.style.quickQuoteDropdown(coordinates.x, coordinates.y)
-						.mousedown(insertQuickQuote));
+					var $dropdown = quickreply.style.quickQuoteDropdown(coordinates.x, coordinates.y)
+						.mousedown(insertQuickQuote);
+					self._setDropdown($dropdown);
 				}
 			}, 0);
 		}
@@ -226,15 +269,26 @@
 		 * @param {event} evt jQuery Event object
 		 */
 		function handleQuickQuote(evt) {
-			addQuickQuote(evt, $(this));
+			var $content = $(this);
+			addQuickQuote(evt, $content);
 
 			if (!quickQuoteCancelEvent) {
-				quickreply.$.qrPosts.on('mousemove', '.content', addQuickQuote);
-
-				$(document.body).one('mouseup', function() {
-					quickreply.$.qrPosts.off('mousemove', '.content', addQuickQuote);
-					quickQuoteCancelEvent = false;
-				});
+				if ('onselectionchange' in document) {
+					$(document).on('selectionchange.quickreply', function (evt) {
+						addQuickQuote(evt, $content);
+					});
+					$(document.body).one('mouseup', function() {
+						$(document).off('selectionchange.quickreply');
+						quickQuoteCancelEvent = false;
+					});
+				} else {
+					// Fall back to mouse events for older browsers - this method has drawbacks on mobile devices
+					quickreply.$.qrPosts.on('mousemove', '.content', addQuickQuote);
+					$(document.body).one('mouseup', function() {
+						quickreply.$.qrPosts.off('mousemove', '.content', addQuickQuote);
+						quickQuoteCancelEvent = false;
+					});
+				}
 
 				quickQuoteCancelEvent = true;
 			}
@@ -245,10 +299,11 @@
 		 */
 		self.init = function() {
 			if ('ontouchstart' in window) {
-				quickreply.$.qrPosts.on('mousedown touchstart', '.content', handleQuickQuote);
+				quickreply.$.qrPosts.on('touchstart', '.content', handleQuickQuote);
 			}
 
-			quickreply.$.qrPosts.on('mouseup', '.content', addQuickQuote);
+			quickreply.$.qrPosts.on('mousedown', '.content', handleQuickQuote)
+				.on('mouseup', '.content', addQuickQuote);
 		};
 	}
 
