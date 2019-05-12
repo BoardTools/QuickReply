@@ -1,16 +1,16 @@
 {
     "unstable": {
         "2.0": {
-            "current": "2.0.0-beta3",
-            "announcement": "https://boardtools.ru/QuickReply/#v2.0.0-beta3",
-            "download": "https://boardtools.ru/download/QuickReply/v2.0.0-beta3.zip",
+            "current": "2.0.0-beta4",
+            "announcement": "https://boardtools.ru/QuickReply/#v2.0.0-beta4",
+            "download": "https://boardtools.ru/download/QuickReply/v2.0.0-beta4.zip",
             "eol": null,
             "security": false
         },
         "1.1": {
-            "current": "1.1.0-RC2",
-            "announcement": "https://boardtools.ru/QuickReply/#v1.1.0-RC2",
-            "download": "https://boardtools.ru/download/QuickReply/v1.1.0-RC2.zip",
+            "current": "1.1.0-RC3",
+            "announcement": "https://boardtools.ru/QuickReply/#v1.1.0-RC3",
+            "download": "https://boardtools.ru/download/QuickReply/v1.1.0-RC3.zip",
             "eol": null,
             "security": false
         }
