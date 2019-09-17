@@ -1598,6 +1598,8 @@
 				case "outdated_form":
 					quickreply.loading.setExplain(quickreply.language.loading.NEW_FORM_TOKEN);
 
+					quickreply.$.mainForm.trigger('qr_outdated_form');
+
 					// data-clicked attribute is cleared below, but we need to click the same button after the timeout.
 					var $clickedButton = quickreply.$.mainForm.find('input[data-clicked="true"]');
 
