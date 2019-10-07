@@ -127,6 +127,7 @@
 
 		this._postID = 0;
 		this._selection = '';
+		this._mode = 'quick';
 
 		var self = this,
 			clientPC = navigator.userAgent.toLowerCase(), // Get client info
@@ -139,12 +140,25 @@
 		self._getSelection = function() {
 			self._selection = '';
 
-			if (window.getSelection && !isIE && !window.opera) {
-				self._selection = window.getSelection().toString();
-			} else if (document.getSelection && !isIE) {
-				self._selection = document.getSelection();
-			} else if (document.selection) {
-				self._selection = document.selection.createRange().text;
+			// if (window.getSelection && !isIE && !window.opera) {
+				// self._selection = window.getSelection().toString();
+			// } else if (document.getSelection && !isIE) {
+				// self._selection = document.getSelection();
+			// } else if (document.selection) {
+				// self._selection = document.selection.createRange().text;
+			// }
+
+			// In full quote mode, get selected text only from current post where quote button is actually pressed
+			// In quick quote mode, get any selected text
+			var selection = window.getSelection();
+			if (selection && selection.toString() != '') {
+				if (self._mode == 'full') {
+					var selectedPostID = $(selection.anchorNode).parents('.post').attr('id').replace('p', '');
+					if (selectedPostID != self._postID) {
+						return;
+					}
+				}
+				self._selection = selection.toString();
 			}
 		};
 
@@ -152,6 +166,12 @@
 		 * Inserts a quote from the specified post to quick reply textarea.
 		 */
 		self._insertQuote = function() {
+			// Re-check _postID in quick quote mode as it may be incorrect in some cases
+			var selection = window.getSelection();
+			if (self._mode == 'quick' && selection && selection.toString() != '') {
+				self._postID = $(selection.anchorNode).parents('.post').attr('id').replace('p', '');
+			}
+
 			var postAuthor = $('#qr_author_p' + self._postID),
 				username = postAuthor.text(),
 				userID = postAuthor.attr('data-id'),
@@ -191,6 +211,7 @@
 		 * @returns {boolean}
 		 */
 		function insertQuickQuote() {
+			self._mode = 'quick';
 			self._insertQuote();
 			self._removeDropdown();
 			return false;
@@ -219,6 +240,7 @@
 			var key = evt.button || evt.which || null; // IE || FF || Unknown
 
 			self._postID = quickreply.style.getPostId($element);
+			self._mode = 'quick';
 
 			setTimeout(function() { // Timeout prevents popup when clicking on selected text
 				self._getSelection();
@@ -331,6 +353,7 @@
 		function addFullQuote(e, element) {
 			self._postID = quickreply.style.getPostId(element);
 			self._selection = '';
+			self._mode = 'full';
 
 			if (quickreply.settings.quickQuoteButton) {
 				self._getSelection();
