@@ -12,7 +12,7 @@
 {% if (CAPTCHA_TEMPLATE and S_CONFIRM_CODE) %}
 <!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
 <div id="qr_captcha_container">
-<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+{% include CAPTCHA_TEMPLATE %}
 </div>
 {% endif %}
 
@@ -24,7 +24,7 @@
 
 	// Define the bbCode tags
 	var bbcode = new Array();
-	var bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
+	var bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'{% for custom_tag in custom_tags %}, {custom_tag.BBCODE_NAME}{% endfor %});
 	var imageTag = false;
 
 	function change_palette()
@@ -95,7 +95,7 @@
 {% endif %}
 </script>
 {% if not(S_ABBC3_QR_BBCODES) %}
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js?assets_version={T_ASSETS_VERSION} -->
+{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/editor.js' %}
 {% endif %}
 
 {% if (S_BBCODE_BUTTONS and not(S_ABBC3_QR_BBCODES)) %}

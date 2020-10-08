@@ -1,6 +1,6 @@
 {% if S_VIEWTOPIC %}
-<!-- INCLUDECSS @boardtools_quickreply/quickreply_main.css?assets_version={T_ASSETS_VERSION} -->
-<!-- INCLUDECSS @boardtools_quickreply/quickreply.css?assets_version={T_ASSETS_VERSION} -->
+{% INCLUDECSS '@boardtools_quickreply/quickreply_main.css' %}
+{% INCLUDECSS '@boardtools_quickreply/quickreply.css' %}
 {% elseif S_IN_POSTING %}
-<!-- INCLUDECSS @boardtools_quickreply/quickreply.css?assets_version={T_ASSETS_VERSION} -->
+{% INCLUDECSS '@boardtools_quickreply/quickreply.css' %}
 {% endif %}
