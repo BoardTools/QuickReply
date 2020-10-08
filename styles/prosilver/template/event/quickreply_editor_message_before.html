@@ -34,11 +34,11 @@
 
 		if (e.style.display == 'block')
 		{
-			document.getElementById('bbpalette').value = '{LA_FONT_COLOR_HIDE}';
+			document.getElementById('bbpalette').value = '{{ lang("FONT_COLOR_HIDE")|addslashes }}';
 		}
 		else
 		{
-			document.getElementById('bbpalette').value = '{LA_FONT_COLOR}';
+			document.getElementById('bbpalette').value = '{{ lang("FONT_COLOR")|addslashes }}';
 		}
 	}
 
@@ -149,7 +149,7 @@
 		<i class="icon fa-flash fa-fw" aria-hidden="true"></i>
 	</button>
 	{% endif %}
-	<button type="button" class="button button-icon-only bbcode-color" name="bbpalette" id="bbpalette" value="{L_FONT_COLOR}" onclick="change_palette();" title="{{ lang('BBCODE_S_HELP') }}">
+	<button type="button" class="button button-icon-only bbcode-color" name="bbpalette" id="bbpalette" value="{{ lang('FONT_COLOR') }}" onclick="change_palette();" title="{{ lang('BBCODE_S_HELP') }}">
 		<i class="icon fa-tint fa-fw" aria-hidden="true"></i>
 	</button>
 	<select name="addbbcode20" class="bbcode-size" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{{ lang('BBCODE_F_HELP') }}">
