@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) Tatiana5 and LavIgor
+* @copyright (c) Татьяна5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -18,23 +18,23 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\boardtools\quickreply\migrations\v0xx\v_0_1_2');
+		return ['\boardtools\quickreply\migrations\v0xx\v_0_1_2'];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('custom', array(array($this, 'install_bbcode_for_qr'))),
+		return [
+			['custom', [[$this, 'install_bbcode_for_qr']]],
 
 			// Add configs
-			array('config.add', array('qr_attach', '1')),
-			array('config.add', array('qr_show_subjects', '0')),
-			array('config.add', array('qr_color_nickname', '1')),
-			array('config.add', array('qr_show_button_translit', '0')),
+			['config.add', ['qr_attach', '1']],
+			['config.add', ['qr_show_subjects', '0']],
+			['config.add', ['qr_color_nickname', '1']],
+			['config.add', ['qr_show_button_translit', '0']],
 
 			// Update existing configs
-			array('config.update', array('qr_version', '0.1.3')),
-		);
+			['config.update', ['qr_version', '0.1.3']],
+		];
 	}
 
 	public function install_bbcode_for_qr()
@@ -66,37 +66,37 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 
 	public function get_bbcode_data()
 	{
-		return array(
-			'ref' => array(
+		return [
+			'ref' => [
 				'bbcode_helpline'	=> 'BBCode for QuickReply extension',
 				'bbcode_match'		=> '[ref]{TEXT}[/ref]',
 				'bbcode_tpl'		=> '<span style="font-weight: bold;">{TEXT}</span>',
 				'display_on_posting'=> 0,
-			),
-			'ref=' => array(
+			],
+			'ref=' => [
 				'bbcode_helpline'	=> 'BBCode for QuickReply extension',
 				'bbcode_match'		=> '[ref={COLOR}]{TEXT}[/ref]',
 				'bbcode_tpl'		=> '<span style="font-weight: bold; color: {COLOR};">{TEXT}</span>',
 				'display_on_posting'=> 0,
-			),
-			'post'	=> array(
+			],
+			'post'	=> [
 				'bbcode_helpline'	=> 'BBCode for QuickReply extension',
 				'bbcode_match'		=> '[post]{NUMBER}[/post]',
 				'bbcode_tpl'		=> '<a href="./viewtopic.php?p={NUMBER}#p{NUMBER}"><span class="imageset icon_topic_latest" title="{L_QR_BBPOST}">{L_QR_BBPOST}</span></a>',
 				'display_on_posting'=> 0,
-			),
-		);
+			],
+		];
 	}
 
 	public function build_bbcode_array($data)
 	{
-		return array(
+		return [
 				'bbcode_tag'			=> $data['bbcode_tag'],
 				'first_pass_match'		=> $data['first_pass_match'],
 				'first_pass_replace'	=> $data['first_pass_replace'],
 				'second_pass_match'		=> $data['second_pass_match'],
 				'second_pass_replace'	=> $data['second_pass_replace']
-			);
+			];
 	}
 
 	public function exist_bbcode($bbcode_name, $bbcode_array)

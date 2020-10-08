@@ -1,50 +1,49 @@
-<!-- IF S_QUICK_REPLY -->
-<div id="qr_message" style="display: none;">{MESSAGE}</div>
-<!-- ENDIF -->
-<script type="text/javascript">
-//<![CDATA[
+{% if S_QUICK_REPLY %}
+<div id="qr_message" style="display: none;">{{ MESSAGE }}</div>
+{% endif %}
+<script>
 var quickreply = {};
-<!-- IF S_QUICK_REPLY -->
+{% if S_QUICK_REPLY %}
 
 // External plugins compatible with QuickReply.
 quickreply.plugins = {
-	abbc3: <!-- IF S_ABBC3_INSTALLED -->true<!-- ELSE -->false<!-- ENDIF -->,
-	liveSearch: <!-- IF S_LIVE_SEARCH and LIVE_SEARCH_ON_OFF_USER -->true<!-- ELSE -->false<!-- ENDIF -->,
-	reCAPTCHA2: <!-- IF S_RECAPTCHA_AVAILABLE and RECAPTCHA2_SITEKEY -->true<!-- ELSE -->false<!-- ENDIF -->,
-	seo: <!-- IF SEO_PHPBB_URL -->true<!-- ELSE -->false<!-- ENDIF -->
+	abbc3: {% if S_ABBC3_QR_BBCODES %}true{% else %}false{% endif %},
+	liveSearch: {% if (S_LIVE_SEARCH and LIVE_SEARCH_ON_OFF_USER) %}true{% else %}false{% endif %},
+	reCAPTCHA2: {% if (S_RECAPTCHA_AVAILABLE and RECAPTCHA2_SITEKEY) %}true{% else %}false{% endif %},
+	seo: {% if SEO_PHPBB_URL %}true{% else %}false{% endif %}
 };
 
 // Configuration settings for QuickReply.
 quickreply.settings = {
-	ajaxPagination: <!-- IF S_QR_AJAX_PAGINATION -->true<!-- ELSE -->false<!-- ENDIF -->,
-	ajaxSubmit: <!-- IF S_QR_AJAX_SUBMIT -->true<!-- ELSE -->false<!-- ENDIF -->,
-	allowBBCode: <!-- IF S_BBCODE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
-	allowedGuest: <!-- IF S_QR_ALLOWED_GUEST -->true<!-- ELSE -->false<!-- ENDIF -->,
-	attachBox: <!-- IF S_QR_SHOW_ATTACH_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
-	colouredNick: <!-- IF S_QR_COLOUR_NICKNAME -->true<!-- ELSE -->false<!-- ENDIF -->,
-	ctrlEnterNotice: <!-- IF S_QR_CTRL_ENTER_NOTICE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	enableBBCode: <!-- IF S_BBCODE_BUTTONS -->true<!-- ELSE -->false<!-- ENDIF -->,
-	enableComma: <!-- IF S_QR_COMMA_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	enableScroll: <!-- IF S_QR_ENABLE_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
-	enableWarning: <!-- IF S_QR_ENABLE_WARNING -->true<!-- ELSE -->false<!-- ENDIF -->,
-	fixEmptyForm: <!-- IF S_QR_FIX_EMPTY_FORM -->true<!-- ELSE -->false<!-- ENDIF -->,
+	ajaxPagination: {% if S_QR_AJAX_PAGINATION %}true{% else %}false{% endif %},
+	ajaxSubmit: {% if S_QR_AJAX_SUBMIT %}true{% else %}false{% endif %},
+	allowBBCode: {% if S_QR_BBCODE_ALLOWED %}true{% else %}false{% endif %},
+	allowedGuest: {% if S_QR_ALLOWED_GUEST %}true{% else %}false{% endif %},
+	attachBox: {% if S_QR_SHOW_ATTACH_BOX %}true{% else %}false{% endif %},
+	colouredNick: {% if S_QR_COLOUR_NICKNAME %}true{% else %}false{% endif %},
+	ctrlEnterNotice: {% if S_QR_CTRL_ENTER_NOTICE %}true{% else %}false{% endif %},
+	enableBBCode: {% if S_BBCODE_BUTTONS %}true{% else %}false{% endif %},
+	enableComma: {% if S_QR_COMMA_ENABLE %}true{% else %}false{% endif %},
+	enableScroll: {% if S_QR_ENABLE_SCROLL %}true{% else %}false{% endif %},
+	enableWarning: {% if S_QR_ENABLE_WARNING %}true{% else %}false{% endif %},
+	fixEmptyForm: {% if S_QR_FIX_EMPTY_FORM %}true{% else %}false{% endif %},
 	formType: {S_QR_FORM_TYPE},
-	fullQuote: <!-- IF S_QR_FULL_QUOTE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	fullQuoteAllowed: <!-- IF S_QR_FULL_QUOTE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
-	hideSubjectBox: <!-- IF QR_HIDE_SUBJECT_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
-	lastQuote: <!-- IF S_QR_LAST_QUOTE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	pluploadEnabled: <!-- IF S_PLUPLOAD and S_QR_SHOW_ATTACH_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickNick: <!-- IF S_QR_QUICKNICK_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickNickString: <!-- IF S_QR_QUICKNICK_STRING -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickNickUserType: <!-- IF S_QR_QUICKNICK_USERTYPE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickNickRef: <!-- IF S_QR_QUICKNICK_REF -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickNickPM: <!-- IF S_QR_QUICKNICK_PM -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickQuote: <!-- IF S_QR_QUICKQUOTE_ENABLE -->true<!-- ELSE -->false<!-- ENDIF -->,
-	quickQuoteButton: <!-- IF S_QR_QUICKQUOTE_BUTTON -->true<!-- ELSE -->false<!-- ENDIF -->,
-	saveReply: <!-- IF S_QR_SAVE_REPLY -->true<!-- ELSE -->false<!-- ENDIF -->,
+	fullQuote: {% if S_QR_FULL_QUOTE %}true{% else %}false{% endif %},
+	fullQuoteAllowed: {% if S_QR_FULL_QUOTE_ALLOWED %}true{% else %}false{% endif %},
+	hideSubjectBox: {% if QR_HIDE_SUBJECT_BOX %}true{% else %}false{% endif %},
+	lastQuote: {% if S_QR_LAST_QUOTE %}true{% else %}false{% endif %},
+	pluploadEnabled: {% if (S_PLUPLOAD and S_QR_SHOW_ATTACH_BOX) %}true{% else %}false{% endif %},
+	quickNick: {% if S_QR_QUICKNICK_ENABLE %}true{% else %}false{% endif %},
+	quickNickString: {% if S_QR_QUICKNICK_STRING %}true{% else %}false{% endif %},
+	quickNickUserType: {% if S_QR_QUICKNICK_USERTYPE %}true{% else %}false{% endif %},
+	quickNickRef: {% if S_QR_QUICKNICK_REF %}true{% else %}false{% endif %},
+	quickNickPM: {% if S_QR_QUICKNICK_PM %}true{% else %}false{% endif %},
+	quickQuote: {% if S_QR_QUICKQUOTE_ENABLE %}true{% else %}false{% endif %},
+	quickQuoteButton: {% if S_QR_QUICKQUOTE_BUTTON %}true{% else %}false{% endif %},
+	saveReply: {% if S_QR_SAVE_REPLY %}true{% else %}false{% endif %},
 	scrollInterval: {S_QR_SCROLL_INTERVAL},
-	softScroll: <!-- IF S_QR_SOFT_SCROLL -->true<!-- ELSE -->false<!-- ENDIF -->,
-	unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
+	softScroll: {% if S_QR_SOFT_SCROLL %}true{% else %}false{% endif %},
+	unchangedSubject: {% if S_QR_NOT_CHANGE_SUBJECT %}true{% else %}false{% endif %}
 };
 
 // Useful variables for QuickReply.
@@ -60,7 +59,7 @@ quickreply.editor = {
 	tempContainer: '#qr_temp_container',
 	textareaSelector: '#qr_postform #message-box textarea',
 	unreadPostSelector: '.unreadpost',
-	viewtopicLink: '{U_VIEW_TOPIC}'
+	viewtopicLink: '{{ U_VIEW_TOPIC }}'
 };
 
 // Global functions for QuickReply.
@@ -109,66 +108,65 @@ quickreply.functions = {
 
 // Language variables for QuickReply.
 quickreply.language = {
-	AJAX_ERROR: '{LA_AJAX_ERROR_TEXT}',
-	AJAX_ERROR_TITLE: '{LA_AJAX_ERROR_TITLE}',
-	BUTTON_QUOTE: '{LA_BUTTON_QUOTE}',
-	CANCEL_SUBMISSION: '{LA_QR_CANCEL_SUBMISSION}',
-	CTRL_ENTER: '{LA_QR_CTRL_ENTER}',
-	ERROR: '{LA_ERROR}',
-	FULLSCREEN: '{LA_QR_FULLSCREEN}',
-	FULLSCREEN_EXIT: '{LA_QR_FULLSCREEN_EXIT}',
-	INFORMATION: '{LA_INFORMATION}',
-	INSERT_TEXT: '{LA_QR_INSERT_TEXT}',
+	AJAX_ERROR: '{{ lang("AJAX_ERROR_TEXT")|addslashes }}',
+	AJAX_ERROR_TITLE: '{{ lang("AJAX_ERROR_TITLE")|addslashes }}',
+	BUTTON_QUOTE: '{{ lang("BUTTON_QUOTE")|addslashes }}',
+	CANCEL_SUBMISSION: '{{ lang("QR_CANCEL_SUBMISSION")|addslashes }}',
+	CTRL_ENTER: '{{ lang("QR_CTRL_ENTER")|addslashes }}',
+	ERROR: '{{ lang("ERROR")|addslashes }}',
+	FULLSCREEN: '{{ lang("QR_FULLSCREEN")|addslashes }}',
+	FULLSCREEN_EXIT: '{{ lang("QR_FULLSCREEN_EXIT")|addslashes }}',
+	INFORMATION: '{{ lang("INFORMATION")|addslashes }}',
+	INSERT_TEXT: '{{ lang("QR_INSERT_TEXT")|addslashes }}',
 	loading: {
-		text: '{LA_QR_LOADING}',
-		ATTACHMENTS: '{LA_QR_LOADING_ATTACHMENTS}',
-		NEW_FORM_TOKEN: '{LA_QR_LOADING_NEW_FORM_TOKEN}',
-		NEW_POSTS: '{LA_QR_LOADING_NEW_POSTS}',
-		PREVIEW: '{LA_QR_LOADING_PREVIEW}',
-		SUBMITTED: '{LA_QR_LOADING_SUBMITTED}',
-		SUBMITTING: '{LA_QR_LOADING_SUBMITTING}',
-		WAIT: '{LA_QR_LOADING_WAIT}'
+		text: '{{ lang("QR_LOADING")|addslashes }}',
+		ATTACHMENTS: '{{ lang("QR_LOADING_ATTACHMENTS")|addslashes }}',
+		NEW_FORM_TOKEN: '{{ lang("QR_LOADING_NEW_FORM_TOKEN")|addslashes }}',
+		NEW_POSTS: '{{ lang("QR_LOADING_NEW_POSTS")|addslashes }}',
+		PREVIEW: '{{ lang("QR_LOADING_PREVIEW")|addslashes }}',
+		SUBMITTED: '{{ lang("QR_LOADING_SUBMITTED")|addslashes }}',
+		SUBMITTING: '{{ lang("QR_LOADING_SUBMITTING")|addslashes }}',
+		WAIT: '{{ lang("QR_LOADING_WAIT")|addslashes }}'
 	},
-	NO_FULL_QUOTE: '{LA_QR_NO_FULL_QUOTE}',
-	POST_REVIEW: '{LA_POST_REVIEW_EXPLAIN}',
-	PREVIEW_CLOSE: '{LA_QR_PREVIEW_CLOSE}',
-	PROFILE: '{LA_QR_PROFILE}',
-	QUICKNICK: '{LA_QR_QUICKNICK}',
-	QUICKNICK_TITLE: '{LA_QR_QUICKNICK_TITLE}',
-	QUICKQUOTE_TEXT: '{LA_QR_QUICKQUOTE}',
-	QUICKQUOTE_TITLE: '{LA_QR_QUICKQUOTE_TITLE}',
-	QUICKREPLY: '{LA_QUICKREPLY}',
-	REPLY_IN_PM: '{LA_QR_REPLY_IN_PM}',
-	REPLY_WITH_QUOTE: '{LA_REPLY_WITH_QUOTE}',
-	TYPE_REPLY: '{LA_QR_TYPE_REPLY}',
-	WARN_BEFORE_UNLOAD: '{LA_QR_WARN_BEFORE_UNLOAD}',
-	WROTE: '{LA_WROTE}'
+	NO_FULL_QUOTE: '{{ lang("QR_NO_FULL_QUOTE")|addslashes }}',
+	POST_REVIEW: '{{ lang("POST_REVIEW_EXPLAIN")|addslashes }}',
+	PREVIEW_CLOSE: '{{ lang("QR_PREVIEW_CLOSE")|addslashes }}',
+	PROFILE: '{{ lang("QR_PROFILE")|addslashes }}',
+	QUICKNICK: '{{ lang("QR_QUICKNICK")|addslashes }}',
+	QUICKNICK_TITLE: '{{ lang("QR_QUICKNICK_TITLE")|addslashes }}',
+	QUICKQUOTE_TEXT: '{{ lang("QR_QUICKQUOTE")|addslashes }}',
+	QUICKQUOTE_TITLE: '{{ lang("QR_QUICKQUOTE_TITLE")|addslashes }}',
+	QUICKREPLY: '{{ lang("QUICKREPLY")|addslashes }}',
+	REPLY_IN_PM: '{{ lang("QR_REPLY_IN_PM")|addslashes }}',
+	REPLY_WITH_QUOTE: '{{ lang("REPLY_WITH_QUOTE")|addslashes }}',
+	TYPE_REPLY: '{{ lang("QR_TYPE_REPLY")|addslashes }}',
+	WARN_BEFORE_UNLOAD: '{{ lang("QR_WARN_BEFORE_UNLOAD")|addslashes }}',
+	WROTE: '{{ lang("WROTE")|addslashes }}'
 };
-<!-- ENDIF -->
-<!-- IF S_QR_SHOW_BUTTON_TRANSLIT -->
+{% endif %}
+{% if S_QR_SHOW_BUTTON_TRANSLIT %}
 
 // Language arrays for translit feature.
 quickreply.translit = {
-	langFrom: '{LA_QR_TRANSLIT_FROM}'.split(','),
-	langTo: '{LA_QR_TRANSLIT_TO}'.split(','),
-	langFromCaps: '{LA_QR_TRANSLIT_FROM_CAPS}'.split(','),
-	langToCaps: '{LA_QR_TRANSLIT_TO_CAPS}'.split(',')
+	langFrom: '{{ lang("QR_TRANSLIT_FROM")|addslashes }}'.split(','),
+	langTo: '{{ lang("QR_TRANSLIT_TO")|addslashes }}'.split(','),
+	langFromCaps: '{{ lang("QR_TRANSLIT_FROM_CAPS")|addslashes }}'.split(','),
+	langToCaps: '{{ lang("QR_TRANSLIT_TO_CAPS")|addslashes }}'.split(',')
 };
-<!-- ENDIF -->
+{% endif %}
 
 // Special features for QuickReply - settings.
 quickreply.special = {
-	hideSubject: <!-- IF QR_HIDE_POSTS_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
+	hideSubject: {% if QR_HIDE_POSTS_SUBJECT %}true{% else %}false{% endif %}
 };
 
 // Special features for QuickReply - functions.
 quickreply.special.functions = {};
-//]]>
 </script>
-<!-- IF S_QUICK_REPLY -->
+{% if S_QUICK_REPLY %}
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_style.js?assets_version={T_ASSETS_VERSION} -->
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_core.js?assets_version={T_ASSETS_VERSION} -->
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_plugins.js?assets_version={T_ASSETS_VERSION} -->
-<!-- IF S_QR_SHOW_BUTTON_TRANSLIT --><!-- INCLUDEJS @boardtools_quickreply/translit.js?assets_version={T_ASSETS_VERSION} --><!-- ENDIF -->
-<!-- ENDIF -->
+{% if S_QR_SHOW_BUTTON_TRANSLIT %}<!-- INCLUDEJS @boardtools_quickreply/translit.js?assets_version={T_ASSETS_VERSION} -->{% endif %}
+{% endif %}
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_special.js?assets_version={T_ASSETS_VERSION} -->

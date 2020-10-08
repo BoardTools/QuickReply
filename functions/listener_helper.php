@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -75,7 +75,7 @@ class listener_helper
 		$this->notifications_helper = $notifications_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->template_variables = array();
+		$this->template_variables = [];
 	}
 
 	/**
@@ -155,7 +155,7 @@ class listener_helper
 	 * @param array  $acl_perms   Array with ACL options to check (key => forum ID)
 	 * @return bool
 	 */
-	protected function check_option($config_var, $user_option, $acl_perms = array())
+	protected function check_option($config_var, $user_option, $acl_perms = [])
 	{
 		if ($config_var && !$this->config[$config_var] ||
 			$user_option && !$this->user->optionget($user_option)
@@ -198,21 +198,21 @@ class listener_helper
 	{
 		$topic_id = $topic_data['topic_id'];
 
-		$qr_hidden_fields = array(
+		$qr_hidden_fields = [
 			'topic_cur_post_id' => (int) $topic_data['topic_last_post_id'],
 			'lastclick'         => (int) time(),
 			'topic_id'          => (int) $topic_id,
 			'forum_id'          => (int) $forum_id,
-		);
+		];
 
 		$this->set_form_parameters($forum_id, $topic_data, $qr_hidden_fields);
 
-		$this->template_variables += array(
+		$this->template_variables += [
 			'S_QUICK_REPLY'    => true,
 			'U_QR_ACTION'      => append_sid("{$this->phpbb_root_path}posting.$this->php_ext", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
 			'QR_HIDDEN_FIELDS' => build_hidden_fields($qr_hidden_fields),
 			'USERNAME'         => $this->request->variable('username', '', true),
-		);
+		];
 	}
 
 	/**
@@ -226,27 +226,27 @@ class listener_helper
 	{
 		add_form_key('posting');
 
-		$s_attach_sig = $this->check_option('allow_sig', 'attachsig', array(
+		$s_attach_sig = $this->check_option('allow_sig', 'attachsig', [
 			'f_sigs' => $forum_id,
 			'u_sig'  => 0
-		));
-		$s_smilies = $this->check_option('allow_smilies', 'smilies', array(
+		]);
+		$s_smilies = $this->check_option('allow_smilies', 'smilies', [
 			'f_smilies' => $forum_id,
-		));
-		$s_bbcode = $this->check_option('allow_bbcode', 'bbcode', array(
+		]);
+		$s_bbcode = $this->check_option('allow_bbcode', 'bbcode', [
 			'f_bbcode' => $forum_id,
-		));
+		]);
 		$s_notify = false;
 
 		// Originally we use checkboxes and check with isset(), so we only provide them if they would be checked
-		$this->set_hidden_fields($qr_hidden_fields, array(
+		$this->set_hidden_fields($qr_hidden_fields, [
 			'disable_bbcode'    => !$s_bbcode,
 			'disable_smilies'   => !$s_smilies,
 			'disable_magic_url' => !$this->config['allow_post_links'],
 			'attach_sig'        => $s_attach_sig,
 			'notify'            => $s_notify,
 			'lock_topic'        => $topic_data['topic_status'] == ITEM_LOCKED,
-		));
+		]);
 
 		if ($this->config['enable_post_confirm'])
 		{
@@ -277,7 +277,7 @@ class listener_helper
 	 */
 	public function template_variables_for_qr($forum_id)
 	{
-		$this->template_variables += array(
+		$this->template_variables += [
 			'S_QR_COLOUR_NICKNAME'    => $this->config['qr_color_nickname'],
 			'QR_HIDE_SUBJECT_BOX'     => $this->config['qr_hide_subject_box'],
 			'S_QR_COMMA_ENABLE'       => $this->config['qr_comma'],
@@ -299,7 +299,7 @@ class listener_helper
 			'READ_POST_IMG' => $this->user->img('icon_post_target', 'POST'),
 
 			'S_QR_ALLOWED_GUEST' => $this->config['qr_allow_for_guests'] && $this->user->data['user_id'] == ANONYMOUS,
-		);
+		];
 	}
 
 	/**

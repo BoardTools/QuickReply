@@ -564,7 +564,7 @@
 			if (quickNickIsString()) {
 				quickreply.$.qrPosts.on('click', '.qr_quicknick', function(e) {
 					e.preventDefault();
-					var $nickname = $(this).parent().find(nicknameSelector);
+					    var $nickname = $(this).closest('div.postbody').find(nicknameSelector).eq(0);
 					self.insert($nickname);
 				});
 			}

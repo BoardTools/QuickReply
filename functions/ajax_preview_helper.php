@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -53,12 +53,12 @@ class ajax_preview_helper
 		// Attachment Preview
 		$this->preview_attachments($message_parser, $forum_id);
 
-		ajax_helper::send_json(array(
+		ajax_helper::send_json([
 			'status'         => 'preview',
 			'PREVIEW_TITLE'  => $this->user->lang['PREVIEW'],
 			'PREVIEW_TEXT'   => $this->preview_message,
 			'PREVIEW_ATTACH' => $this->preview_attachments,
-		));
+		]);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class ajax_preview_helper
 	{
 		if (sizeof($message_parser->attachment_data))
 		{
-			$update_count = array();
+			$update_count = [];
 			$attachment_data = $message_parser->attachment_data;
 
 			parse_attachments($forum_id, $this->preview_message, $attachment_data, $update_count, true);

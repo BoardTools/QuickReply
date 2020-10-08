@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) Tatiana5 and LavIgor
+* @copyright (c) Татьяна5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -18,14 +18,14 @@ class v_0_1_1 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\boardtools\quickreply\migrations\v0xx\v_0_1_0');
+		return ['\boardtools\quickreply\migrations\v0xx\v_0_1_0'];
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Update existing configs
-			array('config.update', array('qr_version', '0.1.1')),
-		);
+			['config.update', ['qr_version', '0.1.1']],
+		];
 	}
 }

@@ -59,7 +59,7 @@
 									<div>
 								<!-- ENDIF -->
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
-										<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>
+										{% EVENT viewtopic_body_contact_icon_prepend %}<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>{% EVENT viewtopic_body_contact_icon_append %}
 									</a>
 								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
 									</div>
@@ -91,7 +91,12 @@
 			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 			<!-- EVENT viewtopic_body_post_subject_before -->
-			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="{postrow.POST_ICON_IMG_ALT}" title="{postrow.POST_ICON_IMG_ALT}" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
+		<h3 {% if postrow.S_FIRST_ROW %}class="first"{% endif %}>
+			{% if postrow.POST_ICON_IMG %}
+				<img src="{{ T_ICONS_PATH }}{{ postrow.POST_ICON_IMG }}" width="{{ postrow.POST_ICON_IMG_WIDTH }}" height="{{ postrow.POST_ICON_IMG_HEIGHT }}" alt="{{ postrow.POST_ICON_IMG_ALT }}" title="{{ postrow.POST_ICON_IMG_ALT }}">
+			{% endif %}
+			<a {% if postrow.S_FIRST_UNREAD %}class="first-unread" {% endif %}href="{{ postrow.U_MINI_POST }}">{{ postrow.POST_SUBJECT }}</a>
+		</h3>
 
 		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
 		<!-- EVENT viewtopic_body_post_buttons_list_before -->
@@ -109,35 +114,35 @@
 					<!-- IF postrow.U_DELETE -->
 						<li>
 							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
-								<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_DELETE_POST}</span>
+								<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_REPORT -->
 						<li>
 							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button button-icon-only">
-								<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_REPORT_POST}</span>
+								<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_REPORT}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_WARN -->
 						<li>
 							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button button-icon-only">
-								<i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i><span class="sr-only">{L_WARN_USER}</span>
+								<i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_WARN}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_INFO -->
 						<li>
 							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button button-icon-only">
-								<i class="icon fa-info fa-fw" aria-hidden="true"></i><span class="sr-only">{L_INFORMATION}</span>
+								<i class="icon fa-info fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_INFORMATION}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_QUOTE -->
 						<li>
 							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button button-icon-only">
-								<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUOTE}</span>
+								<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_QUOTE}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
@@ -156,11 +161,12 @@
 						<i class="icon fa-file fa-fw <!-- IF postrow.S_UNREAD_POST -->icon-red<!-- ELSE -->icon-lightgray<!-- ENDIF --> icon-md" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span>
 					</a>
 				<!-- ENDIF -->
-				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE}
+				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span><time datetime="{postrow.POST_DATE_RFC3339}">{postrow.POST_DATE}</time>
 			</p>
 			<!-- EVENT viewtopic_body_postrow_post_details_after -->
 
 			<!-- IF postrow.S_POST_UNAPPROVED -->
+			<!-- IF postrow.S_CAN_APPROVE -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice unapproved">
 					<span><i class="icon fa-question icon-red fa-fw" aria-hidden="true"></i></span>
@@ -171,6 +177,12 @@
 					{S_FORM_TOKEN}
 				</p>
 			</form>
+			<!-- ELSE -->
+				<p class="post-notice unapproved">
+					<span><i class="icon fa-exclamation icon-red fa-fw" aria-hidden="true"></i></span>
+					<strong>{L_POST_UNAPPROVED_EXPLAIN}</strong>
+				</p>
+			<!-- ENDIF -->
 			<!-- ELSEIF postrow.S_POST_DELETED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice deleted">
@@ -192,6 +204,8 @@
 			<!-- ENDIF -->
 
 			<div class="content">{postrow.MESSAGE}</div>
+
+			<!-- EVENT viewtopic_body_postrow_content_after -->
 
 			<!-- IF postrow.S_HAS_ATTACHMENTS -->
 				<dl class="attachbox">
@@ -241,22 +255,21 @@
 		</div>
 	</div>
 
-	<hr class="divider" />
 	<!-- EVENT viewtopic_body_postrow_post_after -->
 <!-- END postrow -->
 
-<div id="qr_submit_buttons" data-page-title="{PAGE_TITLE} - {SITENAME}" data-page-url="{U_CANONICAL}">
-	{S_FORM_TOKEN}
-	{QR_HIDDEN_FIELDS}
+<div id="qr_submit_buttons" data-page-title="{{ PAGE_TITLE }} - {{ SITENAME }}" data-page-url="{{ U_CANONICAL }}">
+	{{ S_FORM_TOKEN }}
+	{{ QR_HIDDEN_FIELDS }}
 </div>
 
 <div id="qr_pagination">
-<!-- IF .pagination or TOTAL_POSTS -->
-	<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}" class="mark">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
-	<!-- IF .pagination -->
-	<!-- INCLUDE pagination.html -->
-	<!-- ELSE -->
-	&bull; {PAGE_NUMBER}
-	<!-- ENDIF -->
-<!-- ENDIF -->
+{% if (loops.pagination or TOTAL_POSTS) %}
+	{% if (U_VIEW_UNREAD_POST and not(S_IS_BOT)) %}<a href="{{ U_VIEW_UNREAD_POST }}" class="mark">{{ lang('VIEW_UNREAD_POST') }}</a> &bull; {% endif %}{{ TOTAL_POSTS }}
+	{% if loops.pagination %}
+		{% include 'pagination.html' %}
+	{% else %}
+		&bull; {{ PAGE_NUMBER }}
+	{% endif %}
+{% endif %}
 </div>

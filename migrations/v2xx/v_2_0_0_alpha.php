@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) Tatiana5 and LavIgor
+* @copyright (c) Татьяна5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -18,17 +18,17 @@ class v_2_0_0_alpha extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\boardtools\quickreply\migrations\v2xx\v_2_0_0_dev2');
+		return ['\boardtools\quickreply\migrations\v2xx\v_2_0_0_dev2'];
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Update existing configs
-			array('config.update', array('qr_version', '2.0.0-alpha')),
+			['config.update', ['qr_version', '2.0.0-alpha']],
 
-			array('custom', array(array($this, 'update_bbcode_ref'))),
-		);
+			['custom', [[$this, 'update_bbcode_ref']]],
+		];
 	}
 
 	public function update_bbcode_ref()
@@ -66,8 +66,8 @@ class v_2_0_0_alpha extends \phpbb\db\migration\migration
 
 	private function get_bbcode_data()
 	{
-		return array(
-			'ref=' => array(
+		return [
+			'ref=' => [
 				'bbcode_helpline'	=> 'BBCode for QuickReply extension',
 				'bbcode_match'		=> '[ref={COLOR;optional}]{TEXT}[/ref]',
 				'bbcode_tpl'		=> '
@@ -80,7 +80,7 @@ class v_2_0_0_alpha extends \phpbb\db\migration\migration
 						</xsl:otherwise>
 					</xsl:choose>',
 				'display_on_posting'=> 0,
-			),
-		);
+			],
+		];
 	}
 }

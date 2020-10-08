@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -35,11 +35,17 @@ class form_helper
 	/** @var string */
 	protected $phpbb_root_path;
 
+	/** @var plugins_helper */
+	public $plugins_helper;
+
 	/** @var string */
 	protected $php_ext;
 
 	/** @var array */
 	public $form_template_variables;
+
+	/** @var bool */
+	public $abbc3;
 
 	/**
 	 * Constructor
@@ -51,10 +57,11 @@ class form_helper
 	 * @param \phpbb\cache\service     $cache
 	 * @param \phpbb\plupload\plupload $plupload
 	 * @param \phpbb\mimetype\guesser  $mimetype_guesser
+	 * @param plugins_helper           $plugins_helper
 	 * @param string                   $phpbb_root_path Root path
 	 * @param string                   $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\plupload\plupload $plupload, \phpbb\mimetype\guesser $mimetype_guesser, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\plupload\plupload $plupload, \phpbb\mimetype\guesser $mimetype_guesser, plugins_helper $plugins_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -63,9 +70,11 @@ class form_helper
 		$this->cache = $cache;
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
+		$this->plugins_helper = $plugins_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->form_template_variables = array();
+		$this->form_template_variables = [];
+		$this->abbc3 = false;
 	}
 
 	/**
@@ -76,10 +85,13 @@ class form_helper
 	 */
 	public function prepare_qr_form($forum_id, $topic_id)
 	{
+		// Fix for ABBC3
+		$this->abbc3 = $this->plugins_helper->template_variables_for_extensions($forum_id, $topic_id)['S_ABBC3_QR_BBCODES'];
+
 		// BBCode, Smilies and URLs
 		$bbcode_status = $this->handle_bbcodes($forum_id);
 		$smilies_status = $this->handle_smilies($forum_id);
-		$this->form_template_variables += array('S_LINKS_ALLOWED' => $this->config['allow_post_links']);
+		$this->form_template_variables += ['S_LINKS_ALLOWED' => $this->config['allow_post_links']];
 
 		// Show attachment box for adding attachments
 		$show_attach_box = $this->qr_attachments_allowed($forum_id);
@@ -158,7 +170,7 @@ class form_helper
 			// Build custom bbcodes array
 			display_custom_bbcodes();
 
-			$this->form_template_variables += array('S_BBCODE_ALLOWED' => 1);
+			$this->form_template_variables += ['S_QR_BBCODE_ALLOWED' => 1];
 		}
 
 		$this->add_statuses_to_template($bbcode_status, $img_status, $flash_status, $quote_status);
@@ -176,12 +188,12 @@ class form_helper
 	 */
 	public function add_statuses_to_template($bbcode_status, $img_status, $flash_status, $quote_status)
 	{
-		$this->form_template_variables += array(
+		$this->form_template_variables += [
 			'S_BBCODE_BUTTONS' => $bbcode_status && $this->config['qr_bbcode'],
 			'S_BBCODE_IMG'     => $img_status,
 			'S_BBCODE_FLASH'   => $flash_status,
 			'S_BBCODE_QUOTE'   => $quote_status,
-		);
+		];
 	}
 
 	/**
@@ -194,7 +206,8 @@ class form_helper
 	{
 		return (
 			$this->config['allow_bbcode'] &&
-			$this->auth->acl_get('f_bbcode', $forum_id)
+			$this->auth->acl_get('f_bbcode', $forum_id) &&
+			!$this->abbc3
 		);
 	}
 
@@ -232,7 +245,7 @@ class form_helper
 			generate_smilies('inline', $forum_id);
 		}
 
-		$this->form_template_variables += array('S_SMILIES_ALLOWED' => $smilies_status);
+		$this->form_template_variables += ['S_SMILIES_ALLOWED' => $smilies_status];
 
 		return $smilies_status;
 	}
@@ -278,11 +291,11 @@ class form_helper
 
 		posting_gen_attachment_entry($attachment_data, $filename_data, $show_attach_box);
 
-		$this->form_template_variables += array(
+		$this->form_template_variables += [
 			// Upload attachments
 			'S_QR_SHOW_ATTACH_BOX' => $show_attach_box,
 			'S_ATTACH_DATA'        => ($attachment_data) ? json_encode($attachment_data) : '[]',
-		);
+		];
 	}
 
 	/**

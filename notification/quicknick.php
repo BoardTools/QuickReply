@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -34,10 +34,10 @@ class quicknick extends \phpbb\notification\type\quote
 	 * @var bool|array False if the service should use it's default data
 	 *                    Array of data (including keys 'id', 'lang', and 'group')
 	 */
-	public static $notification_option = array(
+	public static $notification_option = [
 		'lang'  => 'NOTIFICATION_TYPE_QUICKNICK',
 		'group' => 'NOTIFICATION_GROUP_POSTING',
-	);
+	];
 
 	/**
 	 * Is available
@@ -55,7 +55,7 @@ class quicknick extends \phpbb\notification\type\quote
 	 */
 	private function get_mentioned_users($xml)
 	{
-		$usernames = array();
+		$usernames = [];
 		if (!preg_match('/<REF[ >]/', $xml))
 		{
 			return $usernames;
@@ -81,17 +81,17 @@ class quicknick extends \phpbb\notification\type\quote
 	 *
 	 * @return array
 	 */
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($post, $options = [])
 	{
-		$options = array_merge(array(
-			'ignore_users' => array(),
-		), $options);
+		$options = array_merge([
+			'ignore_users' => [],
+		], $options);
 
 		$usernames = $this->get_mentioned_users($post['post_text']);
 
 		if (empty($usernames))
 		{
-			return array();
+			return [];
 		}
 
 		$usernames = array_unique($usernames);
@@ -112,7 +112,7 @@ class quicknick extends \phpbb\notification\type\quote
 	 */
 	protected function get_ids_of_usernames($usernames, $poster_id)
 	{
-		$users = array();
+		$users = [];
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . '

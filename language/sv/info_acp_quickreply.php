@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -17,10 +17,10 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'ACP_QUICKREPLY'                       => 'Snabbsvar',
 	'ACP_QUICKREPLY_EXPLAIN'               => 'Quick reply settings',
 	'ACP_QUICKREPLY_TITLE'                 => 'Quick Reply',
@@ -100,4 +100,4 @@ $lang = array_merge($lang, array(
 	'ACP_QR_SMILIES'                       => 'Display smilies',
 	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smilies in quick reply form.',
 	'ACP_QR_SOURCE_POST'                   => 'Lägg till en länk till det citerade meddelandet',
-));
+]);

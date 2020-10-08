@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -17,10 +17,10 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = array();
+	$lang = [];
 }
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 	'ACP_QUICKREPLY'                       => 'Respuesta Rápida',
 	'ACP_QUICKREPLY_EXPLAIN'               => 'Ajustes de Respuesta Rápida',
 	'ACP_QUICKREPLY_TITLE'                 => 'Respuesta Rápida',
@@ -100,4 +100,4 @@ $lang = array_merge($lang, array(
 	'ACP_QR_SMILIES'                       => 'Mostrar emoticonos',
 	'ACP_QR_SMILIES_EXPLAIN'               => 'Permitir mostrar los Emoticonos en el formulario de Respuesta Rápida.',
 	'ACP_QR_SOURCE_POST'                   => 'Añadir un enlace al mensaje citado al citar',
-));
+]);

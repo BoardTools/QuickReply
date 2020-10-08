@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -54,7 +54,7 @@ class ajax_helper
 	public $qr_merged = false;
 
 	/** @var array */
-	private static $qr_fields = array();
+	private static $qr_fields = [];
 
 	/**
 	 * Constructor
@@ -120,18 +120,18 @@ class ajax_helper
 		// Fix issues if the inserted post is not the first.
 		if ($this->qr_insert && !$this->qr_first)
 		{
-			$this->template->alter_block_array('postrow', array(
+			$this->template->alter_block_array('postrow', [
 				'S_FIRST_ROW' => false,
-			), false, 'change');
+			], false, 'change');
 		}
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_QUICKREPLY_REQUEST' => true,
 			'S_QR_FULL_QUOTE'      => $this->config['qr_full_quote'],
-		));
-		$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
+		]);
+		$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields([
 			'qr'             => 1,
 			'qr_cur_post_id' => (int) $current_post_id
-		)));
+		]));
 		$this->output_ajax_response($page_title, $forum_id);
 	}
 
@@ -145,12 +145,12 @@ class ajax_helper
 	{
 		page_header($page_title, false, $forum_id);
 		page_footer(false, false, false);
-		self::send_json(array(
+		self::send_json([
 			'status' => 'success',
 			'result' => $this->template->assign_display('@boardtools_quickreply/quickreply_template.html', '', true),
 			'insert' => $this->qr_insert,
 			'merged' => $this->qr_merged,
-		));
+		]);
 	}
 
 	/**
@@ -171,11 +171,11 @@ class ajax_helper
 		$url_hash = strpos($event['url'], '#');
 		$result_url = ($url_hash !== false) ? substr($event['url'], 0, $url_hash) : $event['url'];
 
-		self::send_json(array(
+		self::send_json([
 			'status' => 'success',
 			'url'    => $result_url,
 			'merged' => ($qr_cur_post_id === $data['post_id']),
-		));
+		]);
 	}
 
 	/**
@@ -215,17 +215,17 @@ class ajax_helper
 			add_form_key('posting');
 
 			$rootref = &$this->template_context->get_root_ref();
-			$qr_hidden_fields = array(
+			$qr_hidden_fields = [
 				'qr'                => 1,
 				'qr_cur_post_id'    => (int) $this->request->variable('qr_cur_post_id', 0),
 				'topic_cur_post_id' => (int) $post_data['topic_last_post_id'],
 				'lastclick'         => (int) time(),
 				'topic_id'          => (int) $post_data['topic_id'],
 				'forum_id'          => (int) $post_data['forum_id'],
-			);
-			self::$qr_fields = array(
+			];
+			self::$qr_fields = [
 				'qr_fields' => $rootref['S_FORM_TOKEN'] . "\n" . build_hidden_fields($qr_hidden_fields)
-			);
+			];
 			unset($error[$form_error_key]);
 
 			return true;
@@ -252,9 +252,9 @@ class ajax_helper
 	 */
 	public function send_form_token()
 	{
-		self::send_json(array(
+		self::send_json([
 			'status' => 'outdated_form',
-		));
+		]);
 	}
 
 	/**
@@ -263,13 +263,13 @@ class ajax_helper
 	 * @param array $error  Array with error strings
 	 * @param array $params Array with additional information (optional)
 	 */
-	public function output_errors($error, $params = array())
+	public function output_errors($error, $params = [])
 	{
-		self::send_json(array_merge(array(
+		self::send_json(array_merge([
 			'error'         => true,
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 			'MESSAGE_TEXT'  => implode('<br />', $error),
-		), $params));
+		], $params));
 	}
 
 	/**
@@ -315,12 +315,12 @@ class ajax_helper
 		$url_next_post = append_sid("{$this->phpbb_root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=$post_id_next"); // #p$post_id_next
 		$current_post = $this->request->variable('qr_cur_post_id', 0);
 
-		self::send_json(array(
+		self::send_json([
 			'status' => 'new_posts',
 			'error'  => true,
 			'merged' => ($post_id_next === $current_post),
 			'url'    => $url_next_post,
-		));
+		]);
 	}
 
 	/**
@@ -328,14 +328,14 @@ class ajax_helper
 	 */
 	public function send_approval_notify()
 	{
-		self::send_json(array(
+		self::send_json([
 			'status'        => 'no_approve',
 			'MESSAGE_TITLE' => $this->user->lang['INFORMATION'],
 			'MESSAGE_TEXT'  => $this->user->lang['POST_STORED_MOD'] . (($this->user->data['user_id'] == ANONYMOUS) ? '' : ' ' . $this->user->lang['POST_APPROVAL_NOTIFY']),
-			'REFRESH_DATA'  => array(
+			'REFRESH_DATA'  => [
 				'time' => 10,
-			)
-		));
+			]
+		]);
 	}
 
 	/**
@@ -358,7 +358,7 @@ class ajax_helper
 	public function template_variables_for_ajax($topic_data)
 	{
 		$ajax_submit = $this->config['qr_ajax_submit'] && $topic_data['qr_ajax_submit'];
-		return array(
+		return [
 			'L_FULL_EDITOR'        => ($ajax_submit) ? $this->user->lang['PREVIEW'] : $this->user->lang['FULL_EDITOR'],
 			'S_QR_AJAX_SUBMIT'     => $ajax_submit,
 			'S_QR_FORM_TYPE'       => $topic_data['qr_form_type'],
@@ -370,7 +370,7 @@ class ajax_helper
 			'S_QR_ENABLE_SCROLL'   => $this->user->data['qr_enable_scroll'],
 			'S_QR_SCROLL_INTERVAL' => $this->config['qr_scroll_time'],
 			'S_QR_SOFT_SCROLL'     => $this->config['qr_scroll_time'] && $this->user->data['qr_soft_scroll']
-		);
+		];
 	}
 
 	/**

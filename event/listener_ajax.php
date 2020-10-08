@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -62,14 +62,14 @@ class listener_ajax implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
-		return array(
-			'core.viewtopic_get_post_data'          => array('viewtopic_modify_sql', -2),
-			'core.viewtopic_modify_page_title'      => array('ajaxify_viewtopic_data', -2),
+		return [
+			'core.viewtopic_get_post_data'          => ['viewtopic_modify_sql', -2],
+			'core.viewtopic_modify_page_title'      => ['ajaxify_viewtopic_data', -2],
 			'core.posting_modify_submission_errors' => 'detect_new_posts',
 			'core.posting_modify_template_vars'     => 'ajax_preview',
-			'core.submit_post_end'                  => array('ajax_submit', -2),
-			'rxu.postsmerging.posts_merging_end'    => array('ajax_submit', -2),
-		);
+			'core.submit_post_end'                  => ['ajax_submit', -2],
+			'rxu.postsmerging.posts_merging_end'    => ['ajax_submit', -2],
+		];
 	}
 
 	/**
@@ -102,7 +102,7 @@ class listener_ajax implements EventSubscriberInterface
 			// Check whether no posts are found.
 			if (!$qr_get_current && max($post_list) <= $current_post)
 			{
-				$this->ajax_helper->output_errors(array($this->user->lang['NO_POSTS_TIME_FRAME']));
+				$this->ajax_helper->output_errors([$this->user->lang['NO_POSTS_TIME_FRAME']]);
 			}
 		}
 	}
@@ -128,18 +128,18 @@ class listener_ajax implements EventSubscriberInterface
 		{
 			if ($topic_data['qr_ajax_submit'])
 			{
-				$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields(array(
+				$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields([
 					'qr'             => 1,
 					'qr_cur_post_id' => (int) max($post_list)
-				)));
+				]));
 			}
 
 			// Add lastclick for phpBB 3.2.4+
 			if (phpbb_version_compare($this->config['version'], '3.2.4', '>='))
 			{
-				$qr_hidden_fields = array(
+				$qr_hidden_fields = [
 					'lastclick' => (int) time(),
-				);
+				];
 
 				$this->template->append_var('QR_HIDDEN_FIELDS', build_hidden_fields($qr_hidden_fields));
 			}

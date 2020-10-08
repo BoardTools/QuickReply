@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) Tatiana5 and LavIgor
+* @copyright (c) Татьяна5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -18,21 +18,21 @@ class v_1_0_0_beta5 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\boardtools\quickreply\migrations\v1xx\v_1_0_0_beta4');
+		return ['\boardtools\quickreply\migrations\v1xx\v_1_0_0_beta4'];
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Add configs
-			array('config.add', array('qr_quicknick_ref', 1)),
-			array('config.add', array('qr_quicknick_pm', 1)),
-			array('config.add', array('qr_quickquote_link', 0)),
-			array('config.add', array('qr_full_quote', 1)),
-			array('config.add', array('qr_show_subjects_in_search', 1)),
+			['config.add', ['qr_quicknick_ref', 1]],
+			['config.add', ['qr_quicknick_pm', 1]],
+			['config.add', ['qr_quickquote_link', 0]],
+			['config.add', ['qr_full_quote', 1]],
+			['config.add', ['qr_show_subjects_in_search', 1]],
 
 			// Update existing configs
-			array('config.update', array('qr_version', '1.0.0-beta5')),
-		);
+			['config.update', ['qr_version', '1.0.0-beta5']],
+		];
 	}
 }

@@ -1,22 +1,20 @@
-<!-- IF S_IN_POSTING -->
-<script type="text/javascript">
-// <![CDATA[
+{% if S_IN_POSTING %}
+<script>
 var quickreply = {};
 
 // Posting related variables for QuickReply.
 quickreply.posting = {
 	language: {
-		ERROR: '{LA_ERROR}',
-		NO_FULL_QUOTE: '{LA_QR_NO_FULL_QUOTE}'
+		ERROR: '{{ lang("ERROR")|addslashes }}',
+		NO_FULL_QUOTE: '{{ lang("QR_NO_FULL_QUOTE")|addslashes }}'
 	},
 	settings: {
-		fullQuoteAllowed: <!-- IF S_QR_FULL_QUOTE_ALLOWED -->true<!-- ELSE -->false<!-- ENDIF -->,
-		hideSubjectBox: <!-- IF QR_HIDE_SUBJECT_BOX -->true<!-- ELSE -->false<!-- ENDIF -->,
-		lastQuote: <!-- IF S_QR_LAST_QUOTE -->true<!-- ELSE -->false<!-- ENDIF -->,
-		unchangedSubject: <!-- IF S_QR_NOT_CHANGE_SUBJECT -->true<!-- ELSE -->false<!-- ENDIF -->
+		fullQuoteAllowed: {% if S_QR_FULL_QUOTE_ALLOWED %}true{% else %}false{% endif %},
+		hideSubjectBox: {% if QR_HIDE_SUBJECT_BOX %}true{% else %}false{% endif %},
+		lastQuote: {% if S_QR_LAST_QUOTE %}true{% else %}false{% endif %},
+		unchangedSubject: {% if S_QR_NOT_CHANGE_SUBJECT %}true{% else %}false{% endif %}
 	}
 };
-// ]]>
 </script>
 <!-- INCLUDEJS @boardtools_quickreply/quickreply_posting.js?assets_version={T_ASSETS_VERSION} -->
-<!-- ENDIF -->
+{% endif %}

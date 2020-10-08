@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) Tatiana5 and LavIgor
+* @copyright (c) Татьяна5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -18,35 +18,35 @@ class v_1_1_0_beta1 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\boardtools\quickreply\migrations\v1xx\v_1_1_0_alpha2');
+		return ['\boardtools\quickreply\migrations\v1xx\v_1_1_0_alpha2'];
 	}
 
 	public function update_schema()
 	{
-		return array(
-			'add_columns' => array(
-				$this->table_prefix . 'users' => array(
-					'qr_enable_warning'    => array('BOOL', 1),
-					'qr_fix_empty_form'    => array('BOOL', 1),
-				),
-			),
-		);
+		return [
+			'add_columns' => [
+				$this->table_prefix . 'users' => [
+					'qr_enable_warning'    => ['BOOL', 1],
+					'qr_fix_empty_form'    => ['BOOL', 1],
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
 	{
-		return array(
-			'drop_columns'    => array(
-				$this->table_prefix . 'users' => array('qr_enable_warning', 'qr_fix_empty_form'),
-			),
-		);
+		return [
+			'drop_columns'    => [
+				$this->table_prefix . 'users' => ['qr_enable_warning', 'qr_fix_empty_form'],
+			],
+		];
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Update existing configs
-			array('config.update', array('qr_version', '1.1.0-beta1')),
-		);
+			['config.update', ['qr_version', '1.1.0-beta1']],
+		];
 	}
 }

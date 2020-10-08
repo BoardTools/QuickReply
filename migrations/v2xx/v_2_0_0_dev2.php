@@ -2,7 +2,7 @@
 /**
 *
 * @package QuickReply Reloaded
-* @copyright (c) Tatiana5 and LavIgor
+* @copyright (c) Татьяна5 and LavIgor
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -18,21 +18,21 @@ class v_2_0_0_dev2 extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return array('\boardtools\quickreply\migrations\v1xx\v_1_1_0_beta1');
+		return ['\boardtools\quickreply\migrations\v1xx\v_1_1_0_beta1'];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('custom', array(array($this, 'update_bbcode_post'))),
+		return [
+			['custom', [[$this, 'update_bbcode_post']]],
 
 			// Update existing configs
-			array('config.update', array('qr_version', '2.0.0-dev2')),
+			['config.update', ['qr_version', '2.0.0-dev2']],
 
 			// Remove configs
-			array('config.remove', array('qr_source_post')),
-			array('config.remove', array('qr_quickquote_link')),
-		);
+			['config.remove', ['qr_source_post']],
+			['config.remove', ['qr_quickquote_link']],
+		];
 	}
 
 	public function update_bbcode_post()
@@ -65,13 +65,13 @@ class v_2_0_0_dev2 extends \phpbb\db\migration\migration
 
 	private function get_bbcode_data()
 	{
-		return array(
-			'post'	=> array(
+		return [
+			'post'	=> [
 				'bbcode_helpline'	=> 'BBCode for QuickReply extension',
 				'bbcode_match'		=> '[post]{NUMBER}[/post]',
 				'bbcode_tpl'		=> '<a href="./viewtopic.php?p={NUMBER}#p{NUMBER}" title="{L_QR_BBPOST}"><i class="icon fa-external-link-square fa-fw icon-lightgray icon-md"></i></a>',
 				'display_on_posting'=> 0,
-			),
-		);
+			],
+		];
 	}
 }

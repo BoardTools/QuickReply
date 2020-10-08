@@ -5,7 +5,7 @@
 * German - Philip Gisella
 * Hungarian - aszi77
 * Polish - FalconTech
-* Russian - original by Tatiana5, maintained by LavIgor
+* Russian - original by Татьяна5, maintained by LavIgor
 * Spanish - Raul Arroyo Monzo
 * Swedish - Tage Strandell
 * Turkish - Edip Dincer

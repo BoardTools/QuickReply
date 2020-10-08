@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -51,10 +51,10 @@ class captcha_helper
 
 		if ($captcha->is_solved() === false)
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'S_CONFIRM_CODE'   => true,
 				'CAPTCHA_TEMPLATE' => $captcha->get_template(),
-			));
+			]);
 		}
 
 		// Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
@@ -76,10 +76,10 @@ class captcha_helper
 				$this->set_captcha(false);
 			}
 			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
+			$json_response->send([
 				'captcha_refreshed' => true,
 				'captcha_result'    => $this->template->assign_display('@boardtools_quickreply/quickreply_captcha_template.html', '', true),
-			));
+			]);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-license.php GNU Public License
  *
  */
@@ -45,7 +45,7 @@ abstract class acp_module_helper
 	public $tpl_name;
 
 	/** @var array */
-	public $new_config = array();
+	public $new_config = [];
 
 	/** @var string */
 	public $ext_name = '';
@@ -92,8 +92,8 @@ abstract class acp_module_helper
 	 */
 	protected function submit_form()
 	{
-		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', array('' => ''), true) : $this->new_config;
-		$this->error = array();
+		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', ['' => ''], true) : $this->new_config;
+		$this->error = [];
 
 		// We validate the complete config if wished
 		validate_config_vars($this->display_vars['vars'], $cfg_array, $this->error);
@@ -226,13 +226,13 @@ abstract class acp_module_helper
 	 */
 	protected function output_basic_vars()
 	{
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'L_TITLE'         => $this->user->lang[$this->display_vars['title']],
 			'L_TITLE_EXPLAIN' => $this->user->lang[$this->display_vars['title'] . '_EXPLAIN'],
 
 			'S_ERROR'   => (sizeof($this->error)) ? true : false,
 			'ERROR_MSG' => implode('<br />', $this->error),
-		));
+		]);
 	}
 
 	/**
@@ -244,13 +244,13 @@ abstract class acp_module_helper
 	 */
 	protected function output_options($config_key, $vars, $content)
 	{
-		$this->template->assign_block_vars('options', array(
+		$this->template->assign_block_vars('options', [
 			'KEY'           => $config_key,
 			'TITLE'         => $this->get_title($vars, 'lang'),
 			'S_EXPLAIN'     => $vars['explain'],
 			'TITLE_EXPLAIN' => $this->get_title_explain($vars),
 			'CONTENT'       => $content,
-		));
+		]);
 	}
 
 	/**
@@ -272,11 +272,11 @@ abstract class acp_module_helper
 			$legend = $this->user->lang($vars);
 			$legend_explain = '';
 		}
-		return array(
+		return [
 			'S_LEGEND'       => true,
 			'LEGEND'         => $legend,
 			'LEGEND_EXPLAIN' => $legend_explain,
-		);
+		];
 	}
 
 	/**

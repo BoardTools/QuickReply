@@ -1,0 +1,34 @@
+<?php
+/**
+*
+* @package QuickReply Reloaded
+* @copyright (c) Татьяна5 and LavIgor
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
+
+namespace boardtools\quickreply\migrations\v2xx;
+
+use phpbb\textreparser\manager;
+use phpbb\textreparser\reparser_interface;
+
+class v_2_1_0_alpha extends \phpbb\db\migration\migration
+{
+	public function effectively_installed()
+	{
+		return isset($this->config['qr_version']) && version_compare($this->config['qr_version'], '2.1.0-alpha', '>=');
+	}
+
+	public static function depends_on()
+	{
+		return ['\boardtools\quickreply\migrations\v2xx\v_2_0_0_beta2'];
+	}
+
+	public function update_data()
+	{
+		return [
+			// Update existing configs
+			['config.update', ['qr_version', '2.1.0-alpha']],
+		];
+	}
+}

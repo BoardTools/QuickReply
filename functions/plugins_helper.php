@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -78,7 +78,7 @@ class plugins_helper
 	 */
 	public function template_variables_for_extensions($forum_id, $topic_id)
 	{
-		$template_variables = array();
+		$template_variables = [];
 		if (
 			$this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') &&
 			$this->posts_merging_allowed($forum_id, $topic_id) &&
@@ -89,11 +89,12 @@ class plugins_helper
 			// Always show the checkbox if PostsMerging extension is installed and
 			// the user has the permission to use this option in current topic.
 			$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
-			$template_variables += array('POSTS_MERGING_OPTION' => true);
+			$template_variables += ['POSTS_MERGING_OPTION' => true];
 		}
 
 		// ABBC3
-		$template_variables += array('S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3'));
+		//$template_variables += ['S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3')];
+		$template_variables += ['S_ABBC3_QR_BBCODES' => $this->phpbb_extension_manager->is_enabled('vse/abbc3') && $this->config['abbc3_qr_bbcodes']];
 
 		return $template_variables;
 	}
@@ -106,7 +107,7 @@ class plugins_helper
 	 */
 	public function template_variables_for_plugins($forum_id)
 	{
-		return array(
+		return [
 			'S_QR_NOT_CHANGE_SUBJECT'   => !$this->auth->acl_get('f_qr_change_subject', $forum_id),
 
 			// begin mod CapsLock Transfer
@@ -116,7 +117,7 @@ class plugins_helper
 			// begin mod Translit
 			'S_QR_SHOW_BUTTON_TRANSLIT' => $this->config['qr_show_button_translit'],
 			// end mod Translit
-		);
+		];
 	}
 
 	/**

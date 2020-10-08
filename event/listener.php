@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -62,7 +62,7 @@ class listener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
-		return array(
+		return [
 			'core.user_setup'                    => 'load_language_on_setup',
 			'core.viewtopic_modify_post_row'     => 'viewtopic_modify_post_row',
 			'core.viewtopic_modify_page_title'   => 'viewtopic_modify_data',
@@ -72,7 +72,7 @@ class listener implements EventSubscriberInterface
 			'rxu.postsmerging.posts_merging_end' => 'on_submit',
 			'core.search_get_posts_data'         => 'hide_posts_subjects_in_searchresults_sql',
 			'core.search_modify_tpl_ary'         => 'hide_posts_subjects_in_searchresults_tpl',
-		);
+		];
 	}
 
 	/**
@@ -83,10 +83,10 @@ class listener implements EventSubscriberInterface
 	public function load_language_on_setup($event)
 	{
 		$lang_set_ext = $event['lang_set_ext'];
-		$lang_set_ext[] = array(
+		$lang_set_ext[] = [
 			'ext_name' => 'boardtools/quickreply',
 			'lang_set' => 'quickreply_notification',
-		);
+		];
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
 
@@ -104,9 +104,9 @@ class listener implements EventSubscriberInterface
 		{
 			$row = $event['row'];
 			$post_row = $event['post_row'];
-			$post_row = array_merge($post_row, array(
+			$post_row = array_merge($post_row, [
 				'QR_POST_TIME' => $row['post_time'],
-			));
+			]);
 			$event['post_row'] = $post_row;
 		}
 
@@ -116,16 +116,16 @@ class listener implements EventSubscriberInterface
 			decode_message($decoded_message, $row['bbcode_uid']);
 
 			$decoded_message = bbcode_nl2br($decoded_message);
-			$post_row = array_merge($post_row, array(
+			$post_row = array_merge($post_row, [
 				'DECODED_MESSAGE' => $decoded_message,
-			));
+			]);
 		}
 
 		if ($this->helper->plugins_helper->quote_button_disabled($topic_data, $row['post_id']))
 		{
-			$post_row = array_merge($post_row, array(
+			$post_row = array_merge($post_row, [
 				'U_QUOTE' => false
-			));
+			]);
 		}
 		$event['post_row'] = $post_row;
 	}
@@ -162,9 +162,9 @@ class listener implements EventSubscriberInterface
 			$this->template->assign_var('SUBJECT', $this->request->variable('subject', $add_re . censor_text($topic_data['topic_title']), true));
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'QR_HIDE_POSTS_SUBJECT' => !$this->config['qr_show_subjects'],
-		));
+		]);
 	}
 
 	/**
@@ -211,17 +211,17 @@ class listener implements EventSubscriberInterface
 		// Whether the user can change post subject or not
 		if ($this->helper->plugins_helper->cannot_change_subject($forum_id, $event['mode'], $post_data['topic_first_post_id'], $event['post_id']))
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'S_QR_NOT_CHANGE_SUBJECT' => true,
 				'QR_HIDE_SUBJECT_BOX'     => $this->config['qr_hide_subject_box'],
-			));
+			]);
 		};
 
 		// Whether we need to suppress full quotes in topic review
-		$page_data = array_merge($page_data, array(
+		$page_data = array_merge($page_data, [
 			'S_QR_FULL_QUOTE_ALLOWED' => $this->auth->acl_get('f_qr_full_quote', $forum_id),
 			'S_QR_LAST_QUOTE'         => $this->config['qr_last_quote'],
-		));
+		]);
 
 		$event['post_data'] = $post_data;
 		$event['page_data'] = $page_data;
@@ -259,9 +259,9 @@ class listener implements EventSubscriberInterface
 			}
 			$event['sql_array'] = $sql_array;
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'QR_HIDE_POSTS_SUBJECT' => true
-			));
+			]);
 		}
 	}
 
@@ -280,9 +280,9 @@ class listener implements EventSubscriberInterface
 
 			if ($show_results == 'posts')
 			{
-				$tpl_ary = array_merge($tpl_ary, array(
+				$tpl_ary = array_merge($tpl_ary, [
 					'QR_NOT_FIRST_POST' => ($row['topic_first_post_id'] == $row['post_id']) ? false : true,
-				));
+				]);
 
 				$event['tpl_ary'] = $tpl_ary;
 			}

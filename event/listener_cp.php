@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -47,7 +47,7 @@ class listener_cp implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		// We set lower priority for some events for the case if another extension wants to use those events.
-		return array(
+		return [
 			'core.ucp_prefs_view_data'                  => 'ucp_prefs_get_data',
 			'core.ucp_prefs_view_update_data'           => 'ucp_prefs_set_data',
 			'core.acp_users_prefs_modify_data'          => 'acp_prefs_get_data',
@@ -57,7 +57,7 @@ class listener_cp implements EventSubscriberInterface
 			'core.acp_manage_forums_display_form'       => 'acp_manage_forums_template_data',
 			'core.acp_manage_forums_initialise_data'    => 'acp_manage_forums_initialise_data',
 			'core.permissions'                          => 'add_permission',
-		);
+		];
 	}
 
 	/**
@@ -162,9 +162,9 @@ class listener_cp implements EventSubscriberInterface
 	public function add_permission($event)
 	{
 		$permissions = $event['permissions'];
-		$permissions['a_quickreply'] = array('lang' => 'ACL_A_QUICKREPLY', 'cat' => 'misc');
-		$permissions['f_qr_change_subject'] = array('lang' => 'ACL_F_QR_CHANGE_SUBJECT', 'cat' => 'post');
-		$permissions['f_qr_full_quote'] = array('lang' => 'ACL_F_QR_FULL_QUOTE', 'cat' => 'post');
+		$permissions['a_quickreply'] = ['lang' => 'ACL_A_QUICKREPLY', 'cat' => 'misc'];
+		$permissions['f_qr_change_subject'] = ['lang' => 'ACL_F_QR_CHANGE_SUBJECT', 'cat' => 'post'];
+		$permissions['f_qr_full_quote'] =['lang' => 'ACL_F_QR_FULL_QUOTE', 'cat' => 'post'];
 		$event['permissions'] = $permissions;
 	}
 }

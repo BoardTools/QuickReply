@@ -190,7 +190,7 @@
 	 * @returns {string}
 	 */
 	quickreply.style.getPostId = function(element) {
-		return element.parents('.post').attr('id').replace('p', '');
+		return element.closest('div.post').attr('id').replace('p', '');
 	};
 
 	/**

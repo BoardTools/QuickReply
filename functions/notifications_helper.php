@@ -2,7 +2,7 @@
 /**
  *
  * @package       QuickReply Reloaded
- * @copyright (c) 2014 - 2019 Tatiana5 and LavIgor
+ * @copyright (c) 2014 - 2020 Татьяна5 and LavIgor
  * @license       http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
@@ -79,13 +79,13 @@ class notifications_helper
 	 */
 	private function get_notification_data($data, $subject, $username)
 	{
-		return array_merge($data, array(
-			'topic_title'   => (isset($data['topic_title'])) ? $data['topic_title'] : $subject,
+		return array_merge($data, [
+			'topic_title'   => $data['topic_title'] ?? $subject,
 			'post_username' => $username,
 			'post_text'     => $data['message'],
 			'post_time'     => time(),
 			'post_subject'  => $subject,
-		));
+		]);
 	}
 
 	/**
@@ -114,7 +114,7 @@ class notifications_helper
 	 */
 	private function case_to_add($mode)
 	{
-		return in_array($mode, array('post', 'reply', 'quote'));
+		return in_array($mode, ['post', 'reply', 'quote']);
 	}
 
 	/**
@@ -125,6 +125,6 @@ class notifications_helper
 	 */
 	private function case_to_update($mode)
 	{
-		return in_array($mode, array('edit_topic', 'edit_first_post', 'edit', 'edit_last_post'));
+		return in_array($mode, ['edit_topic', 'edit_first_post', 'edit', 'edit_last_post']);
 	}
 }
