@@ -115,7 +115,7 @@
 	left: 0;
 	right: 0;
 	z-index: 41;
-	background-color: #FFF;
+	background-color: transparent;
 	max-height: 50%;
 	overflow-y: auto;
 	overflow-x: hidden;

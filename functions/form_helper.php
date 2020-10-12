@@ -168,9 +168,13 @@ class form_helper
 			$flash_status = $this->flash_status($forum_id);
 
 			// Build custom bbcodes array
-			display_custom_bbcodes();
+			if ($this->config['qr_bbcode'] && !$this->abbc3)
+			{
+				display_custom_bbcodes();
+				//$this->form_template_variables += ['S_QR_BBCODE_ALLOWED' => 1];
+			}
 
-			$this->form_template_variables += ['S_QR_BBCODE_ALLOWED' => 1];
+			$this->form_template_variables += ['S_BBCODE_ALLOWED' => 1];
 		}
 
 		$this->add_statuses_to_template($bbcode_status, $img_status, $flash_status, $quote_status);
@@ -206,8 +210,7 @@ class form_helper
 	{
 		return (
 			$this->config['allow_bbcode'] &&
-			$this->auth->acl_get('f_bbcode', $forum_id) &&
-			!$this->abbc3
+			$this->auth->acl_get('f_bbcode', $forum_id)
 		);
 	}
 
