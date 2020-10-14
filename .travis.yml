@@ -1,38 +1,34 @@
-# Opt into fully virtualized infrastructure
-sudo: required
-dist: precise
-
 language: php
+dist: xenial
 
 matrix:
   include:
-    - php: 5.5
-      env: DB=none;NOTESTS=1
-    - php: 5.4
-      env: DB=mysqli #myisam
-    - php: 5.4
-      env: DB=mysql
-    - php: 5.4
-      env: DB=mariadb
-    - php: 5.4
-      env: DB=postgres
-    - php: 5.4
-      env: DB=sqlite3
-    - php: 5.5
-      env: DB=mysqli
-    - php: 5.6
-      env: DB=mysqli
-    - php: 7.0
-      env: DB=mysqli
     - php: 7.1
+      env: DB=none;NOTESTS=1
+    - php: 7.1
+      env: DB=mariadb
+    - php: 7.1
+      env: DB=postgres
+    - php: 7.1
+      env: DB=sqlite3
+    - php: 7.1
+      env: DB=mysqli # MyISAM
+    - php: 7.2
       env: DB=mysqli
+    - php: 7.2
+      env: PHPBB_BRANCH="master";DB=mysqli
+    - php: 7.3
+      env: DB=mysqli
+    - php: 7.3
+      env: PHPBB_BRANCH="master";DB=mysqli
+    - php: 7.4
+      env: DB=mysqli
+    - php: 7.4
+      env: PHPBB_BRANCH="master";DB=mysqli
     - php: nightly
-      env: DB=mysqli
-    - php: hhvm
-      env: DB=mysqli
+      env: PHPBB_BRANCH="master";DB=mysqli
   allow_failures:
     - php: nightly
-    - php: hhvm
   fast_finish: true
 
 env:
@@ -41,13 +37,15 @@ env:
     - SNIFF="1"            # Should we run code sniffer on your code?
     - IMAGE_ICC="1"        # Should we run icc profile sniffer on your images?
     - EPV="1"              # Should we run EPV (Extension Pre Validator) on your code?
-    - PHPBB_BRANCH="3.2.x"
+    - PHPBB_BRANCH="3.3.x"
+
+services:
+  - postgresql
+  - mysql
 
 branches:
   only:
-    - master
-    - develop
-    - /^develop-.*$/
+    - 2.1.x
 
 before_install:
   - sudo mkdir travis
@@ -61,7 +59,7 @@ install:
   - cd ../../phpBB3
   - travis/prepare-extension.sh $EXTNAME $PHPBB_BRANCH
   - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
-  - sh -c "if [ '$EPV' = '1' -a '$NOTESTS' = '1' ]; then cd phpBB; composer remove sami/sami --update-with-dependencies --dev --no-interaction; composer require phpbb/epv:dev-master --dev --no-interaction --ignore-platform-reqs; cd ../; fi"
+  - sh -c "if [ '$EPV' = '1' -a '$NOTESTS' = '1' ]; then cd phpBB; composer remove sami/sami --update-with-dependencies --no-interaction; composer require phpbb/epv:dev-master --no-interaction --ignore-platform-reqs; cd ../; fi"
 
 before_script:
   - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
