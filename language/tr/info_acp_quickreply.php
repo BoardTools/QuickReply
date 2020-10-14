@@ -96,5 +96,4 @@ $lang = array_merge($lang, [
 	'ACP_QR_SHOW_SUBJECTS_IN_SEARCH'       => 'Gönderi konu başlıklarını arama sonuçlarında göster',
 	'ACP_QR_SMILIES'                       => 'Display smilies',
 	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smilies in quick reply form.',
-	'ACP_QR_SOURCE_POST'                   => 'Alıntı yaparken, alıntı yapılan mesajın bağlantısını ekle',
 ]);

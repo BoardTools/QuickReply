@@ -96,5 +96,4 @@ $lang = array_merge($lang, [
 	'ACP_QR_SHOW_SUBJECTS_IN_SEARCH'       => 'إظهار عناوين المشاركات في نتائج البحث ',
 	'ACP_QR_SMILIES'                       => 'Display smilies',
 	'ACP_QR_SMILIES_EXPLAIN'               => 'Allow display of smilies in quick reply form.',
-	'ACP_QR_SOURCE_POST'                   => 'إضافة رابط للمُشاركة التي تم اقتباسها ',
 ]);
