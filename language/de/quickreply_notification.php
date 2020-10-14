@@ -29,4 +29,4 @@ $lang = array_merge($lang, [
 	'NOTIFICATION_TYPE_QUICKNICK' => 'Du wurdest erwähnt in der Nachricht ',
 
 	'QR_BBPOST' => 'Ursprung des Beitrags',
-);
+];

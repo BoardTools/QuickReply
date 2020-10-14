@@ -9,9 +9,6 @@
 
 namespace boardtools\quickreply\migrations\v2xx;
 
-use phpbb\textreparser\manager;
-use phpbb\textreparser\reparser_interface;
-
 class v_2_1_0_alpha extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()

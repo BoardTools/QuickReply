@@ -130,7 +130,7 @@ class v_0_1_3 extends \phpbb\db\migration\migration
 	{
 		$sql = 'UPDATE ' . $this->table_prefix . 'bbcodes
 			SET ' . $this->db->sql_build_array('UPDATE', $bbcode_array) . '
-			WHERE bbcode_id = ' . $bbcode_id;
+			WHERE bbcode_id = ' . (int)$bbcode_id;
 		$this->db->sql_query($sql);
 	}
 

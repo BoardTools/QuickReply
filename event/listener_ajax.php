@@ -82,7 +82,7 @@ class listener_ajax implements EventSubscriberInterface
 		$this->helper->captcha_helper->check_captcha_refresh();
 
 		$post_list = $event['post_list'];
-		$current_post = $this->request->variable('qr_cur_post_id', 0);
+		$current_post = (int)$this->request->variable('qr_cur_post_id', 0);
 		if ($this->ajax_helper->no_refresh($current_post, $post_list))
 		{
 			$this->ajax_helper->qr_merged = $qr_get_current = $this->request->is_set('qr_get_current');

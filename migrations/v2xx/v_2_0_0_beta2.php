@@ -9,8 +9,8 @@
 
 namespace boardtools\quickreply\migrations\v2xx;
 
-use phpbb\textreparser\manager;
-use phpbb\textreparser\reparser_interface;
+//use phpbb\textreparser\manager;
+//use phpbb\textreparser\reparser_interface;
 
 class v_2_0_0_beta2 extends \phpbb\db\migration\migration
 {
