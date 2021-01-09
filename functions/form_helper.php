@@ -35,17 +35,11 @@ class form_helper
 	/** @var string */
 	protected $phpbb_root_path;
 
-	/** @var plugins_helper */
-	public $plugins_helper;
-
 	/** @var string */
 	protected $php_ext;
 
 	/** @var array */
 	public $form_template_variables;
-
-	/** @var bool */
-	public $abbc3;
 
 	/**
 	 * Constructor
@@ -57,11 +51,10 @@ class form_helper
 	 * @param \phpbb\cache\service     $cache
 	 * @param \phpbb\plupload\plupload $plupload
 	 * @param \phpbb\mimetype\guesser  $mimetype_guesser
-	 * @param plugins_helper           $plugins_helper
 	 * @param string                   $phpbb_root_path Root path
 	 * @param string                   $php_ext
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\plupload\plupload $plupload, \phpbb\mimetype\guesser $mimetype_guesser, plugins_helper $plugins_helper, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\cache\service $cache, \phpbb\plupload\plupload $plupload, \phpbb\mimetype\guesser $mimetype_guesser, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -70,11 +63,9 @@ class form_helper
 		$this->cache = $cache;
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
-		$this->plugins_helper = $plugins_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->form_template_variables = [];
-		$this->abbc3 = false;
 	}
 
 	/**
@@ -85,9 +76,6 @@ class form_helper
 	 */
 	public function prepare_qr_form($forum_id, $topic_id)
 	{
-		// Fix for ABBC3
-		$this->abbc3 = $this->plugins_helper->template_variables_for_extensions($forum_id, $topic_id)['S_ABBC3_QR_BBCODES'];
-
 		// BBCode, Smilies and URLs
 		$bbcode_status = $this->handle_bbcodes($forum_id);
 		$smilies_status = $this->handle_smilies($forum_id);
@@ -168,10 +156,9 @@ class form_helper
 			$flash_status = $this->flash_status($forum_id);
 
 			// Build custom bbcodes array
-			if ($this->config['qr_bbcode'] && !$this->abbc3)
+			if ($this->config['qr_bbcode'])
 			{
 				display_custom_bbcodes();
-				//$this->form_template_variables += ['S_QR_BBCODE_ALLOWED' => 1];
 			}
 
 			$this->form_template_variables += ['S_BBCODE_ALLOWED' => 1];

@@ -77,7 +77,6 @@ services:
             - '@cache'
             - '@plupload'
             - '@mimetype.guesser'
-            - '@boardtools.quickreply.plugins_helper'
             - '%core.root_path%'
             - '%core.php_ext%'
 

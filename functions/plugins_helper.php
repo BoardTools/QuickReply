@@ -93,8 +93,7 @@ class plugins_helper
 		}
 
 		// ABBC3
-		//$template_variables += ['S_ABBC3_INSTALLED' => $this->phpbb_extension_manager->is_enabled('vse/abbc3')];
-		$template_variables += ['S_ABBC3_QR_BBCODES' => $this->phpbb_extension_manager->is_enabled('vse/abbc3') && $this->config['abbc3_qr_bbcodes']];
+		$template_variables += ['S_ABBC3_QUICKREPLY' => $this->phpbb_extension_manager->is_enabled('vse/abbc3') && $this->config['abbc3_qr_bbcodes']];
 
 		return $template_variables;
 	}
