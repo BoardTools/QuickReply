@@ -10,7 +10,8 @@ quickreply.plugins = {
 	abbc3: {% if S_ABBC3_QUICKREPLY %}true{% else %}false{% endif %},
 	liveSearch: {% if (S_LIVE_SEARCH and LIVE_SEARCH_ON_OFF_USER) %}true{% else %}false{% endif %},
 	reCAPTCHA2: {% if (S_RECAPTCHA_AVAILABLE and RECAPTCHA2_SITEKEY) %}true{% else %}false{% endif %},
-	seo: {% if SEO_PHPBB_URL %}true{% else %}false{% endif %}
+	seo: {% if SEO_PHPBB_URL %}true{% else %}false{% endif %},
+	qrBoardUrl: '{{ BOARD_URL }}'
 };
 
 // Configuration settings for QuickReply.

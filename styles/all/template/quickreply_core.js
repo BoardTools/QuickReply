@@ -12,6 +12,8 @@
 		qrSmileyBoxAnimationInterval = 500,
 		$body = $('body');
 
+	var currentLocation = window.location.toString();
+
 	/***********************/
 	/* Initial adjustments */
 	/***********************/
@@ -65,6 +67,26 @@
 		$(window).on("popstate", function(e) {
 			var state = e.originalEvent.state;
 			if (!state) {
+				return;
+			}
+
+			function qr_clear_url(qr_url) {
+				// Full url
+				//qr_url = qr_url.replace(/^\.\//, location.protocol + '//' + location.host + '/');
+				qr_url = qr_url.replace(/^\.\//, quickreply.plugins.qrBoardUrl);
+				// Fix for ?f=forum_id
+				qr_url = qr_url.replace(/\?f=\d+&/, '?');
+
+				return qr_url;
+			}
+
+			/* Don’t reload if only hash changed */
+			var stateFullURL = qr_clear_url(state.url);
+			currentLocation = qr_clear_url(currentLocation);
+
+			console.log('stateFullURL' + ' ' + stateFullURL);
+			console.log('currentLocation' + ' ' + currentLocation);
+			if (currentLocation == stateFullURL) {
 				return;
 			}
 
@@ -1952,6 +1974,7 @@
 		 *                                            'unread' - if we need to scroll to the first unread post
 		 */
 		this.start = function(url, requestData, requestParams) {
+			currentLocation = url;
 			quickreply.loading.start();
 
 			setDefaults();
