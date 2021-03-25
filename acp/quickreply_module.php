@@ -53,6 +53,7 @@ class quickreply_module extends acp_module_helper
 				'qr_smilies'              => array('lang' => 'ACP_QR_SMILIES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 				'qr_capslock_transfer'    => array('lang' => 'ACP_QR_CAPSLOCK', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				'qr_show_button_translit' => array('lang' => 'ACP_QR_SHOW_BUTTON_TRANSLIT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+				'qr_read_next'            => array('lang' => 'ACP_QR_READ_NEXT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
 				//
 				'legend3'                 => 'ACP_QR_LEGEND_AJAX',
 				'qr_ajax_pagination'      => array('lang' => 'ACP_QR_AJAX_PAGINATION', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),

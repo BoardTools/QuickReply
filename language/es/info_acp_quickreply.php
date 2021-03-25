@@ -89,6 +89,7 @@ $lang = array_merge($lang, [
 	'ACP_QR_QUICKQUOTE_BUTTON'             => 'Habilitar cita rápida usando el botón',
 	'ACP_QR_QUICKQUOTE_BUTTON_EXPLAIN'     => 'Permita citas a través de un botón de cita estándar.<br /><em>Tenga en cuenta que el botón de citar se oculta si esta configuración está deshabilitada, y el usuario no tiene permiso para utilizarla para la cita completa.</em>',
 	'ACP_QR_QUICKQUOTE_EXPLAIN'            => 'Permitir citas en un “popup” que aparece cuando se selecciona el texto en un mensaje.',
+	'ACP_QR_READ_NEXT'                     => 'Display “Read next” button',
 	'ACP_QR_SCROLL_TIME'                   => 'Tiempo para un solo evento de desplazamiento y animación',
 	'ACP_QR_SCROLL_TIME_EXPLAIN'           => 'Tiempo en milisegundos para la función de desplazamiento suave. Introducir 0 para el desplazamiento estándar.',
 	'ACP_QR_SHOW_BUTTON_TRANSLIT'          => 'Mostrar botón “Convertir”',

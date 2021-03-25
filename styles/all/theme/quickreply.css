@@ -17,6 +17,28 @@
 	color: #0A8ED0;
 }
 
+.pagination_next {
+	text-align: center;
+}
+
+.pagination_next a.button {
+	background: #ECEDEE;
+	border-color: #B4BAC0;
+	box-shadow: none;
+	text-shadow: none;
+	float: none;
+	padding: 5px 0;
+	margin: 0;
+	margin-bottom: 4px;
+	width: 100%;
+	width: (100% - 2px);
+	font-size: 1.5em;
+}
+
+.pagination_next a.button:hover {
+	border-color: #0A8ED0;
+}
+
 /* Fixed form style. */
 
 /* Compact form style. */

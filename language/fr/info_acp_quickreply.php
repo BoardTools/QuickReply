@@ -89,6 +89,7 @@ $lang = array_merge($lang, [
 	'ACP_QR_QUICKQUOTE_BUTTON'             => 'Activer la citation personnelle en utilisant le bouton',
 	'ACP_QR_QUICKQUOTE_BUTTON_EXPLAIN'     => 'Permet les citations au moyen du bouton de citation standard.<br /><em>NOTE : ce bouton de citation sera masqué si ce paramètre est désactivé et que l’utilisateur n’a pas les permissions nécessaires pour utiliser les citation complète.</em>',
 	'ACP_QR_QUICKQUOTE_EXPLAIN'            => 'Permet de citer rapidement dans le formulaire de la réponse rapide, au travers d’une fenêtre en incrustation « popup », lorsque du texte est sélectionné dans un message.',
+	'ACP_QR_READ_NEXT'                     => 'Display “Read next” button',
 	'ACP_QR_SCROLL_TIME'                   => 'Durée du défilement et de l’animation',
 	'ACP_QR_SCROLL_TIME_EXPLAIN'           => 'Temps en millisecondes pour la fonctionnalité du défilement léger. Saisir 0 pour le défilement par défaut.',
 	'ACP_QR_SHOW_BUTTON_TRANSLIT'          => 'Afficher le bouton « Translittérer » (en russe)',

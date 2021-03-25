@@ -10,3 +10,13 @@
 </div>
 <div id="qr_temp_container" style="display: none;"></div>
 {% endif %}
+
+{% if S_QR_READ_NEXT and postrow.S_LAST_ROW %}
+	<div class="pagination_next">
+		{% for page in pagination %}
+			{% if page.S_IS_NEXT %}
+				<a href="{page.PAGE_URL}" rel="next" role="button" class="button">{{ lang('QR_READ_NEXT') }}</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+{% endif %}

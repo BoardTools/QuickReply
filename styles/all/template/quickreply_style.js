@@ -78,6 +78,11 @@
 				'.additional-element'
 			],
 			$elements = $qrForm.find(elementsArray.join(', '));
+
+			/*var check_val = $('#format-buttons .bbcode-file');
+			if ('undefined' !== typeof check_val && check_val !== null && check_val.length > 0) {
+				elementsArray.shift();
+			}*/
 		return (selectStandard) ? $elements.add($qrForm.find('.submit-buttons, #qr_captcha_container')) : $elements;
 	};
 
@@ -91,6 +96,15 @@
 	};
 
 	/**
+	 * Gets the jQuery object for pagination elements.
+	 *
+	 * @returns {jQuery}
+	 */
+	quickreply.style.getPaginationNext = function() {
+		return $('.pagination_next');
+	};
+
+	/**
 	 * Applies the new pagination data.
 	 * Used in Ajax response handling function
 	 * when temporary container with the new data is available.
@@ -99,6 +113,11 @@
 		var $replyPagination = $('#qr_pagination');
 		quickreply.style.getPagination().html($replyPagination.html());
 		$replyPagination.remove();
+
+		var $replyPaginationNext = $('#qr_pagination_next');
+		quickreply.style.getPaginationNext().slice(1).remove(); // fix duplicate elements
+		quickreply.style.getPaginationNext().html($replyPaginationNext.html());
+		$replyPaginationNext.remove();
 	};
 
 	/**
@@ -119,7 +138,7 @@
 	 */
 	quickreply.style.bindPagination = function() {
 		if (quickreply.settings.saveReply) {
-			$('.action-bar .pagination a:not(.dropdown-trigger, .mark[href="#unread"])').click(function(event) {
+			$('.action-bar .pagination a:not(.dropdown-trigger, .mark[href="#unread"]), .pagination_next a').click(function(event) {
 				event.preventDefault();
 				quickreply.ajaxReload.loadPage($(this).attr('href'));
 			});

@@ -294,6 +294,7 @@ class listener_helper
 			'S_QR_SAVE_REPLY'         => $this->user->data['ajax_pagination'],
 			'S_QR_CTRL_ENTER_NOTICE'  => $this->config['qr_ctrlenter'],
 			'S_DISPLAY_USERNAME'      => !$this->user->data['is_registered'],
+			'S_QR_READ_NEXT'          => $this->config['qr_read_next'],
 
 			'MESSAGE'       => $this->request->variable('message', '', true),
 			'READ_POST_IMG' => $this->user->img('icon_post_target', 'POST'),

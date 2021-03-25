@@ -48,6 +48,7 @@ $lang = array_merge($lang, [
 	'QR_REPLY_IN_PM'                   => 'Odpowiedz przez PW',
 	'QR_TYPE_REPLY'                    => 'Type your reply here...',
 	'QR_WARN_BEFORE_UNLOAD'            => 'Your entered reply has not been submitted and may be lost!',
+	'QR_READ_NEXT'                     => 'Read next',
 	// begin mod Translit
 	'QR_TRANSLIT_TEXT'                 => 'Translit',
 	'QR_TRANSLIT_TEXT_TO_RU'           => 'na rosyjski', // can be changed to your language here and below

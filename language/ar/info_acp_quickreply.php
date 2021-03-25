@@ -89,6 +89,7 @@ $lang = array_merge($lang, [
 	'ACP_QR_QUICKQUOTE_BUTTON'             => 'Enable quick quote using button',
 	'ACP_QR_QUICKQUOTE_BUTTON_EXPLAIN'     => 'Allow quotes through a standard quote button.<br /><em>Note that quote button will be hidden if this setting is disabled and the user does not have the permission to use it for full quote.</em>',
 	'ACP_QR_QUICKQUOTE_EXPLAIN'            => 'السماح بالإقتباسات بواسطة قائمة منسدلة تظهر عند تحديد نص في الردود التي تريد الإقتباس منها.',
+	'ACP_QR_READ_NEXT'                     => 'Display “Read next” button',
 	'ACP_QR_SCROLL_TIME'                   => 'وقت التأثيرات المُتحركة ',
 	'ACP_QR_SCROLL_TIME_EXPLAIN'           => 'حدد الوقت بالملي ثانية للتأثيرات المُتحركة بعد إضافة الرد السريع. القيمة صفر ( 0 ) تعني إستخدام القيمة القياسية للمؤثرات.',
 	'ACP_QR_SHOW_BUTTON_TRANSLIT'          => 'إظهار زر الترجمة إلى “الروسية” ',

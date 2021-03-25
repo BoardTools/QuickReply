@@ -89,6 +89,7 @@ $lang = array_merge($lang, [
 	'ACP_QR_QUICKQUOTE_BUTTON'             => 'Enable quick quote using button',
 	'ACP_QR_QUICKQUOTE_BUTTON_EXPLAIN'     => 'Allow quotes through a standard quote button.<br /><em>Note that quote button will be hidden if this setting is disabled and the user does not have the permission to use it for full quote.</em>',
 	'ACP_QR_QUICKQUOTE_EXPLAIN'            => 'Allow quotes through a “popup” that appears when you select text in a message.',
+	'ACP_QR_READ_NEXT'                     => 'Display “Read next” button',
 	'ACP_QR_SCROLL_TIME'                   => 'Time for a single scroll and animation event',
 	'ACP_QR_SCROLL_TIME_EXPLAIN'           => 'Time in milliseconds for the soft scroll feature. Enter 0 for the standard scroll.',
 	'ACP_QR_SHOW_BUTTON_TRANSLIT'          => 'Show button “Convert”',
