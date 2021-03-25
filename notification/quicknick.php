@@ -34,7 +34,7 @@ class quicknick extends \phpbb\notification\type\quote
 	 * @var bool|array False if the service should use it's default data
 	 *                    Array of data (including keys 'id', 'lang', and 'group')
 	 */
-	public static $notification_option = [
+	static public $notification_option = [
 		'lang'  => 'NOTIFICATION_TYPE_QUICKNICK',
 		'group' => 'NOTIFICATION_GROUP_POSTING',
 	];

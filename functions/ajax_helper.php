@@ -54,7 +54,7 @@ class ajax_helper
 	public $qr_merged = false;
 
 	/** @var array */
-	private static $qr_fields = [];
+	static private $qr_fields = [];
 
 	/**
 	 * Constructor
@@ -343,7 +343,7 @@ class ajax_helper
 	 *
 	 * @param array $data Array with JSON data
 	 */
-	public static function send_json($data)
+	static public function send_json($data)
 	{
 		$json_response = new \phpbb\json_response;
 		$json_response->send(array_merge(self::$qr_fields, $data));

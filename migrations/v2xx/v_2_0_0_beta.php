@@ -19,7 +19,7 @@ class v_2_0_0_beta extends \phpbb\db\migration\container_aware_migration
 		return isset($this->config['qr_version']) && version_compare($this->config['qr_version'], '2.0.0-beta', '>=');
 	}
 
-	public static function depends_on()
+	static public function depends_on()
 	{
 		return ['\boardtools\quickreply\migrations\v2xx\v_2_0_0_alpha'];
 	}
