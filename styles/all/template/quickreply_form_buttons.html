@@ -1,5 +1,5 @@
 {% if S_QR_FORM_TYPE > 0 %}
-<div id="qr_action_box">
+<div id="qr_action_box" style="display: none;">
 	<div id="qr_action_box_container">
 		<i class="qr_fullscreen_button fa fa-fw fa-arrows-alt" title="{{ lang('QR_FULLSCREEN') }}"></i>
 		{% if (S_SMILIES_ALLOWED and loops.smiley) %}
@@ -10,7 +10,7 @@
 		{% endif %}
 	</div>
 </div>
-<div id="qr_text_action_box">
+<div id="qr_text_action_box" style="display: none;">
 	{% if S_BBCODE_BUTTONS %}
 	<i class="qr_bbcode_button fa fa-fw fa-bold" title="{{ lang('QR_BBCODE') }}"></i>
 	{% endif %}

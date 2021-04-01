@@ -1005,6 +1005,7 @@
 			}
 
 			$('#qr_action_box').prependTo(quickreply.$.messageBox);
+			$('#qr_action_box, #qr_text_action_box').show();
 
 			addToggleButton();
 			if (!self.hasReply()) {
@@ -1091,6 +1092,15 @@
 			$(window).on('load', function() {
 				// interval is needed because of form animation
 				self.setCheckExtendedInterval(5000);
+
+				/* Scroll to post fix */
+				var hash = window.location.hash;
+				if (hash && /^#p(\d+)$/.test(hash)) {
+					var qrInterval = (quickreply.settings.softScroll) ? 250 : 0;
+					$('html,body').animate({
+						scrollTop: $(hash).offset().top
+					}, qrInterval);
+				}
 			});
 			quickreply.$.qrPosts.click(self.setCheckExtendedInterval); // for spoilers and other toggles
 
