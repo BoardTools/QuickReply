@@ -2,7 +2,7 @@ QuickReply Reloaded
 ===================
 Extended possibilities to use the QuickReply feature.
 
-[![Build Status](https://travis-ci.org/BoardTools/QuickReply.svg?branch=master)](https://travis-ci.org/BoardTools/QuickReply) [![Build Status](https://github.com/BoardTools/QuickReply/workflows/Tests/badge.svg)](https://github.com/BoardTools/QuickReply/actions)
+[![Build Status](https://travis-ci.org/BoardTools/QuickReply.svg?branch=master)](https://travis-ci.org/BoardTools/QuickReply)
 
 ## General overview and features
 You can find general description of extension's features as well as a demo, up-to-date download links and the list of supported versions on extension's webpage:
