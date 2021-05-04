@@ -37,7 +37,7 @@ class ajax_preview_helper
 	 * @param \phpbb\user            $user
 	 * @param \phpbb\request\request $request
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, 
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config,
 								\phpbb\user $user, \phpbb\request\request $request)
 	{
 		$this->auth = $auth;
