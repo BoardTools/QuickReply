@@ -41,7 +41,7 @@ class plugins_helper
 
 	/**
 	 * Returns whether posts merging is allowed in current topic.
-	 * Used only when postsmerging extension is enabled.
+	 * Used only when PostsMerging extension is enabled.
 	 *
 	 * @param int $forum_id Current forum ID
 	 * @param int $topic_id Current topic ID
@@ -57,7 +57,7 @@ class plugins_helper
 
 	/**
 	 * Returns whether the current topic is excluded from posts merging.
-	 * Used only when postsmerging extension is enabled.
+	 * Used only when PostsMerging extension is enabled.
 	 *
 	 * @param int $forum_id Current forum ID
 	 * @param int $topic_id Current topic ID
@@ -80,15 +80,15 @@ class plugins_helper
 	{
 		$template_variables = [];
 		if (
-			$this->phpbb_extension_manager->is_enabled('rxu/postsmerging') &&
+			$this->phpbb_extension_manager->is_enabled('rxu/PostsMerging') &&
 			$this->posts_merging_allowed($forum_id, $topic_id) &&
 			$this->user->data['is_registered'] &&
 			$this->config['merge_interval']
 		)
 		{
-			// Always show the checkbox if postsmerging extension is installed and
+			// Always show the checkbox if PostsMerging extension is installed and
 			// the user has the permission to use this option in current topic.
-			$this->user->add_lang_ext('rxu/postsmerging', 'posts_merging');
+			$this->user->add_lang_ext('rxu/PostsMerging', 'posts_merging');
 			$template_variables += ['POSTS_MERGING_OPTION' => true];
 		}
 

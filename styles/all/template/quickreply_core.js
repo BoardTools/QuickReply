@@ -1164,6 +1164,7 @@
 		 * Sets extended standard form mode.
 		 */
 		function setExtended() {
+			var attach_visible = ($('#attach-panel').css('display') != 'none');
 			$('#qr_form_placeholder').remove();
 
 			// Opens attachments form and refreshes the uploader: triggers necessary event.
@@ -1179,6 +1180,11 @@
 			$('#smiley-box').finish().css('left', '').css('right', '').css('height', '').css('display', '');
 
 			quickreply.style.formEditorElements(true).finish().show();
+
+			var check_val = $('#format-buttons .bbcode-file');
+			if ('undefined' !== typeof check_val && check_val !== null && check_val.length > 0 && !attach_visible) {
+				$('#attach-panel').hide();
+			}
 			setAttachNotice('hide');
 
 			setTimeout(function() {
@@ -1609,18 +1615,26 @@
 
 				case "preview":
 					var $preview = $('#preview');
-					quickreply.preview.set({
-						display: 'block',
-						title: res.PREVIEW_TITLE,
-						content: res.PREVIEW_TEXT,
-						attachments: res.PREVIEW_ATTACH
-					});
-					quickreply.loading.stop();
-					if (quickreply.settings.enableScroll) {
-						var $container = (quickreply.form.is('fullscreen')) ? quickreply.$.mainForm : false;
-						quickreply.functions.softScroll($preview, $container);
+					if (res.error) {
+						quickreply.loading.stop(true);
+						quickreply.preview.set({
+							display: 'none'
+						});
+						phpbb.alert(res.title, res.message);
+					} else {
+						quickreply.preview.set({
+							display: 'block',
+							title: res.PREVIEW_TITLE,
+							content: res.PREVIEW_TEXT,
+							attachments: res.PREVIEW_ATTACH
+						});
+						quickreply.loading.stop();
+						if (quickreply.settings.enableScroll) {
+							var $container = (quickreply.form.is('fullscreen')) ? quickreply.$.mainForm : false;
+							quickreply.functions.softScroll($preview, $container);
+						}
+						quickreply.$.mainForm.trigger('ajax_submit_preview', [$preview]);
 					}
-					quickreply.$.mainForm.trigger('ajax_submit_preview', [$preview]);
 					break;
 
 				case "no_approve":

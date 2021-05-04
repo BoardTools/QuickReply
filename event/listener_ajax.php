@@ -34,6 +34,15 @@ class listener_ajax implements EventSubscriberInterface
 	/** @var \boardtools\quickreply\functions\listener_helper */
 	protected $helper;
 
+	/** @var bool */
+	protected $img_status;
+
+	/** @var bool */
+	protected $flash_status;
+
+	/** @var bool */
+	protected $quote_status;
+
 	/**
 	 * Constructor
 	 *
@@ -52,6 +61,9 @@ class listener_ajax implements EventSubscriberInterface
 		$this->request = $request;
 		$this->ajax_helper = $ajax_helper;
 		$this->helper = $helper;
+		$this->img_status = false;
+		$this->flash_status = false;
+		$this->quote_status = false;
 	}
 
 	/**
@@ -65,8 +77,9 @@ class listener_ajax implements EventSubscriberInterface
 		return [
 			'core.viewtopic_get_post_data'          => ['viewtopic_modify_sql', -2],
 			'core.viewtopic_modify_page_title'      => ['ajaxify_viewtopic_data', -2],
+			'core.posting_modify_bbcode_status'     => ['get_bbcode_status', -2],
 			'core.posting_modify_submission_errors' => 'detect_new_posts',
-			'core.posting_modify_template_vars'     => 'ajax_preview',
+			'core.posting_modify_message_text'      => 'ajax_preview',
 			'core.submit_post_end'                  => ['ajax_submit', -2],
 			'rxu.postsmerging.posts_merging_end'    => ['ajax_submit', -2],
 		];
@@ -149,6 +162,18 @@ class listener_ajax implements EventSubscriberInterface
 	}
 
 	/**
+	 * Get bbcode status
+	 *
+	 * @param object $event The event object
+	 */
+	public function get_bbcode_status($event)
+	{
+		$this->img_status = $event['img_status'];
+		$this->flash_status = $event['flash_status'];
+		$this->quote_status = $event['quote_status'];
+	}
+
+	/**
 	 * Do not post the message if there are some new ones
 	 *
 	 * @param object $event The event object
@@ -189,9 +214,10 @@ class listener_ajax implements EventSubscriberInterface
 	public function ajax_preview($event)
 	{
 		// Ajax submit
-		if ($this->ajax_helper->qr_is_ajax_submit())
+		if ($this->ajax_helper->qr_is_ajax_submit() && $this->request->is_set_post('preview'))
 		{
-			$this->ajax_helper->ajax_preview_helper->ajax_preview($event);
+			$this->ajax_helper->ajax_preview_helper->check_preview_error($event);
+			$this->ajax_helper->ajax_preview_helper->ajax_preview($event, $this->img_status, $this->flash_status, $this->quote_status);
 		}
 	}
 

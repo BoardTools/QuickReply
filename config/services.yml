@@ -50,6 +50,8 @@ services:
     boardtools.quickreply.ajax_preview_helper:
         class: boardtools\quickreply\functions\ajax_preview_helper
         arguments:
+            - '@auth'
+            - '@config'
             - '@user'
             - '@request'
 

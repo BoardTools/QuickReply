@@ -290,6 +290,10 @@
 	overflow-y: auto;
 }
 
+#qr_postform.qr_fullscreen_form {
+	background-color: #ffffff;
+}
+
 #qr_postform.qr_fullscreen_form #message-box textarea {
 	min-height: 115px;
 	max-height: 50%;
