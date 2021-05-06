@@ -983,6 +983,9 @@
 		 * Initializes fixed form mode.
 		 */
 		this.initFixed = function() {
+			/* Scroll to post fix */
+			self.setFixDiv();
+
 			quickreply.$.textarea.attr('placeholder', quickreply.language.TYPE_REPLY);
 
 			quickreply.style.showQuickReplyForm();
@@ -1094,13 +1097,7 @@
 				self.setCheckExtendedInterval(5000);
 
 				/* Scroll to post fix */
-				var hash = window.location.hash;
-				if (hash && /^#p(\d+)$/.test(hash)) {
-					var qrInterval = (quickreply.settings.softScroll) ? 250 : 0;
-					$('html,body').animate({
-						scrollTop: $(hash).offset().top
-					}, qrInterval);
-				}
+				self.removeFixDiv();
 			});
 			quickreply.$.qrPosts.click(self.setCheckExtendedInterval); // for spoilers and other toggles
 
@@ -1190,6 +1187,9 @@
 			setTimeout(function() {
 				self.$.removeClass('no_transition');
 			}, 0);
+
+			/* Scroll to post fix */
+			self.removeFixDiv();
 		}
 
 		/**
@@ -1404,6 +1404,21 @@
 			if (quickreply.settings.allowedGuest) {
 				quickreply.ajaxReload.start(document.location.href, {qr_captcha_refresh: 1});
 			}
+		};
+
+		/* Scroll to post fix */
+		this.setFixDiv = function() {
+			if (!$(document).is('.qr_fix_div'))
+			{
+				var qrFixDiv = $('<div>')
+								.attr('class', 'qr_fix_div')
+								.css('height', self.$.outerHeight());
+				self.$.after(qrFixDiv);
+			}
+		};
+
+		this.removeFixDiv = function() {
+			$('.qr_fix_div').remove();
 		};
 	}
 
