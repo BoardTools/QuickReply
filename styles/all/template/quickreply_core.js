@@ -76,6 +76,10 @@
 				qr_url = qr_url.replace(/^\.\//, quickreply.plugins.qrBoardUrl);
 				// Fix for ?f=forum_id
 				qr_url = qr_url.replace(/\?f=\d+&/, '?');
+				// Fix for &p=post_id
+				if (/[\?|&]t=\d+&/.test(qr_url)) {
+					qr_url = qr_url.replace(/&p=\d+/, '');
+				}
 
 				return qr_url;
 			}
@@ -1162,6 +1166,7 @@
 		 */
 		function setExtended() {
 			var attach_visible = ($('#attach-panel').css('display') != 'none');
+			var attach_notice_visible = ($('#qr_attach_notice').css('display') != 'none');
 			$('#qr_form_placeholder').remove();
 
 			// Opens attachments form and refreshes the uploader: triggers necessary event.
@@ -1179,7 +1184,7 @@
 			quickreply.style.formEditorElements(true).finish().show();
 
 			var check_val = $('#format-buttons .bbcode-file');
-			if ('undefined' !== typeof check_val && check_val !== null && check_val.length > 0 && !attach_visible) {
+			if ('undefined' !== typeof check_val && check_val !== null && check_val.length > 0 && !attach_visible && !attach_notice_visible) {
 				$('#attach-panel').hide();
 			}
 			setAttachNotice('hide');
