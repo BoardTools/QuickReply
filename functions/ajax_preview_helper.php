@@ -61,11 +61,11 @@ class ajax_preview_helper
 		/** @var \parse_message $message_parser */
 		$message_parser = $event['message_parser'];
 
-		$message_parser->message = $this->request->variable('message', '', true);
+		/*$message_parser->message = $this->request->variable('message', '', true);
 		if (!empty($message_parser->message))
 		{
 			$message_parser->parse($post_data['enable_bbcode'], ($this->config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $this->config['allow_post_links']);
-		}
+		}*/
 		$this->preview_message = $message_parser->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], false);
 
 		// Attachment Preview
@@ -118,7 +118,7 @@ class ajax_preview_helper
 	}
 
 	//
-	public function check_preview_error($event)
+	public function check_preview_error($event, $img_status, $flash_status, $quote_status)
 	{
 		$message_parser = $event['message_parser'];
 		$error = $event['error'];
@@ -149,6 +149,14 @@ class ajax_preview_helper
 			}
 		}
 
+		$post_data = $event['post_data'];
+
+		$message_parser->message = $this->request->variable('message', '', true);
+		if (!empty($message_parser->message))
+		{
+			$message_parser->parse($post_data['enable_bbcode'], ($this->config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $this->config['allow_post_links']);
+		}
+
 		if (count($message_parser->warn_msg))
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
@@ -165,5 +173,7 @@ class ajax_preview_helper
 				'message'        => implode('<br />', $error),
 			]);
 		}
+
+		$event['message_parser'] = $message_parser;
 	}
 }
