@@ -122,6 +122,7 @@ class ajax_preview_helper
 	{
 		$message_parser = $event['message_parser'];
 		$error = $event['error'];
+		$post_data = $event['post_data'];
 
 		// check form
 		if (!check_form_key('posting'))
@@ -148,8 +149,6 @@ class ajax_preview_helper
 				$error[] = $this->user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
 			}
 		}
-
-		$post_data = $event['post_data'];
 
 		$message_parser->message = $this->request->variable('message', '', true);
 		if (!empty($message_parser->message))
